@@ -1,0 +1,54 @@
+/************************************************************
+PROJECT LOG
+____________________
+KingEngine
+____________________
+Date Started: 2/5/14
+____________________
+
+----- 2/5/14 -----
+
+	* Added ksRect class
+	* Added ksTile class
+	* Added tiling / scolling map abilities
+	
+----- 2/8/14 -----
+
+	* Completely revamped tiling / scrolling abilities
+	* Added ksMap
+	* Added bounded map check
+	* Removed ksTile
+
+----- 2/11/14 -----
+
+	* Created ksObject
+	* Created ksText
+	* Created ksTextLog
+	* Added player velocity
+	* Improved button timing
+	* Set framerate
+
+----- 2/16/14 -----
+
+	* Added object animation
+	* Synched animation to movement
+	* Optimization
+
+----- 2/17/14 -----
+
+	* Added camera view
+	* Added menu view ( applied to ksTextLog )
+	* Binded camera to player
+	* Added event triggered layer to ksMap
+	* Added object collision
+
+----- 2/22/14 -----
+
+	* Added ksAbstract
+	* Added ksObject
+	* Added ksComplex
+	* Added ksAbstractLayer
+	* Revised layout of entire engine
+	* Added ksEngine
+
+************************************************************/

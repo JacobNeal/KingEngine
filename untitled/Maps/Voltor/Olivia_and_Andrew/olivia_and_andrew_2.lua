@@ -1,0 +1,1 @@
+KingEngine:runScript( "Maps/Voltor/voltor_night.lua" )

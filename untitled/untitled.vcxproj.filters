@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ksMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksText.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksTextLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="driver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksAbstract.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksAbstractLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksParticleEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksPathFinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksAudioTrack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ksAttackLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ksTile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksRect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksText.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksTextLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cArrayStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksAbstract.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksComplex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksAbstractLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cArray2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cRow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksParticle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksParticleEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksPathNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksPathFinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksAudioTrack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksAttackLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksStatus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ksInventory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="updatelog.txt">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="luafile.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\portal_demo\portal.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\portal_demo\portal_2.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\portal_demo\portal_3.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\portal_demo\portal_evt.ks">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\Maze\maze.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\Maze\maze_2.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\Maze\maze_3.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\Maze\maze_4.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\Maze\maze_5.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\Maze\maze_6.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\Maze\maze_evt.ks">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\Maze\maze_7.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\Voltor\voltor.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Maps\Voltor\voltor_night.lua">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="player_items.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="player_equip.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="player_status.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="status_guide.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="item_guide.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="player_quest.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,1 @@
+KingEngine:runScript( "luafile.lua" )

@@ -1,0 +1,11 @@
+Name
+Level
+HP
+MAX HP
+Low Attack
+High Attack
+Defense
+MANA
+MAX MANA
+XP
+XP to Next

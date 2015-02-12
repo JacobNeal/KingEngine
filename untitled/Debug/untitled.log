@@ -1,0 +1,35 @@
+﻿Build started 2/11/2015 10:04:36 PM.
+     1>Project "P:\Documents\Regime\KingEngine\untitled\untitled.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         P:\Applications\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IP:\Documents\Regime\LuaIncludes\luabind\include /IP:\Documents\Regime\LuaIncludes\lua\include /IP:\Documents\Regime\LuaIncludes\boost\include /I"P:\Documents\Regime\SFML-2.1\include" /ZI /nologo /W3 /WX- /Od /Oy- /D SFML_STATIC /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ksAttackLog.cpp
+         ksAttackLog.cpp
+     1>p:\documents\regime\kingengine\untitled\ksattacklog.cpp(144): warning C4244: 'argument' : conversion from 'float' to 'sf::Uint8', possible loss of data
+     1>p:\documents\regime\kingengine\untitled\ksattacklog.cpp(145): warning C4244: 'argument' : conversion from 'float' to 'sf::Uint8', possible loss of data
+     1>p:\documents\regime\kingengine\untitled\ksattacklog.cpp(146): warning C4244: 'argument' : conversion from 'float' to 'sf::Uint8', possible loss of data
+     1>p:\documents\regime\kingengine\untitled\ksattacklog.cpp(147): warning C4244: 'argument' : conversion from 'float' to 'sf::Uint8', possible loss of data
+     1>p:\documents\regime\kingengine\untitled\ksattacklog.cpp(151): warning C4244: 'argument' : conversion from 'float' to 'sf::Uint8', possible loss of data
+     1>p:\documents\regime\kingengine\untitled\ksattacklog.cpp(152): warning C4244: 'argument' : conversion from 'float' to 'sf::Uint8', possible loss of data
+     1>p:\documents\regime\kingengine\untitled\ksattacklog.cpp(153): warning C4244: 'argument' : conversion from 'float' to 'sf::Uint8', possible loss of data
+     1>p:\documents\regime\kingengine\untitled\ksattacklog.cpp(154): warning C4244: 'argument' : conversion from 'float' to 'sf::Uint8', possible loss of data
+       Link:
+         P:\Applications\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"P:\Documents\Regime\KingEngine\Debug\KingEngine.exe" /INCREMENTAL /NOLOGO /LIBPATH:"P:\Documents\Regime\LuaIncludes\luabind\msvc-11.0-x86" /LIBPATH:"P:\Documents\Regime\LuaIncludes\lua\msvc-11.0-x86" /LIBPATH:"P:\Documents\Regime\SFML-2.1\lib" lua.lib luabind.lib "sfml-graphics-s-d.lib" "sfml-audio-s-d.lib" "sfml-window-s-d.lib" "sfml-system-s-d.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"P:\Documents\Regime\KingEngine\Debug\KingEngine.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"P:\Documents\Regime\KingEngine\Debug\KingEngine.lib" /MACHINE:X86 Debug\ksAbstract.obj
+         Debug\ksAbstractLayer.obj
+         Debug\ksAttackLog.obj
+         Debug\ksAudioTrack.obj
+         Debug\ksEffect.obj
+         Debug\ksEngine.obj
+         Debug\ksMap.obj
+         Debug\ksMenu.obj
+         Debug\ksObject.obj
+         Debug\ksParticleEngine.obj
+         Debug\ksPathFinder.obj
+         Debug\ksPlayer.obj
+         Debug\ksText.obj
+         Debug\ksTextLog.obj
+         Debug\driver.obj
+         untitled.vcxproj -> P:\Documents\Regime\KingEngine\Debug\KingEngine.exe
+     1>Done Building Project "P:\Documents\Regime\KingEngine\untitled\untitled.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.86

@@ -1,0 +1,15 @@
+Battle Axe
+Increases attack rating by 1.
+battleaxe.lua
+Iron Helm
+Increases defense rating by 1.
+ironhelm.lua
+Iron Plate
+Increases defense rating by 1.
+ironplate.lua
+Iron Leggings
+Increases defense rating by 1.
+ironlegs.lua
+Amulet of Fortune
+Increases luck by 1.
+amulet.lua
