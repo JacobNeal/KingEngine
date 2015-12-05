@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{88A44298-27A0-4AC1-9DF3-48D61F18D858}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>KingEngine</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>P:\Documents\Regime\KingEngine\lib\luabind\include;P:\Documents\Regime\KingEngine\lib\lua\include;P:\Documents\Regime\KingEngine\lib\boost\include;P:\Documents\Regime\KingEngine\lib\SFML-2.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>P:\Documents\Regime\KingEngine\lib\luabind\msvc-11.0-x86;P:\Documents\Regime\KingEngine\lib\lua\msvc-11.0-x86;P:\Documents\Regime\KingEngine\lib\SFML-2.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>lua.lib;luabind.lib;sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-system-s-d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>P:\Documents\Regime\KingEngine\lib\luabind\include;P:\Documents\Regime\KingEngine\lib\lua\include;P:\Documents\Regime\KingEngine\lib\boost\include;P:\Documents\Regime\KingEngine\lib\SFML-2.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>P:\Documents\Regime\KingEngine\lib\luabind\msvc-11.0-x86;P:\Documents\Regime\KingEngine\lib\lua\msvc-11.0-x86;P:\Documents\Regime\KingEngine\lib\SFML-2.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>lua.lib;luabind.lib;sfml-graphics-s.lib;sfml-audio-s.lib;sfml-windows-s.lib;sfml-system-s.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="ksAbstract.h" />
+    <ClInclude Include="ksAbstractLayer.h" />
+    <ClInclude Include="ksColor.h" />
+    <ClInclude Include="ksDrawable.h" />
+    <ClInclude Include="ksEffect.h" />
+    <ClInclude Include="ksFile.h" />
+    <ClInclude Include="ksInventory.h" />
+    <ClInclude Include="ksItem.h" />
+    <ClInclude Include="ksMap.h" />
+    <ClInclude Include="ksMenu.h" />
+    <ClInclude Include="ksObject.h" />
+    <ClInclude Include="ksParticle.h" />
+    <ClInclude Include="ksParticleEngine.h" />
+    <ClInclude Include="ksPlayer.h" />
+    <ClInclude Include="ksPlayer.hpp" />
+    <ClInclude Include="ksRect.h" />
+    <ClInclude Include="ksRenderWindow.h" />
+    <ClInclude Include="ksStatus.h" />
+    <ClInclude Include="ksText.h" />
+    <ClInclude Include="ksTextLog.h" />
+    <ClInclude Include="ksTile.h" />
+    <ClInclude Include="ksVector.h" />
+    <ClInclude Include="ksWorld.hpp" />
+    <ClInclude Include="Regime.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ksAbstract.cpp" />
+    <ClCompile Include="ksAbstractLayer.cpp" />
+    <ClCompile Include="ksDrawable.cpp" />
+    <ClCompile Include="ksEffect.cpp" />
+    <ClCompile Include="ksFile.cpp" />
+    <ClCompile Include="ksMap.cpp" />
+    <ClCompile Include="ksMenu.cpp" />
+    <ClCompile Include="ksObject.cpp" />
+    <ClCompile Include="ksParticleEngine.cpp" />
+    <ClCompile Include="ksPlayer.cpp" />
+    <ClCompile Include="ksRenderWindow.cpp" />
+    <ClCompile Include="ksText.cpp" />
+    <ClCompile Include="ksTextLog.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Regime.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
