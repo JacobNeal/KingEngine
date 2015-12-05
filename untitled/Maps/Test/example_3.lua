@@ -1,1 +1,0 @@
-KingEngine:runScript( "Maps/example_house.lua" )

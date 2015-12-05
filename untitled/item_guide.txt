@@ -1,3 +1,0 @@
-ITEM NAME
-ITEM TYPE( G ( General ), K( Key Item ), E( Equipment ) )
-ITEM SCRIPT

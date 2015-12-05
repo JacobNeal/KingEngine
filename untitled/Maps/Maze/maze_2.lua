@@ -1,1 +1,0 @@
-Player:setPosition( MapView, 32, 32 )
