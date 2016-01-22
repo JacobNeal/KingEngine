@@ -48,6 +48,7 @@ class ksApplication
 		void                  addEntity(ksEntity * entity);
 		void                  animateEntity(int entity_number, int lower_tile, int upper_tile, int frame_delay);
         void                  addControl(ksControl * control);
+        void                  loadWorld(int width, int height, int depth);
 
 		//                    Mutators
 		void                  setEntityTilesheet(char * tilesheet);

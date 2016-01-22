@@ -53,6 +53,9 @@ bool ksApplication::isOpen()
 	m_entity_layer.depressEntity();
     m_control_layer.depressControl();
 
+    //m_world.setPosition(400 - (((m_world.getDepth() * 2) + m_world.getWidth() * TILE_WIDTH) / 2),
+    //                    320 - (((m_world.getDepth() * 2) + m_world.getHeight() * TILE_HEIGHT) / 2));
+
 	// check for closed window / app
 	if (m_window.pollEvent(m_evt))
 	{
@@ -194,6 +197,11 @@ void ksApplication::animateEntity(int entity_number, int lower_tile, int upper_t
 void ksApplication::addControl(ksControl * control)
 {
     m_control_layer.addControl(control);
+}
+
+void ksApplication::loadWorld(int width, int height, int depth)
+{
+    m_world.load(width, height, depth);
 }
 
 /*********************************************************

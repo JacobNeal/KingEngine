@@ -32,16 +32,26 @@ class ksWorld : public sf::Drawable, public sf::Transformable
     public:
         //              Constructors
         ksWorld();
+        ksWorld(int width, int height, int depth);
 
         //              Methods
         void            load(int width, int height, int depth);
         void            drawLeftTiles(int start_index);
         void            drawRightTiles(int start_index);
+        void            drawTopTiles(int start_index);
+        void            drawBottomTiles(int start_index);
         void            drawFrontTiles(int start_index);
         ksTile          calculateLeftPosition(int row, int col);
         ksTile          calculateRightPosition(int row, int col);
+        ksTile          calculateTopPosition(int row, int col);
+        ksTile          calculateBottomPosition(int row, int col);
         ksTile          calculateFrontPosition(int row, int col);
         virtual void    draw(sf::RenderTarget & target, sf::RenderStates states) const;
+
+        //              Accessor methods
+        int             getWidth() { return m_width; }
+        int             getHeight() { return m_height; }
+        int             getDepth() { return m_depth; }
 
     private:
         int             m_width;
@@ -51,13 +61,6 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         int             m_outer_width_px;
         int             m_inner_x;
         int             m_inner_y;
-
-        int **          m_front_map;
-        int **          m_back_map;
-        int **          m_top_map;
-        int **          m_bottom_map;
-        int **          m_left_map;
-        int **          m_right_map;
 
         sf::VertexArray m_array;
 };

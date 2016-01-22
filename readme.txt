@@ -27,6 +27,7 @@ ksApplication
     ksWorld
         ksFile
     ksLuaLoader
+    ksEffect
     map(ksParticleEmitter *)
     ksEntityLayer
         map(ksEntity *)
