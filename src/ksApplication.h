@@ -48,7 +48,9 @@ class ksApplication
 		void                  addEntity(ksEntity * entity);
 		void                  animateEntity(int entity_number, int lower_tile, int upper_tile, int frame_delay);
         void                  addControl(ksControl * control);
-        void                  loadWorld(int width, int height, int depth);
+        void                  loadWorld(int width, int height, int depth, std::string name="");
+        void                  increaseCameraDepth();
+        void                  decreaseCameraDepth();
 
 		//                    Mutators
 		void                  setEntityTilesheet(char * tilesheet);
@@ -62,6 +64,7 @@ class ksApplication
         std::map<ksKey::Key, bool> m_key_down;
 		bool                  m_mouse_released;
 		sf::Event             m_evt;
+        sf::View              m_world_view;
 };
 
 #endif

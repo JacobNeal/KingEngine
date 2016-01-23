@@ -9,3 +9,6 @@
 
 #define TILE_WIDTH 32
 #define TILE_HEIGHT 32
+
+#define MAX_LIGHT_INTENSITY 3
+#define LIGHT_INTENSITY_MULT 7

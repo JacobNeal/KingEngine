@@ -16,7 +16,7 @@
 ksApplication::ksApplication()
 	: m_window(sf::VideoMode::getDesktopMode(), "KingEngine"),
 	m_entity_layer("images/default.png"), m_control_layer("images/portal_obj.png"),
-    m_mouse_released(false)
+    m_world("images/voltor_interior.png"), m_mouse_released(false)
 {
 	m_window.setFramerateLimit(FRAMERATE);
 }
@@ -30,7 +30,7 @@ ksApplication::ksApplication()
 ksApplication::ksApplication(char * app_title, int app_width, int app_height)
 	: m_window(sf::VideoMode(app_width, app_height, 32), app_title),
 	m_entity_layer("images/default.png"), m_control_layer("images/portal_obj.png"),
-    m_mouse_released(false)
+    m_world("images/voltor_interior.png"), m_mouse_released(false)
 {
 	m_window.setFramerateLimit(FRAMERATE);
 }
@@ -45,7 +45,10 @@ bool ksApplication::isOpen()
 {
 	// do updates
 	m_window.clear();
+    m_window.setView(m_world_view);
     m_window.draw(m_world);
+
+    m_window.setView(m_window.getDefaultView());
 	m_entity_layer.drawLayer(m_window);
 	m_control_layer.drawLayer(m_window);
     m_window.display();
@@ -61,6 +64,11 @@ bool ksApplication::isOpen()
 	{
 		if (m_evt.type == sf::Event::KeyPressed)
 		{
+            if (m_evt.key.code == sf::Keyboard::A)
+                m_world_view.rotate(90);
+            else if (m_evt.key.code == sf::Keyboard::D)
+                m_world_view.rotate(-90);
+
 			for (std::map<ksKey::Key, bool>::iterator it = m_key_down.begin();
 				it != m_key_down.end(); ++it)
 			{
@@ -199,9 +207,47 @@ void ksApplication::addControl(ksControl * control)
     m_control_layer.addControl(control);
 }
 
-void ksApplication::loadWorld(int width, int height, int depth)
+/*********************************************************
+*   loadWorld
+*
+*   Loads the perspective game world using the passed
+*   (width x height x depth) and the path to the map
+*   files.
+*
+*   * This method will also center the world view.
+*********************************************************/
+void ksApplication::loadWorld(int width, int height, int depth, std::string name)
 {
-    m_world.load(width, height, depth);
+    m_world.load(width, height, depth, name);
+    
+    m_world_view.reset(sf::FloatRect(0, 0, (width + (depth * 2)) * TILE_WIDTH, 
+                                           (height + (depth * 2)) * TILE_HEIGHT));
+    m_world_view.setCenter(400, 320);
+}
+
+/*********************************************************
+*   increaseCameraDepth
+*
+*   Increases the depth of the camera inward toward the
+*   front wall of the game world.
+*********************************************************/
+void ksApplication::increaseCameraDepth()
+{
+    //int perimeter = (m_world.getWidth() * 2) + (m_world.getHeight() * 2);
+
+    //m_world_view.zoom(perimeter / (m_world.getWidth() * m_world.getHeight())); 
+    m_world_view.zoom(0.9);
+}
+
+/*********************************************************
+*   decreaseCameraDepth
+*
+*   Decreases the depth of the camera backward away from
+*   the front wall of the game world.
+*********************************************************/
+void ksApplication::decreaseCameraDepth()
+{
+    m_world_view.zoom(1.1);
 }
 
 /*********************************************************
