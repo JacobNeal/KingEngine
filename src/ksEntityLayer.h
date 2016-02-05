@@ -15,6 +15,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "ksEntity.h"
+#include "ksWorld.h"
 #include "globals.h"
 #include <map>
 
@@ -22,7 +23,7 @@ class ksEntityLayer : public sf::Drawable, public sf::Transformable
 {
 	public:
 		//                      Constructors
-		ksEntityLayer(char * tilesheet);
+		ksEntityLayer(ksWorld * world, char * tilesheet);
 		
 		//                      Methods
 		void                    addEntity(ksEntity * entity);
@@ -36,13 +37,14 @@ class ksEntityLayer : public sf::Drawable, public sf::Transformable
 		//                      Mutators
 		bool                    setTilesheet(char * tilesheet);
 
-		//                      Accessor Methods
+		//                      Accessor methods
 		ksRect                  getRect(int entity_number);
 		int                     getCount();
 
 	private:
 		//                      Data members
         sf::VertexArray         m_array;
+        ksWorld *               m_world;
         std::map<int, ksEntity *> m_entities;
 		sf::Texture             m_texture;
         ksRect *                m_position;

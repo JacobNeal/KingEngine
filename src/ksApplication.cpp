@@ -15,8 +15,9 @@
 *********************************************************/
 ksApplication::ksApplication()
 	: m_window(sf::VideoMode::getDesktopMode(), "KingEngine"),
-	m_entity_layer("images/default.png"), m_control_layer("images/portal_obj.png"),
-    m_world("images/voltor_interior.png"), m_mouse_released(false)
+	m_world("images/voltor_interior.png"), m_camera_depth(0), 
+    m_entity_layer(&m_world, "images/default.png"), 
+    m_control_layer("images/portal_obj.png"), m_mouse_released(false)
 {
 	m_window.setFramerateLimit(FRAMERATE);
 }
@@ -29,8 +30,9 @@ ksApplication::ksApplication()
 *********************************************************/
 ksApplication::ksApplication(char * app_title, int app_width, int app_height)
 	: m_window(sf::VideoMode(app_width, app_height, 32), app_title),
-	m_entity_layer("images/default.png"), m_control_layer("images/portal_obj.png"),
-    m_world("images/voltor_interior.png"), m_mouse_released(false)
+	m_world("images/voltor_interior.png"), m_camera_depth(0), 
+    m_entity_layer(&m_world, "images/default.png"), 
+    m_control_layer("images/portal_obj.png"), m_mouse_released(false)
 {
 	m_window.setFramerateLimit(FRAMERATE);
 }
@@ -46,7 +48,7 @@ bool ksApplication::isOpen()
 	// do updates
 	m_window.clear();
     m_window.setView(m_world_view);
-    m_window.draw(m_world);
+    m_world.drawWorld(m_window);
 
     m_window.setView(m_window.getDefaultView());
 	m_entity_layer.drawLayer(m_window);
@@ -56,6 +58,7 @@ bool ksApplication::isOpen()
 	m_entity_layer.depressEntity();
     m_control_layer.depressControl();
 
+    m_mouse_released = false;
     //m_world.setPosition(400 - (((m_world.getDepth() * 2) + m_world.getWidth() * TILE_WIDTH) / 2),
     //                    320 - (((m_world.getDepth() * 2) + m_world.getHeight() * TILE_HEIGHT) / 2));
 
@@ -64,11 +67,6 @@ bool ksApplication::isOpen()
 	{
 		if (m_evt.type == sf::Event::KeyPressed)
 		{
-            if (m_evt.key.code == sf::Keyboard::A)
-                m_world_view.rotate(90);
-            else if (m_evt.key.code == sf::Keyboard::D)
-                m_world_view.rotate(-90);
-
 			for (std::map<ksKey::Key, bool>::iterator it = m_key_down.begin();
 				it != m_key_down.end(); ++it)
 			{
@@ -207,6 +205,11 @@ void ksApplication::addControl(ksControl * control)
     m_control_layer.addControl(control);
 }
 
+void ksApplication::addLight(ksVector2D start, ksWorldWall wall, int row, int col, ksColor first, ksColor second)
+{
+    m_world.addLight(start, wall, row, col, first, second);
+}
+
 /*********************************************************
 *   loadWorld
 *
@@ -219,6 +222,8 @@ void ksApplication::addControl(ksControl * control)
 void ksApplication::loadWorld(int width, int height, int depth, std::string name)
 {
     m_world.load(width, height, depth, name);
+    
+    m_camera_depth = depth;
     
     m_world_view.reset(sf::FloatRect(0, 0, (width + (depth * 2)) * TILE_WIDTH, 
                                            (height + (depth * 2)) * TILE_HEIGHT));
@@ -233,10 +238,7 @@ void ksApplication::loadWorld(int width, int height, int depth, std::string name
 *********************************************************/
 void ksApplication::increaseCameraDepth()
 {
-    //int perimeter = (m_world.getWidth() * 2) + (m_world.getHeight() * 2);
-
-    //m_world_view.zoom(perimeter / (m_world.getWidth() * m_world.getHeight())); 
-    m_world_view.zoom(0.9);
+    setCameraDelta(m_camera_depth - 1);
 }
 
 /*********************************************************
@@ -247,7 +249,23 @@ void ksApplication::increaseCameraDepth()
 *********************************************************/
 void ksApplication::decreaseCameraDepth()
 {
-    m_world_view.zoom(1.1);
+    setCameraDelta(m_camera_depth + 1);
+}
+
+/*********************************************************
+*   getCameraDelta
+*
+*   Returns the difference between the world's depth
+*   and the camera's depth.
+*********************************************************/
+int ksApplication::getCameraDelta()
+{
+    return m_camera_depth;
+}
+
+ksWorld * ksApplication::getWorld()
+{
+    return &m_world;
 }
 
 /*********************************************************
@@ -258,4 +276,20 @@ void ksApplication::decreaseCameraDepth()
 void ksApplication::setEntityTilesheet(char * tilesheet)
 {
 	m_entity_layer.setTilesheet(tilesheet);
+}
+
+void ksApplication::setCameraDelta(int camera_delta)
+{
+    if (camera_delta > 0 && camera_delta <= m_world.getDepth())
+    {
+        int current_area = (m_world.getWidth() + m_camera_depth) *
+                           (m_world.getHeight() + m_camera_depth);
+
+        m_camera_depth   = camera_delta;
+
+        int new_area     = (m_world.getWidth() + m_camera_depth) *
+                           (m_world.getHeight() + m_camera_depth);
+
+        m_world_view.zoom((float) new_area / current_area);
+    }
 }

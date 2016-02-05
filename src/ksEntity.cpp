@@ -6,6 +6,7 @@
 ********************************************************/
 
 #include "ksEntity.h"
+#include <iostream>
 
 /*********************************************************
 *	ksEntity
@@ -13,32 +14,15 @@
 *	Initialize entity to the position, width, height and 
 *	current tile passed.
 *********************************************************/
-ksEntity::ksEntity(double x, double y, double w, double h, int current_tile)
-    : m_position(x, y), m_current_tile(current_tile), m_frame(0),
+ksEntity::ksEntity(ksWorldWall wall, int row, int col, int w, int h, int current_tile)
+    : m_wall(wall), m_row(row), m_col(col), m_width(w), m_height(h), m_current_tile(current_tile), m_frame(0), 
       m_anim_delay(1), m_lower_tile(current_tile), m_upper_tile(current_tile),
 	  m_pressed(false), m_visible(true)
 {
-	m_texture_coord.X = (current_tile - (TILE_PER_LINE * (current_tile / TILE_PER_LINE))) * w;
-	m_texture_coord.Y = (current_tile / TILE_PER_LINE) * h;
-	m_texture_coord.W = w;
-	m_texture_coord.H = h;
-}
-
-/*********************************************************
-*	ksEntity
-*
-*	Initialize entity to the position rectangle and
-*	current tile passed.
-*********************************************************/
-ksEntity::ksEntity(ksRect position, int current_tile)
-    : m_position(position.X, position.Y), m_current_tile(current_tile),
-      m_frame(0), m_anim_delay(1), m_lower_tile(current_tile), m_upper_tile(current_tile),
-	  m_pressed(false), m_visible(true)
-{
-	m_texture_coord.X = (current_tile - (TILE_PER_LINE * (current_tile / TILE_PER_LINE)) * position.W);
-	m_texture_coord.Y = (current_tile / TILE_PER_LINE) * position.H;
-	m_texture_coord.W = position.W;
-	m_texture_coord.H = position.H;
+	m_texture_coord.X = (current_tile - (TILE_PER_LINE * (current_tile / TILE_PER_LINE))) * (w * TILE_WIDTH);
+	m_texture_coord.Y = (current_tile / TILE_PER_LINE) * (h * TILE_HEIGHT);
+	m_texture_coord.W = (w * TILE_WIDTH);
+	m_texture_coord.H = (h * TILE_HEIGHT);
 }
 
 /*********************************************************
@@ -68,19 +52,31 @@ void ksEntity::animate()
 		m_texture_coord.Y = (m_current_tile / TILE_PER_LINE) * m_texture_coord.H;
 	}
 	++m_frame;
+
+    update();
 }
+
+/********************************************************
+*   update
+*
+*   Call the frame by frame update method. This method
+*   should be overridden in any derived classes.
+********************************************************/
+void ksEntity::update()
+{ }
 
 /*********************************************************
 *	move
 *
 *	Update the position of the entity by adding the passed
-*	x and y values to it's current position.
+*	row, column, and depth values to it's current position.
 *********************************************************/
-void ksEntity::move(double x, double y)
+/*void ksEntity::move(ksDirection direction)
 {
-	m_position.X += x;
-	m_position.Y += y;
-}
+    m_current_direction = direction;
+
+    int diff_x = m_
+}*/
 
 /*********************************************************
 *	setAnimationLow
@@ -117,23 +113,13 @@ void ksEntity::setAnimationDelay(int frame_delay)
 /*********************************************************
 *	setPosition
 *
-*	Set the position of the entity to the x and y passed.
+*	Set the position of the entity to the row and column
+*   passed.
 *********************************************************/
-void ksEntity::setPosition(double x, double y)
+void ksEntity::setPosition(int row, int col, int depth)
 {
-	m_position.X = x;
-	m_position.Y = y;
-}
-
-/*********************************************************
-*	setPosition
-*
-*	Set the position of the entity to the 2D vector passed.
-*********************************************************/
-void ksEntity::setPosition(const ksVector2D & position)
-{
-	m_position.X = position.X;
-	m_position.Y = position.Y;
+	m_row = row;
+    m_col = col;
 }
 
 /*********************************************************
@@ -161,7 +147,7 @@ void ksEntity::setVisible(bool visible)
 *
 *	Returns the position of the entity in vector form.
 *********************************************************/
-const ksVector2D & ksEntity::getPosition()
+const ksTile & ksEntity::getTilePosition()
 {
 	return m_position;
 }
@@ -176,22 +162,56 @@ const ksRect & ksEntity::getTextureCoord()
 	return m_texture_coord;
 }
 
-/*********************************************************
-*   getRect
+/********************************************************
+*   getWidth
 *
-*   Returns a rectangle (x, y, width, height) for the base
-*   game entity
-*********************************************************/
-ksRect ksEntity::getRect()
+*   Returns the width of the entity.
+********************************************************/
+int ksEntity::getWidth()
 {
-	ksRect rect;
+    return m_width;
+}
 
-	rect.X = m_position.X;
-	rect.Y = m_position.Y;
-	rect.W = m_texture_coord.W;
-	rect.H = m_texture_coord.H;
+/********************************************************
+*   getHeight
+*
+*   Returns the height of the entity.
+********************************************************/
+int ksEntity::getHeight()
+{
+    return m_height;
+}
 
-	return rect;
+/********************************************************
+*   getRow
+*
+*   Returns the row that the entity is on. 
+********************************************************/
+int ksEntity::getRow()
+{
+    return m_row;
+}
+
+/********************************************************
+*   getColumn
+*
+*   Returns the column that the entity is on.
+********************************************************/
+int ksEntity::getColumn()
+{
+    return m_col;
+}
+
+/********************************************************
+*   getWall
+*
+*   Returns the enum for the wall type to determine
+*   which wall the entity is on and how to use the row 
+*   and column members.
+********************************************************/
+ksWorldWall ksEntity::getWall()
+{
+    return m_wall;
 }
 
 /*********************************************************

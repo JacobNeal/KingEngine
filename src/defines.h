@@ -11,4 +11,9 @@
 #define TILE_HEIGHT 32
 
 #define MAX_LIGHT_INTENSITY 3
+#define BASE_LIGHT_INTENSITY 50
 #define LIGHT_INTENSITY_MULT 7
+
+#define ksColor sf::Color
+
+#define ENTITY_MOVE_DELTA 3

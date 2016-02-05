@@ -13,8 +13,8 @@
 *	Initialize the entity layer by loading the passed
 *	tilesheet.
 *********************************************************/
-ksEntityLayer::ksEntityLayer(char * tilesheet)
-	: m_num_of_entities(0), m_pressedEntity(nullptr)
+ksEntityLayer::ksEntityLayer(ksWorld * world, char * tilesheet)
+	: m_world(world), m_num_of_entities(0), m_pressedEntity(nullptr)
 {
 	m_texture.loadFromFile(tilesheet);
 	//if (!m_texture.loadFromFile(tilesheet))
@@ -33,7 +33,7 @@ void ksEntityLayer::addEntity(ksEntity * entity)
 
 	m_entities[m_num_of_entities] = entity;
 
-	int   vec = m_num_of_entities * 4;
+	/*int   vec = m_num_of_entities * 4;
 	float x   = (float) entity->getPosition().X;
 	float y   = (float) entity->getPosition().Y;
 	float w   = (float) entity->getTextureCoord().W;
@@ -53,7 +53,7 @@ void ksEntityLayer::addEntity(ksEntity * entity)
 	m_array[vec + 1].texCoords = sf::Vector2f(x + w, y);
 	m_array[vec + 2].texCoords = sf::Vector2f(x + w, y + h);
 	m_array[vec + 3].texCoords = sf::Vector2f(x, y + h);
-
+*/
 	m_num_of_entities++;
 }
 
@@ -80,12 +80,12 @@ bool ksEntityLayer::pressEntity(int mouse_x, int mouse_y)
 {
 	for (int count = 0; count < m_num_of_entities; ++count)
 	{
-		ksRect entity = m_entities[count]->getRect();
+        ksTile entity = m_entities[count]->getTilePosition();
 
-		if (mouse_x > entity.X &&
-			mouse_x < (entity.X + entity.W) &&
-			mouse_y >(entity.Y) &&
-			mouse_y < (entity.Y + entity.H))
+		if (mouse_x > entity.TL.X &&
+			mouse_x < entity.TR.X &&
+			mouse_y > entity.TL.Y &&
+			mouse_y < entity.BL.Y)
 		{
 			m_entities[count]->setPressed(true);
 			m_pressedEntity = m_entities[count];
@@ -122,26 +122,61 @@ void ksEntityLayer::drawLayer(sf::RenderWindow & app)
 		// Update each entities animation before drawing.
 		m_entities[count]->animate();
 
-		int   vec = count * 4;
-		float x   = (float) m_entities[count]->getPosition().X;
-		float y   = (float) m_entities[count]->getPosition().Y;
-		float w   = (float) m_entities[count]->getTextureCoord().W;
-		float h   = (float) m_entities[count]->getTextureCoord().H;
+        /*ksTile tile = m_world->getTilePosition(m_entities[count]->getWall(),
+                                        m_entities[count]->getRow(),
+                                        m_entities[count]->getColumn(),
+                                        m_entities[count]->getWidth(),
+                                        m_entities[count]->getHeight());*/
+        
+        ksTile tile = m_entities[count]->getTilePosition();
 
-		m_array[vec].position     = sf::Vector2f(x, y);
-		m_array[vec + 1].position = sf::Vector2f(x + w, y);
-		m_array[vec + 2].position = sf::Vector2f(x + w, y + h);
-		m_array[vec + 3].position = sf::Vector2f(x, y + h);
+/*        if (tile.TL.X = -1)
+        {
+            ksTile tile = m_world->getTilePosition(m_entities[count]->getWall(),
+                                        m_entities[count]->getRow(),
+                                        m_entities[count]->getColumn(),
+                                        m_entities[count]->getWidth(),
+                                        m_entities[count]->getHeight());
+        }*/
+        
+        int height = ((tile.TR.X - tile.TL.X) / m_entities[count]->getTextureCoord().W) *
+                     m_entities[count]->getTextureCoord().H;
+        tile.TL.X = tile.BL.X;
+        tile.TL.Y = tile.BL.Y - height;
+        tile.TR.X = tile.BR.X;
+        tile.TR.Y = tile.BR.Y - height;
 
-		x = (float) m_entities[count]->getTextureCoord().X / 2;
-		y = (float) m_entities[count]->getTextureCoord().Y / 2;
-		w = (float) m_entities[count]->getTextureCoord().W / 2;
-		h = (float) m_entities[count]->getTextureCoord().H / 2;
+		int    vec  = count * 4;
+
+		m_array[vec].position     = sf::Vector2f(tile.TL.X, tile.TL.Y);
+		m_array[vec + 1].position = sf::Vector2f(tile.TR.X, tile.TR.Y);
+		m_array[vec + 2].position = sf::Vector2f(tile.BR.X, tile.BR.Y);
+		m_array[vec + 3].position = sf::Vector2f(tile.BL.X, tile.BL.Y);
+
+		float x = (float) m_entities[count]->getTextureCoord().X / 2;
+		float y = (float) m_entities[count]->getTextureCoord().Y / 2;
+		float w = (float) m_entities[count]->getTextureCoord().W / 2;
+		float h = (float) m_entities[count]->getTextureCoord().H / 2;
 
 		m_array[vec].texCoords     = sf::Vector2f(x, y);
 		m_array[vec + 1].texCoords = sf::Vector2f(x + w, y);
 		m_array[vec + 2].texCoords = sf::Vector2f(x + w, y + h);
 		m_array[vec + 3].texCoords = sf::Vector2f(x, y + h);
+
+        int light = BASE_LIGHT_INTENSITY + (m_world->getNumberOfLights() * LIGHT_INTENSITY_MULT)
+            + (50 * m_world->getLightIntensity(m_entities[count]->getWall(),
+                                               m_entities[count]->getRow(),
+                                               m_entities[count]->getColumn()));
+
+        if (light > 255)
+            light = 255;
+
+        sf::Color color = sf::Color(light, light, light);
+
+        m_array[vec].color     = color;
+        m_array[vec + 1].color = color;
+        m_array[vec + 2].color = color;
+        m_array[vec + 3].color = color;
 	}
 
 	app.draw(*this);
@@ -192,8 +227,8 @@ ksRect ksEntityLayer::getRect(int entity_number)
 {
 	ksRect rect;
 
-	rect.X = m_entities[entity_number]->getPosition().X;
-	rect.Y = m_entities[entity_number]->getPosition().Y;
+	rect.X = m_entities[entity_number]->getTilePosition().TR.X;
+	rect.Y = m_entities[entity_number]->getTilePosition().TR.Y;
 	rect.W = m_entities[entity_number]->getTextureCoord().W;
 	rect.H = m_entities[entity_number]->getTextureCoord().H;
 

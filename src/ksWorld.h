@@ -27,11 +27,22 @@
 #include <vector>
 
 #include "ksTile.h"
+#include "ksEffect.h"
 #include "defines.h"
 
 #ifdef DESKTOP_BUILD
 #include <fstream>
 #endif
+
+
+enum ksWorldWall
+{
+    TOP = 0,
+    BOTTOM,
+    LEFT,
+    RIGHT,
+    FRONT
+};
 
 class ksWorld : public sf::Drawable, public sf::Transformable
 {
@@ -54,6 +65,11 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         ksTile          calculateBottomPosition(int row, int col);
         ksTile          calculateFrontPosition(int row, int col);
         virtual void    draw(sf::RenderTarget & target, sf::RenderStates states) const;
+        void            drawWorld(sf::RenderWindow & app);
+        void            addLight(ksVector2D start, ksWorldWall wall, int row, int col,
+                                 sf::Color first, sf::Color second);
+        void            setFirstDuration(int duration);
+        void            setSecondDuration(int duration);
 
         //              Accessor methods
         int             getWidth() { return m_width; }
@@ -61,6 +77,10 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         int             getDepth() { return m_depth; }
         int             getInnerX() { return m_inner_x; }
         int             getInnerY() { return m_inner_y; }
+        int             getNumberOfLights() { return m_num_of_lights; }
+        const ksTile &  getTilePosition(ksWorldWall wall, int row, int col, int width, int height);
+        int             getLightIntensity(ksWorldWall wall, int row, int col);
+        int             getTileEvent(ksWorldWall wall, int row, int col);
 
     private:
         //              Data members
@@ -76,13 +96,20 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         std::string     m_tilesheet;
         sf::VertexArray m_array;
         sf::Texture     m_texture;
+        ksEffect        m_effect_layer;
 
         std::vector<std::vector<ksTile>> m_top;
         std::vector<std::vector<ksTile>> m_bottom;
         std::vector<std::vector<ksTile>> m_left;
         std::vector<std::vector<ksTile>> m_right;
         std::vector<std::vector<ksTile>> m_front;
-        
+
+        std::vector<std::vector<int>>    m_top_evt;
+        std::vector<std::vector<int>>    m_bottom_evt;
+        std::vector<std::vector<int>>    m_left_evt;
+        std::vector<std::vector<int>>    m_right_evt;
+        std::vector<std::vector<int>>    m_front_evt;
+
         std::vector<std::vector<int>>    m_top_light;
         std::vector<std::vector<int>>    m_bottom_light;
         std::vector<std::vector<int>>    m_left_light;
