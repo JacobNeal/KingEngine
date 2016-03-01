@@ -55,6 +55,8 @@ class ksApplication
         void                  loadWorld(int width, int height, int depth, std::string name="");
         void                  increaseCameraDepth();
         void                  decreaseCameraDepth();
+        ksPathNode            calculateWorldNode(int x, int y);
+        void                  toggleWorldLighting();
 
         //                    Accessor methods
         int                   getCameraDelta();

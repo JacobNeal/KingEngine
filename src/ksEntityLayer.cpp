@@ -18,7 +18,7 @@ ksEntityLayer::ksEntityLayer(ksWorld * world, char * tilesheet)
 {
 	m_texture.loadFromFile(tilesheet);
 	//if (!m_texture.loadFromFile(tilesheet))
-		//ErrorReport.reportNewError("Couldn't load tilesheet.");
+        //ErrorReport.reportNewError("Couldn't load tilesheet.");
 }
 
 /*********************************************************
@@ -33,27 +33,6 @@ void ksEntityLayer::addEntity(ksEntity * entity)
 
 	m_entities[m_num_of_entities] = entity;
 
-	/*int   vec = m_num_of_entities * 4;
-	float x   = (float) entity->getPosition().X;
-	float y   = (float) entity->getPosition().Y;
-	float w   = (float) entity->getTextureCoord().W;
-	float h   = (float) entity->getTextureCoord().H;
-
-	m_array[vec].position = sf::Vector2f(x, y);
-	m_array[vec + 1].position = sf::Vector2f(x + w, y);
-	m_array[vec + 2].position = sf::Vector2f(x + w, y + h);
-	m_array[vec + 3].position = sf::Vector2f(x, y + h);
-
-	x = (float) entity->getTextureCoord().X / 2;
-	y = (float) entity->getTextureCoord().Y / 2;
-	w = (float) entity->getTextureCoord().W / 2;
-	h = (float) entity->getTextureCoord().H / 2;
-
-	m_array[vec].texCoords     = sf::Vector2f(x, y);
-	m_array[vec + 1].texCoords = sf::Vector2f(x + w, y);
-	m_array[vec + 2].texCoords = sf::Vector2f(x + w, y + h);
-	m_array[vec + 3].texCoords = sf::Vector2f(x, y + h);
-*/
 	m_num_of_entities++;
 }
 
@@ -80,7 +59,7 @@ bool ksEntityLayer::pressEntity(int mouse_x, int mouse_y)
 {
 	for (int count = 0; count < m_num_of_entities; ++count)
 	{
-        ksTile entity = m_entities[count]->getTilePosition();
+        ksPathNode entity = m_entities[count]->getTilePosition();
 
 		if (mouse_x > entity.TL.X &&
 			mouse_x < entity.TR.X &&
@@ -117,36 +96,24 @@ void ksEntityLayer::depressEntity()
 *********************************************************/
 void ksEntityLayer::drawLayer(sf::RenderWindow & app)
 {
+    // Sort the entities before drawing.
+    sortEntitiesByRow();
+
 	for (unsigned int count = 0; count < m_entities.size(); ++count)
 	{
 		// Update each entities animation before drawing.
 		m_entities[count]->animate();
 
-        /*ksTile tile = m_world->getTilePosition(m_entities[count]->getWall(),
-                                        m_entities[count]->getRow(),
-                                        m_entities[count]->getColumn(),
-                                        m_entities[count]->getWidth(),
-                                        m_entities[count]->getHeight());*/
-        
-        ksTile tile = m_entities[count]->getTilePosition();
+        ksPathNode tile = m_entities[count]->getTilePosition();
 
-/*        if (tile.TL.X = -1)
-        {
-            ksTile tile = m_world->getTilePosition(m_entities[count]->getWall(),
-                                        m_entities[count]->getRow(),
-                                        m_entities[count]->getColumn(),
-                                        m_entities[count]->getWidth(),
-                                        m_entities[count]->getHeight());
-        }*/
-        
-        int height = ((tile.TR.X - tile.TL.X) / m_entities[count]->getTextureCoord().W) *
-                     m_entities[count]->getTextureCoord().H;
-        tile.TL.X = tile.BL.X;
-        tile.TL.Y = tile.BL.Y - height;
-        tile.TR.X = tile.BR.X;
-        tile.TR.Y = tile.BR.Y - height;
+        //int height = ((tile.TR.X - tile.TL.X) / m_entities[count]->getTextureCoord().W) *
+        //             m_entities[count]->getTextureCoord().H;
+        //tile.TL.X = tile.BL.X;
+        //tile.TL.Y = tile.BL.Y - height;
+        //tile.TR.X = tile.BR.X;
+        //tile.TR.Y = tile.BR.Y - height;
 
-		int    vec  = count * 4;
+		int vec  = count * 4;
 
 		m_array[vec].position     = sf::Vector2f(tile.TL.X, tile.TL.Y);
 		m_array[vec + 1].position = sf::Vector2f(tile.TR.X, tile.TR.Y);
@@ -163,10 +130,15 @@ void ksEntityLayer::drawLayer(sf::RenderWindow & app)
 		m_array[vec + 2].texCoords = sf::Vector2f(x + w, y + h);
 		m_array[vec + 3].texCoords = sf::Vector2f(x, y + h);
 
-        int light = BASE_LIGHT_INTENSITY + (m_world->getNumberOfLights() * LIGHT_INTENSITY_MULT)
-            + (50 * m_world->getLightIntensity(m_entities[count]->getWall(),
-                                               m_entities[count]->getRow(),
-                                               m_entities[count]->getColumn()));
+        int light = 255;
+        
+        if (m_world->isWorldLighting())
+        {
+            light = BASE_LIGHT_INTENSITY + (m_world->getNumberOfLights() * LIGHT_INTENSITY_MULT)
+                + (50 * m_world->getLightIntensity(m_entities[count]->getWall(),
+                                                   m_entities[count]->getRow(),
+                                                   m_entities[count]->getColumn()));
+        }
 
         if (light > 255)
             light = 255;
@@ -177,7 +149,7 @@ void ksEntityLayer::drawLayer(sf::RenderWindow & app)
         m_array[vec + 1].color = color;
         m_array[vec + 2].color = color;
         m_array[vec + 3].color = color;
-	}
+    }
 
 	app.draw(*this);
 }
@@ -193,6 +165,23 @@ void ksEntityLayer::draw(sf::RenderTarget & target, sf::RenderStates states) con
 	states.transform *= getTransform();
 	states.texture = &m_texture;
 	target.draw(m_array, states);
+}
+
+void ksEntityLayer::sortEntitiesByRow()
+{
+    for (int count = 0; count < m_num_of_entities; ++count)
+    {
+        for (int count2 = 0; count2 < m_num_of_entities - count - 1; ++count2)
+        {
+            if (//m_entities[count2]->getWall() == m_entities[count2 + 1]->getWall() &&
+                m_entities[count2]->getTilePosition().BL.Y > m_entities[count2 + 1]->getTilePosition().BL.Y)
+            {
+                ksEntity * temp        = m_entities[count2];
+                m_entities[count2]     = m_entities[count2 + 1];
+                m_entities[count2 + 1] = temp;
+            }
+        }
+    }
 }
 
 /*********************************************************

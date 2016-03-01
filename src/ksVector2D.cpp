@@ -318,3 +318,11 @@ ksVector2D operator/(const ksVector2D & lhs, double val)
 	result.Y /= val;
 	return result;
 }
+
+ksVector2D operator/(const ksVector2D & lhs, const ksVector2D & rhs)
+{
+    ksVector2D result(lhs);
+    result.X /= rhs.X;
+    result.Y /= rhs.Y;
+    return result;
+}

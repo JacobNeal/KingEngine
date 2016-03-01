@@ -26,12 +26,14 @@ class ksEntityLayer : public sf::Drawable, public sf::Transformable
 		ksEntityLayer(ksWorld * world, char * tilesheet);
 		
 		//                      Methods
-		void                    addEntity(ksEntity * entity);
+		void                    worldLoaded();
+        void                    addEntity(ksEntity * entity);
         void                    animate(int entity_number, int lower_tile, int upper_tile, int frame_delay);
-		bool                    pressEntity(int mouse_x, int mouse_y);
+        bool                    pressEntity(int mouse_x, int mouse_y);
 		void                    depressEntity();
 		void                    drawLayer(sf::RenderWindow & app);
 		virtual void            draw(sf::RenderTarget & target, sf::RenderStates states) const;
+        void                    sortEntitiesByRow();
 		void                    purge();
 
 		//                      Mutators

@@ -11,14 +11,17 @@ EXE = KingEngine
 
 all: $(EXE)
 
-$(EXE): main.o ksComplex.o ksApplication.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o
-	$(CXX) $(LDFLAGS) main.o ksComplex.o ksApplication.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o -o $@
+$(EXE): main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o
+	$(CXX) $(LDFLAGS) main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o -o $@
 
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) main.cpp -o $@
 
 ksComplex.o: ksComplex.cpp
 	$(CXX) $(CXXFLAGS) ksComplex.cpp -o $@
+
+ksComplexBehavior.o: ksComplexBehavior.cpp
+	$(CXX) $(CXXFLAGS) ksComplexBehavior.cpp -o $@
 
 ksApplication.o: ksApplication.cpp
 	$(CXX) $(CXXFLAGS) ksApplication.cpp -o $@

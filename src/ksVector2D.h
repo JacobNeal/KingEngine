@@ -56,6 +56,7 @@ ksVector2D operator*(const ksVector2D & lhs, double rhs);
 ksVector2D operator*(double lhs, const ksVector2D & rhs);
 ksVector2D operator-(const ksVector2D & lhs, const ksVector2D & rhs);
 ksVector2D operator+(const ksVector2D & lhs, const ksVector2D & rhs);
+ksVector2D operator/(const ksVector2D & lhs, const ksVector2D & rhs);
 ksVector2D operator/(const ksVector2D & lhs, double val);
 
 #endif

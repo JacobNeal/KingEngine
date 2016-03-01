@@ -14,8 +14,8 @@
 *	Initialize entity to the position, width, height and 
 *	current tile passed.
 *********************************************************/
-ksEntity::ksEntity(ksWorldWall wall, int row, int col, int w, int h, int current_tile)
-    : m_wall(wall), m_row(row), m_col(col), m_width(w), m_height(h), m_current_tile(current_tile), m_frame(0), 
+ksEntity::ksEntity(ksWorld * world, ksWorldWall wall, int row, int col, int w, int h, int current_tile)
+    : m_world(world), m_wall(wall), m_width(w), m_height(h), m_current_tile(current_tile), m_frame(0), 
       m_anim_delay(1), m_lower_tile(current_tile), m_upper_tile(current_tile),
 	  m_pressed(false), m_visible(true)
 {
@@ -23,6 +23,15 @@ ksEntity::ksEntity(ksWorldWall wall, int row, int col, int w, int h, int current
 	m_texture_coord.Y = (current_tile / TILE_PER_LINE) * (h * TILE_HEIGHT);
 	m_texture_coord.W = (w * TILE_WIDTH);
 	m_texture_coord.H = (h * TILE_HEIGHT);
+    
+    ksTile temp = world->getTilePosition(wall, row, col, w, h);
+
+    m_current_node.row = row;
+    m_current_node.col = col;
+    m_current_node.TL  = temp.TL;
+    m_current_node.TR  = temp.TR;
+    m_current_node.BL  = temp.BL;
+    m_current_node.BR  = temp.BR;
 }
 
 /*********************************************************
@@ -66,19 +75,6 @@ void ksEntity::update()
 { }
 
 /*********************************************************
-*	move
-*
-*	Update the position of the entity by adding the passed
-*	row, column, and depth values to it's current position.
-*********************************************************/
-/*void ksEntity::move(ksDirection direction)
-{
-    m_current_direction = direction;
-
-    int diff_x = m_
-}*/
-
-/*********************************************************
 *	setAnimationLow
 *
 *	Set the lower tile boundary for the animation of the
@@ -111,18 +107,6 @@ void ksEntity::setAnimationDelay(int frame_delay)
 }
 
 /*********************************************************
-*	setPosition
-*
-*	Set the position of the entity to the row and column
-*   passed.
-*********************************************************/
-void ksEntity::setPosition(int row, int col, int depth)
-{
-	m_row = row;
-    m_col = col;
-}
-
-/*********************************************************
 *	setPressed
 *
 *	Set whether or not the entity is being pressed.
@@ -142,14 +126,19 @@ void ksEntity::setVisible(bool visible)
 	m_visible = visible;
 }
 
+void ksEntity::setTilePosition(ksPathNode node)
+{
+    m_current_node = node;
+}
+
 /*********************************************************
 *	getPosition
 *
 *	Returns the position of the entity in vector form.
 *********************************************************/
-const ksTile & ksEntity::getTilePosition()
+const ksPathNode & ksEntity::getTilePosition()
 {
-	return m_position;
+	return m_current_node;
 }
 
 /*********************************************************
@@ -165,7 +154,7 @@ const ksRect & ksEntity::getTextureCoord()
 /********************************************************
 *   getWidth
 *
-*   Returns the width of the entity.
+*   Returns the width in tiles of the entity.
 ********************************************************/
 int ksEntity::getWidth()
 {
@@ -175,7 +164,7 @@ int ksEntity::getWidth()
 /********************************************************
 *   getHeight
 *
-*   Returns the height of the entity.
+*   Returns the height in tiles of the entity.
 ********************************************************/
 int ksEntity::getHeight()
 {
@@ -189,7 +178,7 @@ int ksEntity::getHeight()
 ********************************************************/
 int ksEntity::getRow()
 {
-    return m_row;
+    return m_current_node.row;
 }
 
 /********************************************************
@@ -199,7 +188,7 @@ int ksEntity::getRow()
 ********************************************************/
 int ksEntity::getColumn()
 {
-    return m_col;
+    return m_current_node.col;
 }
 
 /********************************************************

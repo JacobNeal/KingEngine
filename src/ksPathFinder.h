@@ -33,7 +33,8 @@ class ksPathFinder
         ksPathNode            getNodeWithLowestCost();
         void                  findAdjacentNodes(ksPathNode current, std::vector<ksPathNode> & adjacent);
         int                   getHeuristicValue(ksPathNode current, ksPathNode finish);
-        bool                  findInClosed(ksPathNode current);
+        bool                  foundInClosed(ksPathNode current);
+        bool                  foundInOpen(ksPathNode current);
         ksPathNode            createPathNode(int row, int col);
 
     private:
@@ -43,6 +44,7 @@ class ksPathFinder
         std::list<ksPathNode> m_open;
         std::list<ksPathNode> m_closed;
         ksWorldWall           m_wall;
+        ksPathNode            m_start;
         ksPathNode            m_finish;
 };
 

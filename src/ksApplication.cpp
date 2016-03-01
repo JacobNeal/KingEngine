@@ -67,6 +67,16 @@ bool ksApplication::isOpen()
 	{
 		if (m_evt.type == sf::Event::KeyPressed)
 		{
+            if (m_evt.key.code == ksKey::A)
+            {
+                m_world_view.rotate(-5);
+                m_entity_layer.rotate(5);
+            }
+            else if (m_evt.key.code == ksKey::D)
+            {
+                m_world_view.rotate(5);
+                m_entity_layer.rotate(-5);
+            }
 			for (std::map<ksKey::Key, bool>::iterator it = m_key_down.begin();
 				it != m_key_down.end(); ++it)
 			{
@@ -205,6 +215,12 @@ void ksApplication::addControl(ksControl * control)
     m_control_layer.addControl(control);
 }
 
+/*********************************************************
+*   addLight
+*
+*   Add a light that is projected from the start position
+*   onto a particular tile on the wall.
+*********************************************************/
 void ksApplication::addLight(ksVector2D start, ksWorldWall wall, int row, int col, ksColor first, ksColor second)
 {
     m_world.addLight(start, wall, row, col, first, second);
@@ -252,6 +268,35 @@ void ksApplication::decreaseCameraDepth()
     setCameraDelta(m_camera_depth + 1);
 }
 
+ksPathNode ksApplication::calculateWorldNode(int screen_x, int screen_y)
+{
+    ksPathNode temp = m_world.calculateBottomNode(screen_x, screen_y);
+
+    if (temp.row < 0)
+        temp.row = 0;
+    else if (temp.row >= m_world.getDepth())
+        temp.row = m_world.getDepth() - 1;
+
+    if (temp.col < 0)
+        temp.col = 0;
+    else if (temp.col >= m_world.getWidth())
+        temp.col = m_world.getWidth() - 1;
+
+    ksTile position = m_world.calculateBottomPosition(temp.row, temp.col);
+
+    temp.TL = position.TL;
+    temp.TR = position.TR;
+    temp.BL = position.BL;
+    temp.BR = position.BR;
+
+    return temp;
+}
+
+void ksApplication::toggleWorldLighting()
+{
+    m_world.toggleLighting();
+}
+
 /*********************************************************
 *   getCameraDelta
 *
@@ -263,6 +308,13 @@ int ksApplication::getCameraDelta()
     return m_camera_depth;
 }
 
+/*********************************************************
+*   getWorld
+*
+*   Returns a pointer to a world object that contains
+*   info about different events and coliidable tiles
+*   in the world.
+*********************************************************/
 ksWorld * ksApplication::getWorld()
 {
     return &m_world;
@@ -278,6 +330,14 @@ void ksApplication::setEntityTilesheet(char * tilesheet)
 	m_entity_layer.setTilesheet(tilesheet);
 }
 
+/*********************************************************
+*   setCameraDelta
+*
+*   Changing the camera delta changes the distance the
+*   camera is from the front wall. This gives the effect
+*   of zomming in, or out on the world. Can be useful
+*   for first person perspectives.
+*********************************************************/
 void ksApplication::setCameraDelta(int camera_delta)
 {
     if (camera_delta > 0 && camera_delta <= m_world.getDepth())

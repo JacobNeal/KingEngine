@@ -30,12 +30,25 @@ std::list<ksPathNode> ksPathFinder::calculatePath(ksEntity * entity, int finish_
     ksPathNode current_node;
     std::vector<ksPathNode> adjacent_nodes;
     std::list<ksPathNode>::iterator iter;
-
+    std::list<ksPathNode> navigated_nodes;
+    
     m_wall = entity->getWall();
     m_entity = entity;
-    
+
     current_node = createPathNode(entity->getRow(), entity->getColumn());
+    
+    // If the end goal isn't reachable, don't even try.
+    if (m_world->getTileEvent(m_wall, finish_row, finish_col) != 0)
+    {
+        navigated_nodes.push_back(current_node);
+        return navigated_nodes;
+    }
+    
     m_finish     = createPathNode(finish_row, finish_col);
+    m_start      = current_node;
+
+    m_closed.clear();
+    m_open.clear();
 
     m_open.push_back(current_node);
 
@@ -52,30 +65,39 @@ std::list<ksPathNode> ksPathFinder::calculatePath(ksEntity * entity, int finish_
         if (iter != m_open.end())
             iter = m_open.erase(iter);
 
-        //m_open.clear();
-
-        std::cout << "Adding node: " << current_node.row << ", " << current_node.col << '\n';
-
         // If the closed list contains the destination.
-        if (findInClosed(m_finish))
+        if (foundInClosed(m_finish))
             break;
 
         findAdjacentNodes(current_node, adjacent_nodes);
 
         for (ksPathNode node : adjacent_nodes)
         {
-            // If the closed list does not contain the
-            // adjacent node.
-            std::list<ksPathNode>::iterator closed;
-            closed = std::find(m_closed.begin(), m_closed.end(), node);
+            int tentative_g = current_node.g_score + 1;
 
-            if (closed == m_closed.end())
+            // If the closed list does not contain the adjacent node.
+            if (!foundInClosed(node))
             {
-                std::list<ksPathNode>::iterator open;
-                open = std::find(m_open.begin(), m_open.end(), node);
-
-                if (open == m_open.end())
+                // If the open list does not contain the adjacent node.
+                if (!foundInOpen(node))
+                {
+                    if (node.parent != nullptr)
+                        delete node.parent;
+                    
+                    node.parent = new ksPathNode(current_node);
+                    node.g_score = current_node.g_score + 1;
+                    node.f_score = node.g_score + getHeuristicValue(node, m_finish);
                     m_open.push_back(node);
+                }
+                else if (tentative_g < node.g_score)
+                {
+                    if (node.parent != nullptr)
+                        delete node.parent;
+
+                    node.parent  = new ksPathNode(current_node);
+                    node.g_score = node.parent->g_score + 1;
+                    node.f_score = node.g_score + getHeuristicValue(node, m_finish);
+                }
             }
         }
 
@@ -83,7 +105,24 @@ std::list<ksPathNode> ksPathFinder::calculatePath(ksEntity * entity, int finish_
 
     } while (!m_open.empty());
 
-    return m_closed;
+    iter = std::find(m_closed.begin(), m_closed.end(), current_node);
+
+    if (iter != m_closed.end())
+    {
+        m_finish.parent = (*iter).parent;
+
+        ksPathNode * current_ptr = &m_finish;
+
+        while (current_ptr != nullptr && (*current_ptr) != m_start)
+        {
+            navigated_nodes.push_front((*current_ptr));
+            std::cout << "Node: " << (*current_ptr).row << ", " << (*current_ptr).col << '\n';
+
+            current_ptr = current_ptr->parent;
+        }
+    }
+
+    return navigated_nodes;
 }
 
 /********************************************************
@@ -96,19 +135,22 @@ std::list<ksPathNode> ksPathFinder::calculatePath(ksEntity * entity, int finish_
 ksPathNode ksPathFinder::getNodeWithLowestCost()
 {
     ksPathNode lowest_node;
-    lowest_node.cost = -1;
+    lowest_node.g_score = -1;
 
     // Set a large number for the initial value of F.
     int lowest_f = 30000;
 
     for (ksPathNode node : m_open)
     {
-        int f_score = node.cost + getHeuristicValue(node, m_finish);
+        if (node.parent != nullptr)
+            node.g_score = node.parent->g_score + 1;
+        
+        node.f_score = node.g_score + getHeuristicValue(node, m_finish);
 
-        if (f_score <= lowest_f)
+        if (node.f_score <= lowest_f)
         {
             lowest_node = node;
-            lowest_f    = f_score;
+            lowest_f    = node.f_score;
         }
     }
 
@@ -128,7 +170,8 @@ void ksPathFinder::findAdjacentNodes(ksPathNode current,
     if ((current.row - 1) >= 0 && m_world->getTileEvent(m_wall, current.row - 1, current.col) == 0)
     {
         ksPathNode top = createPathNode(current.row - 1, current.col);
-        top.cost = current.cost + 1;
+        top.parent  = new ksPathNode(current);
+        top.g_score = current.g_score + 1;
 
         adjacent.push_back(top);
     }
@@ -137,7 +180,8 @@ void ksPathFinder::findAdjacentNodes(ksPathNode current,
     if ((current.col - 1) >= 0 && m_world->getTileEvent(m_wall, current.row, current.col - 1) == 0)
     {
         ksPathNode left = createPathNode(current.row, current.col - 1);
-        left.cost = current.cost + 1;
+        left.parent  = new ksPathNode(current);
+        left.g_score = current.g_score + 1;
 
         adjacent.push_back(left);
     }
@@ -165,7 +209,8 @@ void ksPathFinder::findAdjacentNodes(ksPathNode current,
     if ((current.row + 1) < max_row && m_world->getTileEvent(m_wall, current.row + 1, current.col) == 0)
     {
         ksPathNode bottom = createPathNode(current.row + 1, current.col);
-        bottom.cost = current.cost + 1;
+        bottom.parent  = new ksPathNode(current);
+        bottom.g_score = current.g_score + 1;
 
         adjacent.push_back(bottom);
     }
@@ -174,7 +219,8 @@ void ksPathFinder::findAdjacentNodes(ksPathNode current,
     if ((current.col + 1) < max_col && m_world->getTileEvent(m_wall, current.row, current.col + 1) == 0)
     {
         ksPathNode right = createPathNode(current.row, current.col + 1);
-        right.cost = current.cost + 1;
+        right.parent  = new ksPathNode(current);
+        right.g_score = current.g_score + 1;
 
         adjacent.push_back(right);
     }
@@ -194,7 +240,7 @@ int ksPathFinder::getHeuristicValue(ksPathNode current, ksPathNode finish)
     return heuristic;
 }
 
-bool ksPathFinder::findInClosed(ksPathNode current)
+bool ksPathFinder::foundInClosed(ksPathNode current)
 {
     bool found = false;
 
@@ -202,6 +248,23 @@ bool ksPathFinder::findInClosed(ksPathNode current)
     {
         if (current.row  == node.row &&
             current.col  == node.col)
+        {
+            found = true;
+            break;
+        }
+    }
+
+    return found;
+}
+
+bool ksPathFinder::foundInOpen(ksPathNode current)
+{
+    bool found = false;
+
+    for (ksPathNode node : m_open)
+    {
+        if (current.row == node.row &&
+            current.col == node.col)
         {
             found = true;
             break;
@@ -226,7 +289,8 @@ ksPathNode ksPathFinder::createPathNode(int row, int col)
     node.center.Y = temp.TL.Y + ((temp.BL.Y - temp.TL.Y) / 2);
     node.row      = row;
     node.col      = col;
-    node.cost     = 0;
+    node.g_score  = 0;
+    node.f_score  = 0;
 
     return node;
 }

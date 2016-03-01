@@ -25,7 +25,7 @@ class ksEntity
 {
 	public:
 		//                 Constructors
-		ksEntity(ksWorldWall wall, int row, int col, int w, int h, int current_tile);
+		ksEntity(ksWorld * world, ksWorldWall wall, int row, int col, int w, int h, int current_tile);
 
 		//                 Methods
 		void               animate();
@@ -36,13 +36,12 @@ class ksEntity
 		void               setAnimationLower(int lower_tile);
 		void               setAnimationUpper(int upper_tile);
 		void               setAnimationDelay(int frame_delay);
-		
-        void               setPosition(int row, int col, int depth);
         void               setPressed(bool press);
 		void               setVisible(bool visible);
+        void               setTilePosition(ksPathNode node);
 
 		//                 Accessor methods
-		const ksTile &     getTilePosition();
+		const ksPathNode & getTilePosition();
 		const ksRect &     getTextureCoord();
 		int                getWidth();
         int                getHeight();
@@ -54,9 +53,8 @@ class ksEntity
 
 	protected:
 		//                 Data members
-        ksTile             m_position;
-        int                m_row;
-        int                m_col;
+        ksWorld *          m_world;
+        ksPathNode         m_current_node;
         ksWorldWall        m_wall;
         int                m_width;
         int                m_height;

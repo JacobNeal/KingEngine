@@ -28,6 +28,7 @@
 
 #include "ksTile.h"
 #include "ksEffect.h"
+#include "ksPathNode.h"
 #include "defines.h"
 
 #ifdef DESKTOP_BUILD
@@ -64,12 +65,15 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         ksTile          calculateTopPosition(int row, int col);
         ksTile          calculateBottomPosition(int row, int col);
         ksTile          calculateFrontPosition(int row, int col);
+        ksPathNode      calculateFrontNode(int screen_x, int screen_y);
+        ksPathNode      calculateBottomNode(int screen_x, int screen_y);
         virtual void    draw(sf::RenderTarget & target, sf::RenderStates states) const;
         void            drawWorld(sf::RenderWindow & app);
         void            addLight(ksVector2D start, ksWorldWall wall, int row, int col,
                                  sf::Color first, sf::Color second);
         void            setFirstDuration(int duration);
         void            setSecondDuration(int duration);
+        void            toggleLighting();
 
         //              Accessor methods
         int             getWidth() { return m_width; }
@@ -78,9 +82,12 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         int             getInnerX() { return m_inner_x; }
         int             getInnerY() { return m_inner_y; }
         int             getNumberOfLights() { return m_num_of_lights; }
+        bool            isWorldLighting() { return m_lighting; }
         const ksTile &  getTilePosition(ksWorldWall wall, int row, int col, int width, int height);
         int             getLightIntensity(ksWorldWall wall, int row, int col);
         int             getTileEvent(ksWorldWall wall, int row, int col);
+        int             getWallMaxRow(ksWorldWall wall);
+        int             getWallMaxCol(ksWorldWall wall);
 
     private:
         //              Data members
@@ -97,6 +104,7 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         sf::VertexArray m_array;
         sf::Texture     m_texture;
         ksEffect        m_effect_layer;
+        bool            m_lighting;
 
         std::vector<std::vector<ksTile>> m_top;
         std::vector<std::vector<ksTile>> m_bottom;

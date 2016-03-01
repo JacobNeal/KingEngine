@@ -9,92 +9,107 @@ int main()
 	ksApplication app("Regime", 800, 640);
 	app.setEntityTilesheet("images/voltor_interior.png");
 
-	// Add keys to be checked for
-	app.addInput(ksKey::W);
-	app.addInput(ksKey::A);
-	app.addInput(ksKey::S);
-	app.addInput(ksKey::D);
+    app.loadWorld(8, 4, 8, "maps/exterior");
 
-    std::string last_move = "up";
-
-    //app.loadWorld(15, 10, 5, "maps/interior");
-    app.loadWorld(8, 4, 8, "maps/interior_3");
+//    Toggle the lighting in order to not see any lighting / shadows in
+//    the engine.
+//    app.toggleWorldLighting();
+    app.addLight(ksVector2D(-1, -1), LEFT, 2, 2, ksColor(255, 255, 0, 50), ksColor(80, 80, 0, 50));
 
     ksPathFinder path_finder(app.getWorld());
-
-    ksComplex ent(&path_finder, BOTTOM, 0, 0, 2, 2, 10);
-	app.addEntity(&ent);
-
-    ksComplex chair(&path_finder, BOTTOM, 3, 0, 1, 2, 9);
-    app.addEntity(&chair); 
     
+    ksEntity grass(app.getWorld(), BOTTOM, 1, 3, 1, 1, 11);
+    app.addEntity(&grass);
+
+    ksEntity grass2(app.getWorld(), BOTTOM, 3, 0, 1, 1, 11);
+    app.addEntity(&grass2);
+
+    ksEntity grass3(app.getWorld(), BOTTOM, 0, 0, 1, 1, 11);
+    app.addEntity(&grass3);
+
+    ksEntity grass4(app.getWorld(), BOTTOM, 6, 2, 1, 1, 11);
+    app.addEntity(&grass4);
+
+    ksEntity grass5(app.getWorld(), BOTTOM, 0, 6, 1, 1, 11);
+    app.addEntity(&grass5);
+
+    ksEntity grass6(app.getWorld(), BOTTOM, 7, 7, 1, 1, 11);
+    app.addEntity(&grass6);
+
+    ksEntity flower(app.getWorld(), BOTTOM, 1, 5, 1, 1, 31);
+    flower.setAnimationLower(31);
+    flower.setAnimationUpper(32);
+    flower.setAnimationDelay(60);
+    app.addEntity(&flower);
+
+    ksEntity flower2(app.getWorld(), BOTTOM, 6, 0, 1, 1, 31);
+    flower2.setAnimationLower(31);
+    flower2.setAnimationUpper(32);
+    flower2.setAnimationDelay(60);
+    app.addEntity(&flower2);
+
+    ksEntity flower3(app.getWorld(), BOTTOM, 6, 6, 1, 1, 31);
+    flower3.setAnimationLower(31);
+    flower3.setAnimationUpper(32);
+    flower3.setAnimationDelay(60);
+    app.addEntity(&flower3);
+   
+    ksEntity flower4(app.getWorld(), BOTTOM, 0, 1, 1, 1, 31);
+    flower4.setAnimationLower(31);
+    flower4.setAnimationUpper(32);
+    flower4.setAnimationDelay(60);
+    app.addEntity(&flower4);
+
+    ksComplex ent(&path_finder, app.getWorld(), BOTTOM, 0, 4, 1, 2, 10);
+    ent.setAnimationLower(10);
+    ent.setAnimationUpper(12);
+    ent.setAnimationDelay(30);
+    app.addEntity(&ent);
+
+    ent.move(5, 1);
+
+    ksComplex cloud(&path_finder, app.getWorld(), LEFT, 0, 6, 2, 2, 27);
+    cloud.setAnimationLower(27);
+    cloud.setAnimationUpper(29);
+    cloud.setAnimationDelay(30);
+    app.addEntity(&cloud);
+
+    cloud.seek(0, 0);
+
+    ksComplex chair(&path_finder, app.getWorld(), BOTTOM, 0, 4, 1, 2, 9);
+    app.addEntity(&chair);
+  
+    chair.pursue(&ent);  
+//    chair.addToGroup(&ent);
+//    chair.group();
+
+//    ent.addToGroup(&chair);
+//    ent.group();
+//    chair.flee(0, 3, 1);
+
     ksVector2D start;
     start.X = 500;
     start.Y = 32;
 
-    app.addLight(start, LEFT, 2, 2, ksColor(255, 255, 0, 50), ksColor(80, 80, 0, 50));
-    
-    //ksButton cont(64, 64);
-    //app.addControl(&cont);
+//    ksButton cont(64, 64);
+//    app.addControl(&cont);
 
 	while (app.isOpen())
 	{
 		// Check for key input (move entity)
 		if (app.getMouseDown())
         {
-//            if (ent.getDepth() < 5)
-//            {
-//                ent.move(0, 0, 1);
-//                app.setCameraDelta(5);
-//            }
-
-            //ent.setPath(path_finder.calculatePath(app.getWorld(), &ent, 6, 6));
-            ent.move(6, 6);
-
-        /*    ksVector2D start;
-            start.X = app.getMousePosition().X;
-            start.Y = app.getMousePosition().Y;
-
-            app.addLight(start, LEFT, 2, 2, ksColor(255, 255, 0, 50), ksColor(80, 80, 0, 50));*/
-
-//            app.animateEntity(0, 12, 17, 5);
-//            last_move = "up";
+            ksPathNode temp = app.calculateWorldNode(app.getMousePosition().X,
+                                                     app.getMousePosition().Y);
+            ent.move(temp.row, temp.col);
+//            chair.flee(temp.row, temp.col, 1);
+//            chair.seek(temp.row, temp.col);
+//            chair.move(temp.row, temp.col);
         }
         if (app.getKeyDown(ksKey::Num1))
         {
             app.setCameraDelta(5);
         }
-        else if (app.getKeyDown(ksKey::Num2))
-        {
-//            if (ent.getDepth() > 0)
-//            {
-//                ent.move(0, 0, -1);
-                app.setCameraDelta(4);
-//            }
-
-//            app.animateEntity(0, 3, 8, 5);
-//            last_move = "down";
-        }
-        else if (app.getKeyDown(ksKey::Num3))
-        {
-            app.setCameraDelta(3);
-        }
-        else if (app.getKeyDown(ksKey::Num4))
-        {
-            app.setCameraDelta(2);
-        }
-        else if (app.getKeyDown(ksKey::Num5))
-        {
-            app.setCameraDelta(1);
-        }
-  //          if (last_move == "up")
-    //            app.animateEntity(0, 9, 11, 45);
-      //      else if (last_move == "down")
-        //        app.animateEntity(0, 0, 2, 30);
-          //  else if (last_move == "right")
-            //    app.animateEntity(0, 18, 20, 45);
-           // else if (last_move == "left")
-             //   app.animateEntity(0, 27, 29, 45);
     }
 
 	return 0;
