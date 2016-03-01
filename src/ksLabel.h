@@ -10,8 +10,8 @@
 *
 ********************************************************/
 
-#ifndef KS_CONTROL_H
-#define KS_CONTROL_H
+#ifndef KS_LABEL_H
+#define KS_LABEL_H
 
 #include <SFML/Graphics.hpp>
 #include <string>
