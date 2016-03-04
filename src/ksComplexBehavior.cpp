@@ -20,10 +20,12 @@ ksComplexBehavior::ksComplexBehavior(ksPathFinder * path_finder,
     : m_path_finder(path_finder), m_world(world), m_vehicle(vehicle),
       m_seek(false), m_flee(false), m_pursuit(false), m_evasion(false),
       m_group_on(false), m_path_on(false), m_target_row(-1), 
-      m_target_col(-1), m_target_range(0)
+      m_target_col(-1), m_target_range(0), m_vehicle_velocity(0, 0)
 {
     m_current_node = vehicle->getTilePosition();
     m_next_node = m_current_node;
+    m_vehicle_heading.X = 0;
+    m_vehicle_heading.Y = 0;
 }
 
 /*********************************************************
@@ -35,7 +37,7 @@ ksComplexBehavior::ksComplexBehavior(ksPathFinder * path_finder,
 *********************************************************/
 ksPathNode ksComplexBehavior::calculate()
 {
-    if (m_seek && (m_current_node.row != m_target_row || m_current_node.col != m_target_col))
+/*    if (m_seek && (m_current_node.row != m_target_row || m_current_node.col != m_target_col))
     {
         // Move the current node incrementally
         moveInc(10);
@@ -130,7 +132,7 @@ ksPathNode ksComplexBehavior::calculate()
         alignment();
         cohesion();
     }
-    else if (m_path_on == true)
+    else*/ if (m_path_on == true)
     {
         if (m_wander_path.size() > 0 && m_path_iter != m_wander_path.end())
         {
@@ -155,7 +157,77 @@ ksPathNode ksComplexBehavior::calculate()
         }
         else
             m_path_on = false;
-    }   
+    }
+
+    /*if (m_next_node != m_current_node)
+    {
+        moveInc(10);
+
+        if (m_current_node.center.X >= (m_next_node.center.X - 2) &&
+            m_current_node.center.X <= (m_next_node.center.X + 2) &&
+            m_current_node.center.Y >= (m_next_node.center.Y - 2) &&
+            m_current_node.center.Y <= (m_next_node.center.Y + 2))
+        {
+            m_current_node = m_next_node;
+
+            if (!m_path_on)
+            {
+                // Calculating steering force using the weighted sum
+                // of the active behaviors.
+                ksVector2D steering_force;
+
+                if (m_seek)
+                    steering_force += seek(m_target_row, m_target_col) * 1.0;
+                if (m_flee)
+                    steering_force += flee(m_target_row, m_target_col) * 1.0;
+                if (m_group_on)
+                {
+                    // Apply the group behaviors to
+                    // the steering force.
+                    steering_force += separation() * 1.0;
+                    steering_force += alignment() * 1.0;
+                    steering_force += cohesion() * 1.0;
+                    std::cout << "Calculating group behavior\n"
+                              << "Force: " << steering_force.Y << ", " << steering_force.X << '\n';
+                }
+
+                m_vehicle_velocity += steering_force;
+
+                // Convert ksVector2D to a ksPathNode
+                if (steering_force.X > 0.1)
+                    m_vehicle_velocity.X = 1;
+                else if (steering_force.X < -0.1)
+                    m_vehicle_velocity.X = -1;
+                if (steering_force.Y > 0.1)
+                    m_vehicle_velocity.Y = 1;
+                else if (steering_force.Y <= -0.1)
+                    m_vehicle_velocity.Y = -1;
+
+                m_next_node.col += m_vehicle_heading.X;
+                m_next_node.row += m_vehicle_heading.Y;
+
+                std::cout << "Next Node: " << m_next_node.row << ", " << m_next_node.col << '\n';
+
+                // Set up the x, y position and other info of the next node.
+                m_next_node = getNodePosition(m_next_node.row, m_next_node.col);
+            }
+            else if (m_wander_path.size() > 0 && m_path_iter != m_wander_path.end())
+            {
+                m_path_iter++;
+                m_next_node = (*m_path_iter);
+            }
+            else
+            {
+                m_path_on = false;
+            }
+            
+            m_tl_delta     = m_next_node.TL - m_current_node.TL;
+            m_tr_delta     = m_next_node.TR - m_current_node.TR;
+            m_bl_delta     = m_next_node.BL - m_current_node.BL;
+            m_br_delta     = m_next_node.BR - m_current_node.BR;
+            m_center_delta = m_next_node.center - m_current_node.center;
+        }
+    }*/
 
     return m_current_node;
 }
@@ -166,9 +238,9 @@ ksPathNode ksComplexBehavior::calculate()
 *   Perform the seek steering behavior using the passed
 *   row and column.
 *********************************************************/
-ksPathNode ksComplexBehavior::seek(int row, int col)
+ksVector2D ksComplexBehavior::seek(int row, int col)
 {
-    ksPathNode result;
+/*    ksPathNode result;
     
     result.row = row - m_vehicle->getTilePosition().row;
     result.col = col - m_vehicle->getTilePosition().col;
@@ -193,6 +265,22 @@ ksPathNode ksComplexBehavior::seek(int row, int col)
     result     = getNodePosition(result.row, result.col);
 
     return result;
+*/
+    ksVector2D targetPos;
+    ksVector2D vehiclePos;
+    ksVector2D desiredVelocity;
+
+    targetPos.X = col;
+    targetPos.Y = row;
+
+    vehiclePos.X = m_vehicle->getTilePosition().col;
+    vehiclePos.Y = m_vehicle->getTilePosition().row;
+
+    desiredVelocity = targetPos - vehiclePos;
+
+    desiredVelocity.normalize();
+
+    return desiredVelocity - m_vehicle_velocity;// - m_vehicle_velocity;//(desiredVelocity - m_vehicle_velocity);
 }
 
 /********************************************************
@@ -202,9 +290,9 @@ ksPathNode ksComplexBehavior::seek(int row, int col)
 *   row and column. This method assumes it is in range.
 *   The range gets checked in the calculate method.
 ********************************************************/
-ksPathNode ksComplexBehavior::flee(int row, int col)
+ksVector2D ksComplexBehavior::flee(int row, int col)
 {
-    ksPathNode result;
+    /*ksPathNode result;
 
     result.row = m_vehicle->getTilePosition().row - row;
     result.col = m_vehicle->getTilePosition().col - col;
@@ -231,7 +319,26 @@ ksPathNode ksComplexBehavior::flee(int row, int col)
     
     result     = getNodePosition(result.row, result.col);
     
-    return result;
+    return result;*/
+    ksVector2D targetPos;
+    ksVector2D vehiclePos;
+
+    targetPos.X = col;
+    targetPos.Y = row;
+
+    vehiclePos.X = m_vehicle->getTilePosition().col;
+    vehiclePos.Y = m_vehicle->getTilePosition().row;
+
+    const double panicDistanceSq = 2.0 * 2.0;
+
+    if (vehiclePos.getDistanceSq(targetPos) > panicDistanceSq)
+        return ksVector2D(0, 0);
+
+    ksVector2D desiredVelocity = vehiclePos - targetPos;
+
+    desiredVelocity.normalize();
+
+    return (desiredVelocity - m_vehicle_velocity);
 }
 
 /********************************************************
@@ -242,14 +349,27 @@ ksPathNode ksComplexBehavior::flee(int row, int col)
 ********************************************************/
 ksPathNode ksComplexBehavior::pursue(ksComplex * pursuit_target)
 {
-    ksPathNode next = pursuit_target->getNextPathNode();
+    //ksPathNode next = pursuit_target->getNextPathNode();
 
-    m_pursuit = true;
-    m_pursuit_target = pursuit_target;
+    //m_pursuit = true;
+    //m_pursuit_target = pursuit_target;
 
     // Seek the estimated future position of the
     // target entity.
-    return seek(next.row, next.col);
+    return ksPathNode(0, 0);//seek(next.row, next.col);
+
+    ksVector2D evaderPos;
+    ksVector2D vehiclePos;
+
+    evaderPos.X = pursuit_target->getTilePosition().col;
+    evaderPos.Y = pursuit_target->getTilePosition().row;
+
+    vehiclePos.X = m_vehicle->getTilePosition().col;
+    vehiclePos.Y = m_vehicle->getTilePosition().row;
+
+    ksVector2D to_evader = evaderPos - vehiclePos;
+
+    
 }
 
 /********************************************************
@@ -260,14 +380,14 @@ ksPathNode ksComplexBehavior::pursue(ksComplex * pursuit_target)
 ********************************************************/
 ksPathNode ksComplexBehavior::evade(ksComplex * evasion_target)
 {
-    ksPathNode next = evasion_target->getNextPathNode();
+    //ksPathNode next = evasion_target->getNextPathNode();
 
-    m_evasion = true;
-    m_evasion_target = evasion_target;
+    //m_evasion = true;
+    //m_evasion_target = evasion_target;
 
     // Flee the estimated future position of the
     // target entity.
-    return flee(next.row, next.col);
+    return ksPathNode(0, 0);//flee(next.row, next.col);
 }
 
 /********************************************************
@@ -301,7 +421,7 @@ void ksComplexBehavior::move(int row, int col)
 *   that they can be considered when performing
 *   group separation, alignment, and cohesion.
 ********************************************************/
-void ksComplexBehavior::addToGroup(ksEntity * entity)
+void ksComplexBehavior::addToGroup(ksComplex * entity)
 {
     m_group.push_back(entity);
 }
@@ -329,6 +449,7 @@ void ksComplexBehavior::seekOn(int row, int col)
     m_target_row = row;
     m_target_col = col;
     m_seek       = true;
+    m_next_node.row += 1;
 }
 
 /********************************************************
@@ -354,6 +475,7 @@ void ksComplexBehavior::fleeOn(int row, int col, int range)
     m_target_col   = col;
     m_target_range = range;
     m_flee         = true;
+    m_next_node.row += 1;
 }
 
 /********************************************************
@@ -376,6 +498,7 @@ void ksComplexBehavior::fleeOff()
 void ksComplexBehavior::groupOn()
 {
     m_group_on = true;
+    m_next_node.row += 1;
 }
 
 /********************************************************
@@ -398,6 +521,11 @@ void ksComplexBehavior::groupOff()
 ksPathNode ksComplexBehavior::getNextPathNode()
 {
     return m_next_node;
+}
+
+ksVector2D ksComplexBehavior::getPathHeading()
+{
+    return m_vehicle_heading;
 }
 
 /********************************************************
@@ -488,11 +616,11 @@ void ksComplexBehavior::moveInc(int transition_num)
 *
 *   Perform separation on the group of complex entities.
 ********************************************************/
-void ksComplexBehavior::separation()
+ksVector2D ksComplexBehavior::separation()
 {
     ksVector2D steering;
 
-    for (ksEntity * entity : m_group)
+    for (ksComplex * entity : m_group)
     {
         if (entity != m_vehicle)
         {
@@ -503,11 +631,11 @@ void ksComplexBehavior::separation()
             ksVector2D ToAgentNorm = ToAgent;
             ToAgent.normalize();
 
-            steering += ToAgentNorm / ToAgent;
+            steering += ToAgentNorm / ToAgent.getLength();
         }
     }
 
-    std::cout << "Separation: " << steering.X << ", " << steering.Y << '\n';
+    return steering;
 }
 
 /********************************************************
@@ -515,9 +643,20 @@ void ksComplexBehavior::separation()
 *
 *   Perform alignment on the group of complex entities.
 ********************************************************/
-void ksComplexBehavior::alignment()
+ksVector2D ksComplexBehavior::alignment()
 {
+    ksVector2D avgHeading;
 
+    if (m_group.size() > 0)
+    {
+        for (ksComplex * entity : m_group)
+            avgHeading += entity->getComplexHeading();
+
+        avgHeading /= (double) m_group.size();
+        avgHeading -= m_vehicle_heading;
+    }
+
+    return avgHeading;
 }
 
 /********************************************************
@@ -525,7 +664,30 @@ void ksComplexBehavior::alignment()
 *
 *   Perform cohesion on the group of complex entities.
 ********************************************************/
-void ksComplexBehavior::cohesion()
+ksVector2D ksComplexBehavior::cohesion()
 {
+    ksVector2D center;
+    ksVector2D steering;
 
+    if (m_group.size() > 0)
+    {
+        for (ksComplex * entity : m_group)
+        {
+            if (entity != m_vehicle)
+            {
+                ksVector2D pos;
+
+                pos.X = entity->getTilePosition().col;
+                pos.Y = entity->getTilePosition().row;
+            
+                center += pos;
+            }
+        }
+
+        // Steer toward the center of the group
+        center /= (double) (m_group.size() - 1);
+        steering = seek((int) center.Y, (int) center.X);
+    }
+
+    return steering;
 }

@@ -22,10 +22,12 @@ class ksButton : public ksControl
 {
     public:
         //                         Constructors
+//        ksButton(sf::Font * font, std::string text, double x, double y);
         ksButton(double x, double y);
 
         //                         Methods
         virtual void               update();
+        virtual void               drawControl(sf::RenderWindow * app);
         virtual void               move(double x, double y);
         virtual sf::VertexArray *  getVertexArray();
         virtual bool               pressed(int mouse_x, int mouse_y);
@@ -38,11 +40,13 @@ class ksButton : public ksControl
 
         //                         Data members
         sf::VertexArray            m_array;
+        //sf::Text                   m_text;
         ksVector2D                 m_position;
         double                     m_width;
         double                     m_height;
         bool                       m_pressed;
         bool                       m_visible;
+        
 };
 
 #endif

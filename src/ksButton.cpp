@@ -13,8 +13,10 @@
 *   Initializes the button class by setting the position
 *   of the control to the passed x and y.
 ********************************************************/
+//ksButton::ksButton(sf::Font * font, std::string text, double x, double y)
 ksButton::ksButton(double x, double y)
-    : m_position(x, y), m_width(96.0), m_height(32.0), m_pressed(false), m_visible(true)
+    : /*m_text(text, font, 12),*/ m_position(x, y), m_width(96.0), m_height(32.0), 
+    m_pressed(false), m_visible(true)
 {
     m_array.setPrimitiveType(sf::Quads);
 
@@ -35,6 +37,8 @@ ksButton::ksButton(double x, double y)
     m_array.append(sf::Vertex(sf::Vector2f(x + m_width, y), sf::Color(100, 100, 100)));
     m_array.append(sf::Vertex(sf::Vector2f(x + m_width, y + m_height), sf::Color(100, 100, 100)));
     m_array.append(sf::Vertex(sf::Vector2f(x, y + m_height), sf::Color(100, 100, 100)));
+
+    //m_text.setPosition(x, y);
 }
 
 /********************************************************
@@ -45,6 +49,16 @@ ksButton::ksButton(double x, double y)
 void ksButton::update()
 {
     // Update here.
+}
+
+/********************************************************
+*   drawControl
+*
+*   Draws the control along with any other associated
+*   object to the screen.
+********************************************************/
+void ksButton::drawControl(sf::RenderWindow * app)
+{
 }
 
 /********************************************************

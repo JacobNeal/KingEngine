@@ -55,11 +55,6 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         //              Methods
         void            load(int width, int height, int depth, std::string name="");
         void            readTiles(std::string name);
-        void            drawLeftTiles(int start_index);
-        void            drawRightTiles(int start_index);
-        void            drawTopTiles(int start_index);
-        void            drawBottomTiles(int start_index);
-        void            drawFrontTiles(int start_index);
         ksTile          calculateLeftPosition(int row, int col);
         ksTile          calculateRightPosition(int row, int col);
         ksTile          calculateTopPosition(int row, int col);
@@ -74,6 +69,17 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         void            setFirstDuration(int duration);
         void            setSecondDuration(int duration);
         void            toggleLighting();
+        void            toggle2D(ksWorldWall wall);
+        void            toggle3D();
+
+        //              New Methods (refactor)
+        void            calculateTilePositions();
+        void            updateTilePositions();
+        void            assignTilePositions(std::vector<std::vector<ksTile>> * wall,
+                                            int & pos, int max_row, int max_col);
+        void            updateTextureCoordinates();
+        void            assignTextureCoordinates(std::vector<std::vector<ksTile>> * wall,
+                                                 int & pos, int max_row, int max_col);
 
         //              Accessor methods
         int             getWidth() { return m_width; }
@@ -105,12 +111,37 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         sf::Texture     m_texture;
         ksEffect        m_effect_layer;
         bool            m_lighting;
+        bool            m_2D;
+
+        int *           m_front_num_row;
+        int *           m_front_num_col;
+        int *           m_left_num_row;
+        int *           m_left_num_col;
+        int *           m_right_num_row;
+        int *           m_right_num_col;
+        int *           m_top_num_row;
+        int *           m_top_num_col;
+        int *           m_bottom_num_row;
+        int *           m_bottom_num_col;
+
 
         std::vector<std::vector<ksTile>> m_top;
         std::vector<std::vector<ksTile>> m_bottom;
         std::vector<std::vector<ksTile>> m_left;
         std::vector<std::vector<ksTile>> m_right;
         std::vector<std::vector<ksTile>> m_front;
+
+        std::vector<std::vector<ksTile>> m_top_pos;
+        std::vector<std::vector<ksTile>> m_bottom_pos;
+        std::vector<std::vector<ksTile>> m_left_pos;
+        std::vector<std::vector<ksTile>> m_right_pos;
+        std::vector<std::vector<ksTile>> m_front_pos;
+
+        std::vector<std::vector<ksTile>> * m_front_tex;
+        std::vector<std::vector<ksTile>> * m_left_tex;
+        std::vector<std::vector<ksTile>> * m_right_tex;
+        std::vector<std::vector<ksTile>> * m_top_tex;
+        std::vector<std::vector<ksTile>> * m_bottom_tex;
 
         std::vector<std::vector<int>>    m_top_evt;
         std::vector<std::vector<int>>    m_bottom_evt;

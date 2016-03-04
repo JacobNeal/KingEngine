@@ -11,9 +11,11 @@ int main()
 
     app.loadWorld(8, 4, 8, "maps/exterior");
 
+//    app.toggleWorld2D(BOTTOM);
+
 //    Toggle the lighting in order to not see any lighting / shadows in
 //    the engine.
-//    app.toggleWorldLighting();
+    app.toggleWorldLighting();
     app.addLight(ksVector2D(-1, -1), LEFT, 2, 2, ksColor(255, 255, 0, 50), ksColor(80, 80, 0, 50));
 
     ksPathFinder path_finder(app.getWorld());
@@ -66,25 +68,31 @@ int main()
     ent.setAnimationDelay(30);
     app.addEntity(&ent);
 
-    ent.move(5, 1);
 
-    ksComplex cloud(&path_finder, app.getWorld(), LEFT, 0, 6, 2, 2, 27);
+    //ent.seek(5, 1);
+    //    ent.move(5, 1);
+
+/*    ksComplex cloud(&path_finder, app.getWorld(), LEFT, 0, 6, 2, 2, 27);
     cloud.setAnimationLower(27);
     cloud.setAnimationUpper(29);
     cloud.setAnimationDelay(30);
     app.addEntity(&cloud);
 
     cloud.seek(0, 0);
-
+*/
     ksComplex chair(&path_finder, app.getWorld(), BOTTOM, 0, 4, 1, 2, 9);
     app.addEntity(&chair);
   
-    chair.pursue(&ent);  
+//    chair.pursue(&ent);  
 //    chair.addToGroup(&ent);
 //    chair.group();
 
 //    ent.addToGroup(&chair);
 //    ent.group();
+
+//    chair.addToGroup(&ent);
+//    chair.group();
+
 //    chair.flee(0, 3, 1);
 
     ksVector2D start;
@@ -103,12 +111,38 @@ int main()
                                                      app.getMousePosition().Y);
             ent.move(temp.row, temp.col);
 //            chair.flee(temp.row, temp.col, 1);
-//            chair.seek(temp.row, temp.col);
+//            ent.seek(temp.row, temp.col);
 //            chair.move(temp.row, temp.col);
         }
         if (app.getKeyDown(ksKey::Num1))
         {
-            app.setCameraDelta(5);
+            app.toggleWorld2D(BOTTOM);
+            ent.setWall(FRONT);
+            grass.setWall(FRONT);
+            grass2.setWall(FRONT);
+            grass3.setWall(FRONT);
+            grass4.setWall(FRONT);
+            grass5.setWall(FRONT);
+            grass6.setWall(FRONT);
+            flower.setWall(FRONT);
+            flower2.setWall(FRONT);
+            flower3.setWall(FRONT);
+            flower4.setWall(FRONT);
+        }
+        else if (app.getKeyDown(ksKey::Num2))
+        {
+            app.toggleWorld3D();
+            ent.setWall(BOTTOM);
+            grass.setWall(BOTTOM);
+            grass2.setWall(BOTTOM);
+            grass3.setWall(BOTTOM);
+            grass4.setWall(BOTTOM);
+            grass5.setWall(BOTTOM);
+            grass6.setWall(BOTTOM);
+            flower.setWall(BOTTOM);
+            flower2.setWall(BOTTOM);
+            flower3.setWall(BOTTOM);
+            flower4.setWall(BOTTOM);
         }
     }
 

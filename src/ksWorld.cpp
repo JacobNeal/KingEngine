@@ -15,10 +15,16 @@
 ********************************************************/
 ksWorld::ksWorld(std::string tilesheet)
     : m_width(0), m_height(0), m_depth(0), m_inner_x(0), m_inner_y(0), 
-      m_num_of_lights(0), m_tilesheet(tilesheet), m_lighting(true)
+      m_num_of_lights(0), m_tilesheet(tilesheet), m_lighting(true), m_2D(false)
 {
    m_texture.loadFromFile(tilesheet);
    m_base_color = sf::Color(50, 50, 50);
+
+   m_front_tex  = &m_front;
+   m_left_tex   = &m_left;
+   m_right_tex  = &m_right;
+   m_top_tex    = &m_top;
+   m_bottom_tex = &m_bottom;
 }
 
 /********************************************************
@@ -51,18 +57,23 @@ void ksWorld::load(int width, int height, int depth, std::string name)
     m_height = height > 0 ? height : 1;
     m_depth  = depth  > 0 ? depth  : 0;
 
+    m_front_num_row  = &m_height;
+    m_front_num_col  = &m_width;
+    m_left_num_row   = &m_height;
+    m_left_num_col   = &m_depth;
+    m_right_num_row  = &m_height;
+    m_right_num_col  = &m_depth;
+    m_top_num_row    = &m_depth;
+    m_top_num_col    = &m_width;
+    m_bottom_num_row = &m_depth;
+    m_bottom_num_col = &m_width;
+
     m_array.clear();
 
     if (name != "")
         readTiles(name);
 
-    std::cout << "World loaded.\n";
-
-    m_array.setPrimitiveType(sf::Quads);
-    
-    // FRONT + LEFT + RIGHT + TOP + BOTTOM
-    m_array.resize((m_width * m_height * 4) + (m_height * m_depth * 4) + (m_height * m_depth * 4) +
-                   (m_width * m_depth * 4) + (m_width * m_depth * 4));
+    m_array.setPrimitiveType(sf::Triangles);
 
     m_outer_width_px = ((m_depth * 2) + m_width) * TILE_WIDTH;
     m_outer_height_px = ((m_depth * 2) + m_height) * TILE_HEIGHT;
@@ -70,13 +81,9 @@ void ksWorld::load(int width, int height, int depth, std::string name)
     m_inner_x = (m_outer_width_px / 2) - ((m_width * TILE_WIDTH) / 2);
     m_inner_y = (m_outer_height_px / 2) - ((m_height * TILE_HEIGHT) / 2);
 
-    drawFrontTiles(0);
-    drawLeftTiles(m_width * m_height * 4);
-    drawRightTiles((m_width * m_height * 4) + (m_height * m_depth * 4));
-    drawTopTiles((m_width * m_height * 4) + (m_height * m_depth * 4) + 
-                 (m_height * m_depth * 4));
-    drawBottomTiles((m_width * m_height * 4) + (m_height * m_depth * 4) + 
-                    (m_height * m_depth * 4) + (m_width * m_depth * 4));
+    calculateTilePositions();
+    updateTilePositions();
+    updateTextureCoordinates();
 }
 
 /********************************************************
@@ -387,261 +394,6 @@ void ksWorld::readTiles(std::string name)
 }
 
 /********************************************************
-*   drawLeftTiles
-*
-*   Draw all of the tiles on the left wall with their
-*   respective lighting.
-********************************************************/
-void ksWorld::drawLeftTiles(int start_index)
-{
-    for (int row = 0; row < m_height; ++row)
-    {
-        for (int col = 0; col < m_depth; ++col)
-        {
-            ksTile tile = calculateLeftPosition(row, col);
-            
-            int r = m_base_color.r + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_left_light[row][col]);
-            int g = m_base_color.g + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_left_light[row][col]);
-            int b = m_base_color.b + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_left_light[row][col]);
-            
-            if (r > 255)
-                r = 255;
-            if (g > 255)
-                g = 255;
-            if (b > 255)
-                b = 255;
-
-            if (!m_lighting)
-            {
-                r = 255;
-                g = 255;
-                b = 255;
-            }
-
-            m_array[start_index].position       = sf::Vector2f(tile.TL.X, tile.TL.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_left[row][col].TL.X, m_left[row][col].TL.Y);
-
-            m_array[start_index].position       = sf::Vector2f(tile.TR.X, tile.TR.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_left[row][col].TR.X, m_left[row][col].TR.Y);
-
-            m_array[start_index].position       = sf::Vector2f(tile.BR.X, tile.BR.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_left[row][col].BR.X, m_left[row][col].BR.Y);
-
-            m_array[start_index].position       = sf::Vector2f(tile.BL.X, tile.BL.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_left[row][col].BL.X, m_left[row][col].BL.Y);
-        }
-    }
-}
-
-/********************************************************
-*   drawRightTiles
-*
-*   Draw all of the tiles on the right wall with their
-*   respective lighting.
-********************************************************/
-void ksWorld::drawRightTiles(int start_index)
-{
-    for (int row = 0; row < m_height; ++row)
-    {
-        for (int col = 0; col < m_depth; ++col)
-        {
-            ksTile tile = calculateRightPosition(row, col);
-            
-            int r = m_base_color.r + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_right_light[row][col]);
-            int g = m_base_color.g + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_right_light[row][col]);
-            int b = m_base_color.b + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_right_light[row][col]);
-            
-            if (r > 255)
-                r = 255;
-            if (g > 255)
-                g = 255;
-            if (b > 255)
-                b = 255;
-            
-            if (!m_lighting)
-            {
-                r = 255;
-                g = 255;
-                b = 255;
-            }
-
-            m_array[start_index].position       = sf::Vector2f(tile.TL.X, tile.TL.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_right[row][col].TL.X, m_right[row][col].TL.Y);
-            
-            m_array[start_index].position       = sf::Vector2f(tile.TR.X, tile.TR.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_right[row][col].TR.X, m_right[row][col].TR.Y);
-
-            m_array[start_index].position       = sf::Vector2f(tile.BR.X, tile.BR.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_right[row][col].BR.X, m_right[row][col].BR.Y);
-
-            m_array[start_index].position       = sf::Vector2f(tile.BL.X, tile.BL.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_right[row][col].BL.X, m_right[row][col].BL.Y);
-        }
-    }
-}
-
-/********************************************************
-*   drawTopTiles
-*
-*   Draw all of the tiles on the top wall with their
-*   respective lighting.
-********************************************************/
-void ksWorld::drawTopTiles(int start_index)
-{
-    for (int row = 0; row < m_depth; ++row)
-    {
-        for (int col = 0; col < m_width; ++col)
-        {
-            ksTile tile = calculateTopPosition(row, col);
-            
-            int r = m_base_color.r + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_top_light[row][col]);
-            int g = m_base_color.g + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_top_light[row][col]);
-            int b = m_base_color.b + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_top_light[row][col]);
-            
-            if (r > 255)
-                r = 255;
-            if (g > 255)
-                g = 255;
-            if (b > 255)
-                b = 255;
-            
-            if (!m_lighting)
-            {
-                r = 255;
-                g = 255;
-                b = 255;
-            }
-
-            m_array[start_index].position       = sf::Vector2f(tile.TL.X, tile.TL.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);;
-            m_array[start_index++].texCoords    = sf::Vector2f(m_top[row][col].TL.X, m_top[row][col].TL.Y);
-            
-            m_array[start_index].position       = sf::Vector2f(tile.TR.X, tile.TR.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_top[row][col].TR.X, m_top[row][col].TR.Y);
-
-            m_array[start_index].position       = sf::Vector2f(tile.BR.X, tile.BR.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_top[row][col].BR.X, m_top[row][col].BR.Y);
-
-            m_array[start_index].position       = sf::Vector2f(tile.BL.X, tile.BL.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_top[row][col].BL.X, m_top[row][col].BL.Y);
-        }
-    }
-}
-
-/********************************************************
-*   drawBottomTiles
-*
-*   Draw all the tiles on the bottom wall with their
-*   respective lighting.
-********************************************************/
-void ksWorld::drawBottomTiles(int start_index)
-{
-    for (int row = 0; row < m_depth; ++row)
-    {
-        for (int col = 0; col < m_width; ++col)
-        {
-            ksTile tile = calculateBottomPosition(row, col);
-            
-            int r = m_base_color.r + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_bottom_light[row][col]);
-            int g = m_base_color.g + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_bottom_light[row][col]);
-            int b = m_base_color.b + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_bottom_light[row][col]);
-            
-            if (r > 255)
-                r = 255;
-            if (g > 255)
-                g = 255;
-            if (b > 255)
-                b = 255;
-
-            if (!m_lighting)
-            {
-                r = 255;
-                g = 255;
-                b = 255;
-            }
-
-            m_array[start_index].position       = sf::Vector2f(tile.TL.X, tile.TL.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_bottom[row][col].TL.X, m_bottom[row][col].TL.Y);
-            
-            m_array[start_index].position       = sf::Vector2f(tile.TR.X, tile.TR.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_bottom[row][col].TR.X, m_bottom[row][col].TR.Y);
-
-            m_array[start_index].position       = sf::Vector2f(tile.BR.X, tile.BR.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_bottom[row][col].BR.X, m_bottom[row][col].BR.Y);
-
-            m_array[start_index].position       = sf::Vector2f(tile.BL.X, tile.BL.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_bottom[row][col].BL.X, m_bottom[row][col].BL.Y);
-        }
-    }
-}
-
-/********************************************************
-*   drawFrontTiles
-*
-*   Draw all the tiles on the front wall with their
-*   respective lighting.
-********************************************************/
-void ksWorld::drawFrontTiles(int start_index)
-{
-    for (int row = 0; row < m_height; ++row)
-    {
-        for (int col = 0; col < m_width; ++col)
-        {
-            ksTile tile = calculateFrontPosition(row, col);
-            
-            int r = m_base_color.r + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_front_light[row][col]);
-            int g = m_base_color.g + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_front_light[row][col]);
-            int b = m_base_color.b + (m_num_of_lights * LIGHT_INTENSITY_MULT) + (50 * m_front_light[row][col]);
-            
-            if (r > 255)
-                r = 255;
-            if (g > 255)
-                g = 255;
-            if (b > 255)
-                b = 255;
-
-            if (!m_lighting)
-            {
-                r = 255;
-                g = 255;
-                b = 255;
-            }
-
-            m_array[start_index].position       = sf::Vector2f(tile.TL.X, tile.TL.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_front[row][col].TL.X, m_front[row][col].TL.Y);
-            
-            m_array[start_index].position       = sf::Vector2f(tile.TR.X, tile.TR.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_front[row][col].TR.X, m_front[row][col].TR.Y);
-
-            m_array[start_index].position       = sf::Vector2f(tile.BR.X, tile.BR.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_front[row][col].BR.X, m_front[row][col].BR.Y);
-
-            m_array[start_index].position       = sf::Vector2f(tile.BL.X, tile.BL.Y);
-            m_array[start_index].color          = sf::Color(r, g, b);
-            m_array[start_index++].texCoords    = sf::Vector2f(m_front[row][col].BL.X, m_front[row][col].BL.Y);
-        }
-    }
-}
-
-/********************************************************
 *   calculateLeftPosition
 *
 *   Calculate a tile's 4 points on the left wall.
@@ -921,18 +673,231 @@ void ksWorld::addLight(ksVector2D start, ksWorldWall wall, int row, int col,
     
     m_num_of_lights += 6;
     
-    drawFrontTiles(0);
-    drawLeftTiles(m_width * m_height * 4);
-    drawRightTiles((m_width * m_height * 4) + (m_height * m_depth * 4));
-    drawTopTiles((m_width * m_height * 4) + (m_height * m_depth * 4) + 
-                 (m_height * m_depth * 4));
-    drawBottomTiles((m_width * m_height * 4) + (m_height * m_depth * 4) + 
-                    (m_height * m_depth * 4) + (m_width * m_depth * 4));
+    //drawFrontTiles(0);
+    //drawLeftTiles(m_width * m_height * 4);
+    //drawRightTiles((m_width * m_height * 4) + (m_height * m_depth * 4));
+    //drawTopTiles((m_width * m_height * 4) + (m_height * m_depth * 4) + 
+    //             (m_height * m_depth * 4));
+    //drawBottomTiles((m_width * m_height * 4) + (m_height * m_depth * 4) + 
+    //                (m_height * m_depth * 4) + (m_width * m_depth * 4));
 }
 
 void ksWorld::toggleLighting()
 {
     m_lighting = !m_lighting;
+}
+
+void ksWorld::toggle2D(ksWorldWall wall)
+{
+    switch (wall)
+    {
+        case FRONT:
+            m_front_tex     = &m_front;
+            m_front_num_row = &m_height;
+            m_front_num_col = &m_width;
+            break;
+        
+        case LEFT:
+            m_front_tex     = &m_left;
+            m_front_num_row = &m_height;
+            m_front_num_col = &m_depth;
+            break;
+
+        case RIGHT:
+            m_front_tex     = &m_right;
+            m_front_num_row = &m_height;
+            m_front_num_col = &m_depth;
+            break;
+
+        case TOP:
+            m_front_tex     = &m_top;
+            m_front_num_row = &m_depth;
+            m_front_num_col = &m_width;
+            break;
+
+        case BOTTOM:
+            m_front_tex     = &m_bottom;
+            m_front_num_row = &m_depth;
+            m_front_num_col = &m_width;
+            break;
+
+        default:
+            m_front_tex     = &m_front;
+            m_front_num_row = &m_height;
+            m_front_num_col = &m_width;
+    }
+
+    // Set flag for 2D perspective.
+    m_2D = true;
+
+    calculateTilePositions();
+    updateTilePositions();
+    updateTextureCoordinates();
+}
+
+void ksWorld::toggle3D()
+{
+    m_front_tex     = &m_front;
+    m_front_num_row = &m_height;
+    m_front_num_col = &m_width;
+
+    // Set flag for 3D perspective.
+    m_2D = false;
+
+    calculateTilePositions();
+    updateTilePositions();
+    updateTextureCoordinates();
+}
+
+void ksWorld::calculateTilePositions()
+{
+    // Front
+    m_front_pos.resize((*m_front_num_row));
+
+    for (int row = 0; row < (*m_front_num_row); ++row)
+    {
+        m_front_pos[row].resize((*m_front_num_col));
+
+        for (int col = 0; col < (*m_front_num_col); ++col)
+            m_front_pos[row][col] = calculateFrontPosition(row, col);
+    }
+
+    // Left
+    m_left_pos.resize((*m_left_num_row));
+
+    for (int row = 0; row < (*m_left_num_row); ++row)
+    {
+        m_left_pos[row].resize((*m_left_num_col));
+
+        for (int col = 0; col < (*m_left_num_col); ++col)
+            m_left_pos[row][col] = calculateLeftPosition(row, col);
+    }
+
+    // Right
+    m_right_pos.resize((*m_right_num_row));
+
+    for (int row = 0; row < (*m_right_num_row); ++row)
+    {
+        m_right_pos[row].resize((*m_right_num_col));
+
+        for (int col = 0; col < (*m_right_num_col); ++col)
+            m_right_pos[row][col] = calculateRightPosition(row, col);
+    }
+
+    // Top
+    m_top_pos.resize((*m_top_num_row));
+
+    for (int row = 0; row < (*m_top_num_row); ++row)
+    {
+        m_top_pos[row].resize((*m_top_num_col));
+
+        for (int col = 0; col < (*m_top_num_col); ++col)
+            m_top_pos[row][col] = calculateTopPosition(row, col);
+    }
+
+    // Bottom
+    m_bottom_pos.resize((*m_bottom_num_row));
+
+    for (int row = 0; row < (*m_bottom_num_row); ++row)
+    {
+        m_bottom_pos[row].resize((*m_bottom_num_col));
+
+        for (int col = 0; col < (*m_bottom_num_col); ++col)
+            m_bottom_pos[row][col] = calculateBottomPosition(row, col);
+    }
+}
+
+void ksWorld::updateTilePositions()
+{
+    int array_pos = 0;
+
+    m_array.clear();
+    
+    if (m_2D)
+        m_array.resize((*m_front_num_row) * (*m_front_num_col) * 6);
+    else
+        m_array.resize(((*m_front_num_row) * (*m_front_num_col) * 6) +
+                       ((*m_left_num_row) * (*m_left_num_col) * 6) +
+                       ((*m_right_num_row) * (*m_right_num_col) * 6) +
+                       ((*m_top_num_row) * (*m_top_num_col) * 6) + 
+                       ((*m_bottom_num_row) * (*m_bottom_num_col) * 6));
+
+    // Front wall
+    assignTilePositions(&m_front_pos, array_pos, (*m_front_num_row), (*m_front_num_col));
+
+    // If in 3D perspective
+    if (!m_2D)
+    {
+        // Left wall
+        assignTilePositions(&m_left_pos, array_pos, (*m_left_num_row), (*m_left_num_col));
+        
+        // Right wall
+        assignTilePositions(&m_right_pos, array_pos, (*m_right_num_row), (*m_right_num_col));
+
+        // Top wall
+        assignTilePositions(&m_top_pos, array_pos, (*m_top_num_row), (*m_top_num_col));
+
+        // Bottom wall
+        assignTilePositions(&m_bottom_pos, array_pos, (*m_bottom_num_row), (*m_bottom_num_col));
+    }
+}
+
+void ksWorld::assignTilePositions(std::vector<std::vector<ksTile>> * wall,
+                                  int & pos, int max_row, int max_col)
+{
+    for (int row = 0; row < max_row; ++row)
+    {
+        for (int col = 0; col < max_col; ++col)
+        {
+            m_array[pos++].position = sf::Vector2f((*wall)[row][col].TL.X, (*wall)[row][col].TL.Y);
+            m_array[pos++].position = sf::Vector2f((*wall)[row][col].TR.X, (*wall)[row][col].TR.Y);
+            m_array[pos++].position = sf::Vector2f((*wall)[row][col].BR.X, (*wall)[row][col].BR.Y);
+            m_array[pos++].position = sf::Vector2f((*wall)[row][col].BR.X, (*wall)[row][col].BR.Y);
+            m_array[pos++].position = sf::Vector2f((*wall)[row][col].BL.X, (*wall)[row][col].BL.Y);
+            m_array[pos++].position = sf::Vector2f((*wall)[row][col].TL.X, (*wall)[row][col].TL.Y);
+        }
+    }
+}
+
+void ksWorld::updateTextureCoordinates()
+{
+    int array_pos = 0;
+
+    // Front wall
+    assignTextureCoordinates(m_front_tex, array_pos, (*m_front_num_row), (*m_front_num_col));
+
+    // If in 3D perspective
+    if (!m_2D)
+    {
+        // Left wall
+        assignTextureCoordinates(m_left_tex, array_pos, (*m_left_num_row), (*m_left_num_col));
+        
+        // Right wall
+        assignTextureCoordinates(m_right_tex, array_pos, (*m_right_num_row), (*m_right_num_col));
+
+        // Top wall
+        assignTextureCoordinates(m_top_tex, array_pos, (*m_top_num_row), (*m_top_num_col));
+
+        // Bottom wall
+        assignTextureCoordinates(m_bottom_tex, array_pos, (*m_bottom_num_row), (*m_bottom_num_col));
+    }
+}
+
+void ksWorld::assignTextureCoordinates(std::vector<std::vector<ksTile>> * wall,
+                                       int & pos, int max_row, int max_col)
+{
+    for (int row = 0; row < max_row; ++row)
+    {
+        for (int col = 0; col < max_col; ++col)
+        {
+            m_array[pos++].texCoords = sf::Vector2f((*wall)[row][col].TL.X, (*wall)[row][col].TL.Y);
+            m_array[pos++].texCoords = sf::Vector2f((*wall)[row][col].TR.X, (*wall)[row][col].TR.Y);
+            m_array[pos++].texCoords = sf::Vector2f((*wall)[row][col].BR.X, (*wall)[row][col].BR.Y);
+            m_array[pos++].texCoords = sf::Vector2f((*wall)[row][col].BR.X, (*wall)[row][col].BR.Y);
+            m_array[pos++].texCoords = sf::Vector2f((*wall)[row][col].BL.X, (*wall)[row][col].BL.Y);
+            m_array[pos++].texCoords = sf::Vector2f((*wall)[row][col].TL.X, (*wall)[row][col].TL.Y);
+        }
+    }
 }
 
 /********************************************************
@@ -943,71 +908,55 @@ void ksWorld::toggleLighting()
 ********************************************************/
 const ksTile & ksWorld::getTilePosition(ksWorldWall wall, int row, int col, int width, int height)
 {
-    ksTile tile1, tile2, tile3, tile4, tile5;
+    ksTile tile;
     
-    if (wall == FRONT)
+    switch (wall)
     {
-        tile1 = calculateFrontPosition(row, col);
-        tile2 = calculateFrontPosition(row + height - 1, col);
-        tile3 = calculateFrontPosition(row + height - 1, col + width - 1);
-        tile4 = calculateFrontPosition(row, col + width - 1);
-        
-        tile5.TL = tile1.TL;
-        tile5.TR = tile4.TR;
-        tile5.BR = tile3.BR;
-        tile5.BL = tile2.BL;
-    }
-    else if (wall == TOP)
-    {
-        tile1 = calculateTopPosition(row, col);
-        tile2 = calculateTopPosition(row + height - 1, col);
-        tile3 = calculateTopPosition(row + height - 1, col + width - 1);
-        tile4 = calculateTopPosition(row, col + width - 1);
-        
-        tile5.TL = tile1.TL;
-        tile5.TR = tile4.TR;
-        tile5.BR = tile3.BR;
-        tile5.BL = tile2.BL;
-    }
-    else if (wall == BOTTOM)
-    {
-        tile1 = calculateBottomPosition(row, col);
-        tile2 = calculateBottomPosition(row, col + width - 1);
-        tile3 = calculateRightPosition(m_height - height, row);
+        case FRONT:
+            tile.TL = m_front_pos[row][col].TL;
+            tile.TR = m_front_pos[row][col + width - 1].TR;
+            tile.BR = m_front_pos[row + height - 1][col + width - 1].BR;
+            tile.BL = m_front_pos[row + height - 1][col].BL;
+            break;
 
-        tile5.BL   = tile1.BL;
-        tile5.BR   = tile2.BR;
-        tile5.TL.X = tile5.BL.X;
-        tile5.TL.Y = tile3.TR.Y;
-        tile5.TR.X = tile5.BR.X;
-        tile5.TR.Y = tile5.TL.Y;
-    }
-    else if (wall == LEFT)
-    {
-        tile1 = calculateLeftPosition(row, col);
-        tile2 = calculateLeftPosition(row + height - 1, col);
-        tile3 = calculateLeftPosition(row + height - 1, col + width - 1);
-        tile4 = calculateLeftPosition(row, col + width - 1);
+        case LEFT:
+            tile.TL = m_left_pos[row][col].TL;
+            tile.TR = m_left_pos[row][col + width - 1].TR;
+            tile.BR = m_left_pos[row + height - 1][col + width - 1].BR;
+            tile.BL = m_left_pos[row + height - 1][col].BL;
+            break;
+
+        case RIGHT:
+            tile.TL = m_right_pos[row][col].TL;
+            tile.TR = m_right_pos[row][col + width - 1].TR;
+            tile.BR = m_right_pos[row + height - 1][col + width - 1].BR;
+            tile.BL = m_right_pos[row + height - 1][col].BL;
+            break;
+
+        case TOP:
+            tile.TL = m_top_pos[row][col].TL;
+            tile.TR = m_top_pos[row][col + width - 1].TR;
+            tile.BR = m_top_pos[row + height - 1][col + width - 1].BR;
+            tile.BL = m_top_pos[row + height - 1][col].BL;
+            break;
         
-        tile5.TL = tile1.TL;
-        tile5.TR = tile4.TR;
-        tile5.BR = tile3.BR;
-        tile5.BL = tile2.BL;
-    }
-    else if (wall == RIGHT)
-    {
-        tile1 = calculateRightPosition(row, col);
-        tile2 = calculateRightPosition(row + height - 1, col);
-        tile3 = calculateRightPosition(row + height - 1, col + width - 1);
-        tile4 = calculateRightPosition(row, col + width - 1);
-        
-        tile5.TL = tile1.TL;
-        tile5.TR = tile4.TR;
-        tile5.BR = tile3.BR;
-        tile5.BL = tile2.BL;
+        case BOTTOM:
+            tile.BL   = m_bottom_pos[row][col].BL;
+            tile.BR   = m_bottom_pos[row][col + width - 1].BR;
+            tile.TL.X = tile.BL.X;
+            tile.TL.Y = m_right_pos[m_height - height][row].TR.Y;
+            tile.TR.X = tile.BR.X;
+            tile.TR.Y = tile.TL.Y;
+            break;
+
+        default:
+            tile.TL = m_front_pos[row][col].TL;
+            tile.TR = m_front_pos[row][col + width - 1].TR;
+            tile.BR = m_front_pos[row + height - 1][col + width - 1].BR;
+            tile.BL = m_front_pos[row + height - 1][col].BL;
     }
 
-    return tile5;
+    return tile;
 }
 
 int ksWorld::getLightIntensity(ksWorldWall wall, int row, int col)

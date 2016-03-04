@@ -21,6 +21,7 @@ class ksControl
     public:
         //                         Methods
         virtual void               update() = 0;
+//        virtual void               drawControl() = 0;
         virtual void               move(double x, double y) = 0;
         virtual sf::VertexArray *  getVertexArray() = 0;
         virtual bool               pressed(int mouse_x, int mouse_y) = 0;

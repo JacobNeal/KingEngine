@@ -297,6 +297,16 @@ void ksApplication::toggleWorldLighting()
     m_world.toggleLighting();
 }
 
+void ksApplication::toggleWorld2D(ksWorldWall wall)
+{
+    m_world.toggle2D(wall);
+}
+
+void ksApplication::toggleWorld3D()
+{
+    m_world.toggle3D();
+}
+
 /*********************************************************
 *   getCameraDelta
 *

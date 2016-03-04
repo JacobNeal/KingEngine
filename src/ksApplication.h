@@ -57,6 +57,8 @@ class ksApplication
         void                  decreaseCameraDepth();
         ksPathNode            calculateWorldNode(int x, int y);
         void                  toggleWorldLighting();
+        void                  toggleWorld2D(ksWorldWall wall);
+        void                  toggleWorld3D();
 
         //                    Accessor methods
         int                   getCameraDelta();

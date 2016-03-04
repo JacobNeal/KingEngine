@@ -131,6 +131,19 @@ void ksEntity::setTilePosition(ksPathNode node)
     m_current_node = node;
 }
 
+void ksEntity::setWall(ksWorldWall wall)
+{
+    m_wall = wall;
+    
+    ksTile temp = m_world->getTilePosition(m_wall, m_current_node.row,
+                                         m_current_node.col, m_width, m_height);
+
+    m_current_node.TL  = temp.TL;
+    m_current_node.TR  = temp.TR;
+    m_current_node.BL  = temp.BL;
+    m_current_node.BR  = temp.BR;
+}
+
 /*********************************************************
 *	getPosition
 *

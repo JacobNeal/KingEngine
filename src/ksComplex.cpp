@@ -104,7 +104,7 @@ void ksComplex::evade(ksComplex * entity)
 *   Call the addToGroup method of the complex behavior
 *   class passing the desired entity.
 ********************************************************/
-void ksComplex::addToGroup(ksEntity * entity)
+void ksComplex::addToGroup(ksComplex * entity)
 {
     m_behavior.addToGroup(entity);
 }
@@ -142,4 +142,9 @@ void ksComplex::group()
 ksPathNode ksComplex::getNextPathNode()
 {
     return m_behavior.getNextPathNode();
+}
+
+ksVector2D ksComplex::getComplexHeading()
+{
+    return m_behavior.getPathHeading();
 }

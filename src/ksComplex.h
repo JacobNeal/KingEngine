@@ -41,12 +41,13 @@ class ksComplex : public ksEntity
         void                            flee(int row, int col, int range);
         void                            pursue(ksComplex * entity);
         void                            evade(ksComplex * entity);
-        void                            addToGroup(ksEntity * entity);
+        void                            addToGroup(ksComplex * entity);
         void                            clearGroup();
         void                            group();
     
         //                              Accessor methods
         ksPathNode                      getNextPathNode();
+        ksVector2D                      getComplexHeading();
 
     protected:
         //                              Data members

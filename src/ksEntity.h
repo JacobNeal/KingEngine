@@ -39,6 +39,7 @@ class ksEntity
         void               setPressed(bool press);
 		void               setVisible(bool visible);
         void               setTilePosition(ksPathNode node);
+        void               setWall(ksWorldWall wall);
 
 		//                 Accessor methods
 		const ksPathNode & getTilePosition();

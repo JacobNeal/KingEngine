@@ -27,12 +27,12 @@ class ksComplexBehavior
 
         //                  Methods
         ksPathNode          calculate();
-        ksPathNode          seek(int row, int col);
-        ksPathNode          flee(int row, int col);
+        ksVector2D          seek(int row, int col);
+        ksVector2D          flee(int row, int col);
         ksPathNode          pursue(ksComplex * pursuit_target);
         ksPathNode          evade(ksComplex * evasion_target);
         void                move(int row, int col);
-        void                addToGroup(ksEntity * entity);
+        void                addToGroup(ksComplex * entity);
         void                clearGroup();
 
         // Toggle on or off behaviors
@@ -45,6 +45,7 @@ class ksComplexBehavior
 
         //                  Accessor methods
         ksPathNode          getNextPathNode();
+        ksVector2D          getPathHeading();
 
     protected:
         int                 applyRowBoundaries(int row);
@@ -53,9 +54,9 @@ class ksComplexBehavior
         void                moveInc(int transition_num);
         
         //                  Group behavior
-        void                separation();
-        void                alignment();
-        void                cohesion();
+        ksVector2D          separation();
+        ksVector2D          alignment();
+        ksVector2D          cohesion();
 
         //                  Data members
         ksPathFinder *      m_path_finder;
@@ -74,7 +75,7 @@ class ksComplexBehavior
 
         std::list<ksPathNode> m_wander_path;
         std::list<ksPathNode>::iterator m_path_iter;
-        std::list<ksEntity *> m_group;
+        std::list<ksComplex *> m_group;
 
         ksVector2D          m_tl_delta;
         ksVector2D          m_tr_delta;
@@ -88,6 +89,9 @@ class ksComplexBehavior
 
         ksPathNode          m_current_node;
         ksPathNode          m_next_node;
+
+        ksVector2D          m_vehicle_velocity;
+        ksVector2D          m_vehicle_heading;
 };
 
 #endif
