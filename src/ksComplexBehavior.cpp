@@ -32,6 +32,11 @@ ksComplexBehavior::ksComplexBehavior(ksPathFinder * path_finder,
     m_vehicle_heading.Y = 0;
 }
 
+/*********************************************************
+*   calculateForce
+*
+*   Calculates the force using the weighted sums method.
+*********************************************************/
 ksVector2D ksComplexBehavior::calculateForce()
 {
     ksVector2D steering_force;
@@ -79,6 +84,12 @@ ksVector2D ksComplexBehavior::calculateForce()
     return steering_force;
 }
 
+/*********************************************************
+*   calculatePrioritizedForce
+*
+*   Calculates the steering force using the prioritized
+*   sum of the weighted behaviors.
+*********************************************************/
 ksVector2D ksComplexBehavior::calculatePrioritizedForce()
 {
     m_steering_force.zero();
@@ -171,7 +182,7 @@ ksVector2D ksComplexBehavior::calculatePrioritizedForce()
 *   seek
 *
 *   Perform the seek steering behavior using the passed
-*   row and column.
+*   vector position.
 *********************************************************/
 ksVector2D ksComplexBehavior::seek(ksVector2D position)
 {
@@ -185,7 +196,9 @@ ksVector2D ksComplexBehavior::seek(ksVector2D position)
 *   flee
 *
 *   Perform the flee steering behavior using the passed
-*   row and column. This method assumes it is in range.
+*   vector. This method calculates the panic distance
+*   and uses the squared value to determine whether or
+*   not it should fleee.
 *   The range gets checked in the calculate method.
 ********************************************************/
 ksVector2D ksComplexBehavior::flee(ksVector2D position)
@@ -203,6 +216,12 @@ ksVector2D ksComplexBehavior::flee(ksVector2D position)
     return (desired_velocity - m_vehicle->getVelocity());
 }
 
+/*********************************************************
+*   arrive
+*
+*   Performs the arrive steering behavior using the
+*   passed vector position.
+*********************************************************/
 ksVector2D ksComplexBehavior::arrive(ksVector2D position)
 {
     ksVector2D to_target = position - m_vehicle->getPosition();
@@ -253,19 +272,14 @@ ksVector2D ksComplexBehavior::pursue(ksComplex * pursuit_target)
                 m_pursuit_target->getVelocity() * look_ahead);
 }
 
+/*********************************************************
+*   offsetPursue
+*
+*   Gets the vector force that will pursue the desired
+*   target at a particular offset away from it.
+*********************************************************/
 ksVector2D ksComplexBehavior::offsetPursue(ksComplex * pursuit_target, ksVector2D offset)
 {
-//    ksVector2D world_offset_pos = getPointToWorldSpace(offset, pursuit_target->getHeading(),
-//                                                       pursuit_target->getSide(),
-//                                                       pursuit_target->getPosition());
-
-//    ksVector2D to_offset = world_offset_pos - m_vehicle->getPosition();
-
-//    double look_ahead = to_offset.getLength() / 
-//                        (150.0 + pursuit_target->getVelocity().getLength());
-
-//    return arrive(world_offset_pos + 
-//                  pursuit_target->getVelocity().getLength() * look_ahead);
     return ksVector2D(0, 0);
 }
 
@@ -294,6 +308,13 @@ ksVector2D ksComplexBehavior::evade(ksComplex * evasion_target)
                 m_evasion_target->getVelocity() * look_ahead);
 }
 
+/*********************************************************
+*   obstacleAvoidance
+*
+*   Calculates a steering force that will avoid nearby
+*   obstacles and entities, based on who is in the group
+*   and who it closest by.
+*********************************************************/
 ksVector2D ksComplexBehavior::obstacleAvoidance()
 {
     // detection_length = min_detection + (m_vehicle.speed / max_speed) * min_detection
@@ -463,45 +484,87 @@ void ksComplexBehavior::fleeOff()
     m_flee = false;
 }
 
+/*********************************************************
+*   arriveOn
+*
+*   Toggle on the arrive behavior for this complex entity.
+*********************************************************/
 void ksComplexBehavior::arriveOn(ksVector2D vect)
 {
     m_arrive = true;
     m_target = vect;
 }
 
+/*********************************************************
+*   arriveOff
+*
+*   Toggle off the arrive behavior for this complex entity.
+*********************************************************/
 void ksComplexBehavior::arriveOff()
 {
     m_arrive = false;
 }
 
+/*********************************************************
+*   pursuitOn
+*
+*   Toggle on the pursuit behavior for this complex entity.
+*********************************************************/
 void ksComplexBehavior::pursuitOn(ksComplex * vehicle)
 {
     m_pursuit_target = vehicle;
     m_pursuit = true;
 }
 
+/*********************************************************
+*   pursuitOff
+*
+*   Toggle off the pursuit behavior for this complex entity.
+*********************************************************/
 void ksComplexBehavior::pursuitOff()
 {
     m_pursuit = false;
 }
 
+/*********************************************************
+*   offsetPursuitOn
+*
+*   Toggle on the offset pursuit behavior for this complex
+*   entity.
+*********************************************************/
 void ksComplexBehavior::offsetPursuitOn(ksComplex * vehicle, ksVector2D offset)
 {
     m_offset_pursuit = true;
     m_pursuit_target = vehicle;
 }
 
+/*********************************************************
+*   offsetPursuitOff
+*
+*   Toggle off the offset pursuit behavior for this complex
+*   entity.
+*********************************************************/
 void ksComplexBehavior::offsetPursuitOff()
 {
     m_offset_pursuit = false;
 }
 
+/*********************************************************
+*   evasionOn
+*
+*   Toggle on the evasion behavior for this complex entity.
+*********************************************************/
 void ksComplexBehavior::evasionOn(ksComplex * vehicle)
 {
     m_evasion_target = vehicle;
     m_evasion = true;
 }
 
+/*********************************************************
+*   evasionOff
+*
+*   Toggle off the evasion behavior for this complex entity.
+*********************************************************/
 void ksComplexBehavior::evasionOff()
 {
     m_evasion = false;
@@ -531,11 +594,23 @@ void ksComplexBehavior::groupOff()
     m_group_on = false;
 }
 
+/*********************************************************
+*   obstacleOn
+*
+*   Toggle on the obstacle avoidance behavior for this
+*   complex entity.
+*********************************************************/
 void ksComplexBehavior::obstacleOn()
 {
     m_obstacle = true;
 }
 
+/*********************************************************
+*   obstacleOff
+*
+*   Toggle off the obstacle avoidance behavior for this
+*   complex entity.
+*********************************************************/
 void ksComplexBehavior::obstacleOff()
 {
     m_obstacle = false;
@@ -552,6 +627,11 @@ ksPathNode ksComplexBehavior::getNextPathNode()
     return m_next_node;
 }
 
+/*********************************************************
+*   getPathHeading
+*
+*   Returns the path heading of the vehicle.
+*********************************************************/
 ksVector2D ksComplexBehavior::getPathHeading()
 {
     return m_vehicle_heading;
@@ -640,6 +720,16 @@ void ksComplexBehavior::moveInc(int transition_num)
     m_current_node.center.Y += m_center_delta.Y / transition_num;
 }
 
+/*********************************************************
+*   accumulateForce
+*
+*   Allow for the next added force to be added if there's
+*   enough remaining force relative to the maximum
+*   steering force. If there isn't enough remaining
+*   force, then fill the remainder of the steering force
+*   with the incoming force. Returns false if there
+*   wasn't enough remaining force.
+*********************************************************/
 bool ksComplexBehavior::accumulateForce(ksVector2D force)
 {
     double magnitude = m_steering_force.getLength();
@@ -659,6 +749,12 @@ bool ksComplexBehavior::accumulateForce(ksVector2D force)
     return true;
 }
 
+/*********************************************************
+*   getPointToLocalSpace
+*
+*   Converts a point, heading, side and position to
+*   local space for behavior based calculations.
+*********************************************************/
 ksVector2D ksComplexBehavior::getPointToLocalSpace(ksVector2D point, ksVector2D heading,
                                                    ksVector2D side, ksVector2D position)
 {
@@ -685,29 +781,27 @@ ksVector2D ksComplexBehavior::getPointToLocalSpace(ksVector2D point, ksVector2D 
     return point;
 }
 
+/*********************************************************
+*   getPointToWorldSpace
+*
+*   Converts a point, heading, side, and position to
+*   world space for behavior based calculations.
+*********************************************************/
 ksVector2D ksComplexBehavior::getPointToWorldSpace(ksVector2D point, ksVector2D heading,
                                                    ksVector2D side, ksVector2D position)
 {
     return ksVector2D(0, 0);
 }
 
+/*********************************************************
+*   getVectorToWorldSpace
+*
+*   Returns a vector to world space relative to the passed
+*   vector, heading, and side.
+*********************************************************/
 ksVector2D ksComplexBehavior::getVectorToWorldSpace(ksVector2D vect, ksVector2D heading,
                                                     ksVector2D side)
 {
-    //transformation_mat.rotate(heading, side);
-
-    // 11 = 1
-    // 12 = 0
-    // 13 = 0
-    
-    // 21 = 0
-    // 22 = 1
-    // 23 = 0
-
-    // 31 = 0
-    // 32 = 0
-    // 33 = 1
-
     double transform_11 = (1 * vect.X) + (0 * side.X) + (0 * 0);
     double transform_12 = (1 * vect.Y) + (0 * side.Y) + (0 * 0);
     //double transform_13 = (1 * 0) + (0 * 0) + (0 * 1);

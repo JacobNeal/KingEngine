@@ -13,8 +13,17 @@ int main()
     app.insertText(350, 50, "scenario", "", 20, ksColor(0, 0, 0, 100));
     app.insertText(350, 70, "scenario_description", "", 20, ksColor(0, 0, 0, 100));
 
-//    app.loadWorld(8, 4, 8, "maps/exterior");
-    app.loadWorld(25, 20, 0, "maps/exterior_2");
+    app.insertText(600, 50, "entity_count", "", 20, ksColor(0, 0, 0, 100));
+
+    // Directions displayed on screen
+    app.insertText(50, 120, "scenario_directions1", "Press 1 for patrolling guard scenario",
+                   20, ksColor(0, 0, 0, 75));
+    app.insertText(50, 140, "scenario_directions2", "Press 2 for pack of wolves scenario",
+                   20, ksColor(0, 0, 0, 75));
+    app.insertText(50, 160, "scenario_directions3", "Press 3 for rabbit and fox scenario",
+                   20, ksColor(0, 0, 0, 75));
+
+    app.loadWorld(8, 4, 8, "maps/exterior");
 
     // Toggle the lighting in order to not see any lighting / shadows in
     // the engine.
@@ -23,48 +32,6 @@ int main()
 
     ksPathFinder path_finder(app.getWorld());
     
-    ksEntity grass(app.getWorld(), FRONT, 1, 3, 1, 1, 11);
-    app.addEntity(&grass);
-
-    ksEntity grass2(app.getWorld(), FRONT, 3, 0, 1, 1, 11);
-    app.addEntity(&grass2);
-
-    ksEntity grass3(app.getWorld(), FRONT, 0, 0, 1, 1, 11);
-    app.addEntity(&grass3);
-
-    ksEntity grass4(app.getWorld(), FRONT, 6, 2, 1, 1, 11);
-    app.addEntity(&grass4);
-
-    ksEntity grass5(app.getWorld(), FRONT, 0, 6, 1, 1, 11);
-    app.addEntity(&grass5);
-
-    ksEntity grass6(app.getWorld(), FRONT, 7, 7, 1, 1, 11);
-    app.addEntity(&grass6);
-
-    ksEntity flower(app.getWorld(), FRONT, 1, 5, 1, 1, 31);
-    flower.setAnimationLower(31);
-    flower.setAnimationUpper(32);
-    flower.setAnimationDelay(60);
-    app.addEntity(&flower);
-
-    ksEntity flower2(app.getWorld(), FRONT, 6, 0, 1, 1, 31);
-    flower2.setAnimationLower(31);
-    flower2.setAnimationUpper(32);
-    flower2.setAnimationDelay(60);
-    app.addEntity(&flower2);
-
-    ksEntity flower3(app.getWorld(), FRONT, 6, 6, 1, 1, 31);
-    flower3.setAnimationLower(31);
-    flower3.setAnimationUpper(32);
-    flower3.setAnimationDelay(60);
-    app.addEntity(&flower3);
-   
-    ksEntity flower4(app.getWorld(), FRONT, 0, 1, 1, 1, 31);
-    flower4.setAnimationLower(31);
-    flower4.setAnimationUpper(32);
-    flower4.setAnimationDelay(60);
-    app.addEntity(&flower4);
-
     std::vector<ksComplex *> entity_list;
     int entity_num = 0;
 
@@ -72,9 +39,6 @@ int main()
 
     int emitter_row = 1;
     int emitter_col = 12; 
-
-    app.insertText(600, 50, "entity_count", "Total count: " + std::to_string(entity_num), 
-            20, ksColor(0, 0, 0, 100));
 
 	while (app.isOpen())
 	{
@@ -116,6 +80,9 @@ int main()
 
             app.setText("scenario", "Scenario 1");
             app.setText("scenario_description", "Patrolling Guard");
+            app.setText("scenario_directions1", "");
+            app.setText("scenario_directions2", "");
+            app.setText("scenario_directions3", "");
 
             app.clearEntities();
             entity_list.clear();
@@ -144,13 +111,35 @@ int main()
 
             app.setText("scenario", "Scenario 2");
             app.setText("scenario_description", "Pack of Wolves");
-
+            app.setText("scenario_directions1", "Press spacebar to add more entities.");
+            app.setText("scenario_directions2", "");
+            app.setText("scenario_directions3", "");
+            
             app.clearEntities();
             entity_list.clear();
             entity_num = 0;
 
             app.loadWorld(25, 20, 0, "maps/exterior_2");
-            
+    
+            std::vector<ksEntity *> flowers;
+
+            int current_flower = 0;
+
+            for (int x = 0; x < 25; ++x)
+            {
+                for (int y = 0; y < 20; ++y)
+                {
+                    if ((x % 3 == 0) && (y % 5 == 0))
+                    {
+                        flowers.push_back(new ksEntity(app.getWorld(), FRONT, y, x, 1, 1, 31));
+                        flowers[current_flower]->setAnimationLower(31);
+                        flowers[current_flower]->setAnimationUpper(32);
+                        flowers[current_flower]->setAnimationDelay(60);
+                        app.addEntity(flowers[current_flower++]);
+                    }
+                }
+            }
+
             for (int count = 0; count < 8; ++count)
             {
                 entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), FRONT, 
@@ -182,7 +171,10 @@ int main()
             
             app.setText("scenario", "Scenario 3");
             app.setText("scenario_description", "Rabbit and Fox");
-
+            app.setText("scenario_directions1", "");
+            app.setText("scenario_directions2", "");
+            app.setText("scenario_directions3", "");
+            
             app.clearEntities();
             entity_list.clear();
             entity_num = 0;
