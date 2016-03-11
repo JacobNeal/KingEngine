@@ -32,210 +32,6 @@ ksComplexBehavior::ksComplexBehavior(ksPathFinder * path_finder,
     m_vehicle_heading.Y = 0;
 }
 
-/*********************************************************
-*   calculate
-*
-*   Calculates the total steering force acting upon the
-*   complex type. By assigning priority to seeking,
-*   fleeing, then group behaviors, before pathfinding.
-*********************************************************/
-ksPathNode ksComplexBehavior::calculate()
-{
-/*    if (m_seek && (m_current_node.row != m_target_row || m_current_node.col != m_target_col))
-    {
-        // Move the current node incrementally
-        moveInc(10);
-        
-        if (m_current_node.center.X >= (m_next_node.center.X - 2) &&
-            m_current_node.center.X <= (m_next_node.center.X + 2) &&
-            m_current_node.center.Y >= (m_next_node.center.Y - 2) &&
-            m_current_node.center.Y <= (m_next_node.center.Y + 2))
-        {
-            m_current_node = m_next_node;
-            m_next_node    = seek(m_target_row, m_target_col);
-            
-            m_tl_delta     = m_next_node.TL - m_current_node.TL;
-            m_tr_delta     = m_next_node.TR - m_current_node.TR;
-            m_bl_delta     = m_next_node.BL - m_current_node.BL;
-            m_br_delta     = m_next_node.BR - m_current_node.BR;
-            m_center_delta = m_next_node.center - m_current_node.center;
-        }
-    }
-    else if (m_pursuit && 
-            (m_current_node.row != m_pursuit_target->getTilePosition().row ||
-             m_current_node.col != m_pursuit_target->getTilePosition().col))
-    {
-        // Move the current node incrementally
-        moveInc(10);
-        
-        if (m_current_node.center.X >= (m_next_node.center.X - 2) &&
-            m_current_node.center.X <= (m_next_node.center.X + 2) &&
-            m_current_node.center.Y >= (m_next_node.center.Y - 2) &&
-            m_current_node.center.Y <= (m_next_node.center.Y + 2))
-        {
-            m_current_node = m_next_node;
-            m_next_node    = pursue(m_pursuit_target);
-            
-            m_tl_delta     = m_next_node.TL - m_current_node.TL;
-            m_tr_delta     = m_next_node.TR - m_current_node.TR;
-            m_bl_delta     = m_next_node.BL - m_current_node.BL;
-            m_br_delta     = m_next_node.BR - m_current_node.BR;
-            m_center_delta = m_next_node.center - m_current_node.center;
-        }
-    }
-    else if (m_evasion)
-    {
-        // Move the current node incrementally
-        moveInc(10);
-        
-        if (m_current_node.center.X >= (m_next_node.center.X - 2) &&
-            m_current_node.center.X <= (m_next_node.center.X + 2) &&
-            m_current_node.center.Y >= (m_next_node.center.Y - 2) &&
-            m_current_node.center.Y <= (m_next_node.center.Y + 2))
-        {
-            m_current_node = m_next_node;
-            m_next_node    = evade(m_evasion_target);
-            
-            m_tl_delta     = m_next_node.TL - m_current_node.TL;
-            m_tr_delta     = m_next_node.TR - m_current_node.TR;
-            m_bl_delta     = m_next_node.BL - m_current_node.BL;
-            m_br_delta     = m_next_node.BR - m_current_node.BR;
-            m_center_delta = m_next_node.center - m_current_node.center;
-        }
-    }
-    else if (m_flee &&
-            (m_current_node.row != 0 || m_current_node.col != 0) &&
-            (m_current_node.row != (m_world->getWallMaxRow(m_vehicle->getWall()) - 1) ||
-            m_current_node.col != (m_world->getWallMaxCol(m_vehicle->getWall()) - 1)) &&
-            (m_current_node.row - m_target_row) >= -m_target_range &&
-            (m_current_node.row - m_target_row) <= m_target_range &&
-            (m_current_node.col - m_target_col) >= -m_target_range &&
-            (m_current_node.col - m_target_col) <= m_target_range)
-    {
-        // Move the current node incrementally
-        moveInc(10);
-        
-        if (m_current_node.center.X >= (m_next_node.center.X - 2) &&
-            m_current_node.center.X <= (m_next_node.center.X + 2) &&
-            m_current_node.center.Y >= (m_next_node.center.Y - 2) &&
-            m_current_node.center.Y <= (m_next_node.center.Y + 2))
-        {
-            m_current_node = m_next_node;
-            m_next_node    = flee(m_target_row, m_target_col);
-            
-            m_tl_delta     = m_next_node.TL - m_current_node.TL;
-            m_tr_delta     = m_next_node.TR - m_current_node.TR;
-            m_bl_delta     = m_next_node.BL - m_current_node.BL;
-            m_br_delta     = m_next_node.BR - m_current_node.BR;
-            m_center_delta = m_next_node.center - m_current_node.center;
-        }
-    }
-    else if (m_group_on)
-    {
-        separation();
-        alignment();
-        cohesion();
-    }
-    else*/ if (m_path_on == true)
-    {
-        if (m_wander_path.size() > 0 && m_path_iter != m_wander_path.end())
-        {
-            // Move the current node incrementally
-            moveInc(10);
-
-            if (m_current_node.center.X >= ((*m_path_iter).center.X - 2) &&
-                m_current_node.center.X <= ((*m_path_iter).center.X + 2) &&
-                m_current_node.center.Y >= ((*m_path_iter).center.Y - 2) &&
-                m_current_node.center.Y <= ((*m_path_iter).center.Y + 2))
-            {
-                m_current_node = (*m_path_iter);
-                m_path_iter++;
-                m_next_node = (*m_path_iter);
-
-                m_tl_delta = (*m_path_iter).TL - m_current_node.TL;
-                m_tr_delta = (*m_path_iter).TR - m_current_node.TR;
-                m_bl_delta = (*m_path_iter).BL - m_current_node.BL;
-                m_br_delta = (*m_path_iter).BR - m_current_node.BR;
-                m_center_delta = (*m_path_iter).center - m_current_node.center;
-            }
-        }
-        else
-            m_path_on = false;
-    }
-
-    /*if (m_next_node != m_current_node)
-    {
-        moveInc(10);
-
-        if (m_current_node.center.X >= (m_next_node.center.X - 2) &&
-            m_current_node.center.X <= (m_next_node.center.X + 2) &&
-            m_current_node.center.Y >= (m_next_node.center.Y - 2) &&
-            m_current_node.center.Y <= (m_next_node.center.Y + 2))
-        {
-            m_current_node = m_next_node;
-
-            if (!m_path_on)
-            {
-                // Calculating steering force using the weighted sum
-                // of the active behaviors.
-                ksVector2D steering_force;
-
-                if (m_seek)
-                    steering_force += seek(m_target_row, m_target_col) * 1.0;
-                if (m_flee)
-                    steering_force += flee(m_target_row, m_target_col) * 1.0;
-                if (m_group_on)
-                {
-                    // Apply the group behaviors to
-                    // the steering force.
-                    steering_force += separation() * 1.0;
-                    steering_force += alignment() * 1.0;
-                    steering_force += cohesion() * 1.0;
-                    std::cout << "Calculating group behavior\n"
-                              << "Force: " << steering_force.Y << ", " << steering_force.X << '\n';
-                }
-
-                m_vehicle_velocity += steering_force;
-
-                // Convert ksVector2D to a ksPathNode
-                if (steering_force.X > 0.1)
-                    m_vehicle_velocity.X = 1;
-                else if (steering_force.X < -0.1)
-                    m_vehicle_velocity.X = -1;
-                if (steering_force.Y > 0.1)
-                    m_vehicle_velocity.Y = 1;
-                else if (steering_force.Y <= -0.1)
-                    m_vehicle_velocity.Y = -1;
-
-                m_next_node.col += m_vehicle_heading.X;
-                m_next_node.row += m_vehicle_heading.Y;
-
-                std::cout << "Next Node: " << m_next_node.row << ", " << m_next_node.col << '\n';
-
-                // Set up the x, y position and other info of the next node.
-                m_next_node = getNodePosition(m_next_node.row, m_next_node.col);
-            }
-            else if (m_wander_path.size() > 0 && m_path_iter != m_wander_path.end())
-            {
-                m_path_iter++;
-                m_next_node = (*m_path_iter);
-            }
-            else
-            {
-                m_path_on = false;
-            }
-            
-            m_tl_delta     = m_next_node.TL - m_current_node.TL;
-            m_tr_delta     = m_next_node.TR - m_current_node.TR;
-            m_bl_delta     = m_next_node.BL - m_current_node.BL;
-            m_br_delta     = m_next_node.BR - m_current_node.BR;
-            m_center_delta = m_next_node.center - m_current_node.center;
-        }
-    }*/
-
-    return m_current_node;
-}
-
 ksVector2D ksComplexBehavior::calculateForce()
 {
     ksVector2D steering_force;
@@ -310,8 +106,6 @@ ksVector2D ksComplexBehavior::calculatePrioritizedForce()
             return m_steering_force;
     }
 
-//    std::cout << "\nObstacle\n";
-
     if (m_evasion)
     {
         steering_force = evade(m_evasion_target) * 1.0;
@@ -320,8 +114,6 @@ ksVector2D ksComplexBehavior::calculatePrioritizedForce()
             return m_steering_force;
     }
     
-//    std::cout << "Evasion\n";
-
     if (m_flee)
     {
         steering_force = flee(m_target) * 1.0;
@@ -330,8 +122,6 @@ ksVector2D ksComplexBehavior::calculatePrioritizedForce()
             return m_steering_force;
     }
     
-//    std::cout << "Flee\n";
-
     if (m_group_on)
     {
         steering_force = separation() * 1.0;
@@ -350,8 +140,6 @@ ksVector2D ksComplexBehavior::calculatePrioritizedForce()
             return m_steering_force;
     }
 
-//    std::cout << "Group\n";
-
     if (m_seek)
     {
         steering_force = seek(m_target) * 1.0;
@@ -359,8 +147,6 @@ ksVector2D ksComplexBehavior::calculatePrioritizedForce()
         if (!accumulateForce(steering_force))
             return m_steering_force;
     }
-
-//    std::cout << "Seek\n";
 
     if (m_arrive)
     {
@@ -370,8 +156,6 @@ ksVector2D ksComplexBehavior::calculatePrioritizedForce()
             return m_steering_force;
     }
 
-//    std::cout << "Arrive\n";
-
     if (m_pursuit)
     {
         steering_force = pursue(m_pursuit_target) * 1.0;
@@ -379,8 +163,6 @@ ksVector2D ksComplexBehavior::calculatePrioritizedForce()
         if (!accumulateForce(steering_force))
             return m_steering_force;
     }
-
-//    std::cout << "Pursuit\n";
 
     return m_steering_force;
 }

@@ -73,6 +73,21 @@ void ksComplex::update()
                 m_center_delta = (*m_path_iter).center - m_current_node.center;
             }
         }
+        else if (m_loop_path)
+        {
+            // Reverse the list of path nodes.     
+            m_path.reverse();
+
+            m_path_iter = m_path.begin();
+            m_current_node = (*m_path_iter);
+            m_path_iter++;
+
+            m_tl_delta = (*m_path_iter).TL - m_current_node.TL;
+            m_tr_delta = (*m_path_iter).TR - m_current_node.TR;
+            m_bl_delta = (*m_path_iter).BL - m_current_node.BL;
+            m_br_delta = (*m_path_iter).BR - m_current_node.BR;
+            m_center_delta = (*m_path_iter).center - m_current_node.center;
+        }
     }
     else
     {
@@ -123,7 +138,8 @@ void ksComplex::update()
 ********************************************************/
 void ksComplex::move(int row, int col, bool loop)
 {
-    m_path_on = true;
+    m_path_on   = true;
+    m_loop_path = loop;
     m_path      = m_path_finder->calculatePath(this, row, col);
     m_path_iter = m_path.begin();
     m_current_node = (*m_path_iter);

@@ -186,24 +186,8 @@ void ksPathFinder::findAdjacentNodes(ksPathNode current,
         adjacent.push_back(left);
     }
 
-    int max_row = 0;
-    int max_col = 0;
-
-    if (m_wall == TOP || m_wall == BOTTOM)
-    {
-        max_row = m_world->getDepth();
-        max_col = m_world->getWidth();
-    }
-    else if (m_wall == LEFT || m_wall == RIGHT)
-    {
-        max_row = m_world->getHeight();
-        max_col = m_world->getDepth();
-    }
-    else
-    {
-        max_row = m_world->getHeight();
-        max_col = m_world->getWidth();
-    }
+    int max_row = m_world->getWallMaxRow(m_entity->getWall());
+    int max_col = m_world->getWallMaxCol(m_entity->getWall());
 
     // Bottom
     if ((current.row + 1) < max_row && m_world->getTileEvent(m_wall, current.row + 1, current.col) == 0)
