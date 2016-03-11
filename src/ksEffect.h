@@ -48,10 +48,10 @@ class ksEffect : public sf::Drawable, public sf::Transformable
         std::map<int, sf::Color> m_first;
         std::map<int, sf::Color> m_second;
         int                      m_number_of_lights;
-        int                      m_current_color;
+        //int                      m_current_color;
         int                      m_first_duration;
         int                      m_second_duration;
-        int                      m_current_frame;
+        //int                      m_current_frame;
 };
 
 #endif

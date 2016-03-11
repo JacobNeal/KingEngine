@@ -20,6 +20,7 @@ ksApplication::ksApplication()
     m_control_layer("images/portal_obj.png"), m_mouse_released(false)
 {
 	m_window.setFramerateLimit(FRAMERATE);
+    m_font.loadFromFile("images/minecraft.ttf");
 }
 
 /*********************************************************
@@ -28,13 +29,14 @@ ksApplication::ksApplication()
 *   Initialize the application to the width, height and
 *   application title passed.
 *********************************************************/
-ksApplication::ksApplication(char * app_title, int app_width, int app_height)
-	: m_window(sf::VideoMode(app_width, app_height, 32), app_title),
+ksApplication::ksApplication(std::string app_title, int app_width, int app_height)
+	: m_window(sf::VideoMode(app_width, app_height, 32), app_title.c_str()),
 	m_world("images/voltor_interior.png"), m_camera_depth(0), 
     m_entity_layer(&m_world, "images/default.png"), 
     m_control_layer("images/portal_obj.png"), m_mouse_released(false)
 {
 	m_window.setFramerateLimit(FRAMERATE);
+    m_font.loadFromFile("images/minecraft.ttf");
 }
 
 /*********************************************************
@@ -53,6 +55,13 @@ bool ksApplication::isOpen()
     m_window.setView(m_window.getDefaultView());
 	m_entity_layer.drawLayer(m_window);
 	m_control_layer.drawLayer(m_window);
+    
+    for (std::map<std::string, sf::Text>::iterator iter = m_text_layer.begin();
+         iter != m_text_layer.end(); iter++)
+    {
+        m_window.draw(iter->second);
+    }
+
     m_window.display();
 
 	m_entity_layer.depressEntity();
@@ -67,16 +76,6 @@ bool ksApplication::isOpen()
 	{
 		if (m_evt.type == sf::Event::KeyPressed)
 		{
-            if (m_evt.key.code == ksKey::A)
-            {
-                m_world_view.rotate(-5);
-                m_entity_layer.rotate(5);
-            }
-            else if (m_evt.key.code == ksKey::D)
-            {
-                m_world_view.rotate(5);
-                m_entity_layer.rotate(-5);
-            }
 			for (std::map<ksKey::Key, bool>::iterator it = m_key_down.begin();
 				it != m_key_down.end(); ++it)
 			{
@@ -300,11 +299,42 @@ void ksApplication::toggleWorldLighting()
 void ksApplication::toggleWorld2D(ksWorldWall wall)
 {
     m_world.toggle2D(wall);
+    m_entity_layer.toggle2D(FRONT);
 }
 
 void ksApplication::toggleWorld3D()
 {
     m_world.toggle3D();
+    m_entity_layer.toggle2D(BOTTOM);
+}
+
+void ksApplication::rotateWorldLeft()
+{
+    m_world.rotateLeft();
+}
+
+void ksApplication::rotateWorldRight()
+{
+    m_world.rotateRight();
+}
+
+void ksApplication::insertText(double x, double y, std::string name, 
+                               std::string text, int size, ksColor color)
+{
+    m_text_layer.insert(std::pair<std::string, sf::Text>(name, sf::Text(text, m_font)));
+    m_text_layer[name].setPosition(x, y);
+    m_text_layer[name].setCharacterSize(size);
+    m_text_layer[name].setColor(color);
+}
+
+void ksApplication::setText(std::string name, std::string text)
+{
+    m_text_layer[name].setString(text);
+}
+
+void ksApplication::clearEntities()
+{
+    m_entity_layer.purge();
 }
 
 /*********************************************************
@@ -335,7 +365,7 @@ ksWorld * ksApplication::getWorld()
 *
 *   Set the tilesheet for the base game entity layer.
 *********************************************************/
-void ksApplication::setEntityTilesheet(char * tilesheet)
+void ksApplication::setEntityTilesheet(std::string tilesheet)
 {
 	m_entity_layer.setTilesheet(tilesheet);
 }

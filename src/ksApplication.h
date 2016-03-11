@@ -38,7 +38,7 @@ class ksApplication
 	public:
 		//                    Constructors
 		ksApplication();
-		ksApplication(char * app_title, int app_width, int app_height);
+		ksApplication(std::string app_title, int app_width, int app_height);
 
 		//                    Methods
 		bool                  isOpen();
@@ -59,13 +59,20 @@ class ksApplication
         void                  toggleWorldLighting();
         void                  toggleWorld2D(ksWorldWall wall);
         void                  toggleWorld3D();
-
+        void                  rotateWorldLeft();
+        void                  rotateWorldRight();
+        void                  insertText(double x, double y, 
+                                         std::string name, std::string text,
+                                         int size = 20, ksColor color = ksColor(255, 255, 255));
+        void                  setText(std::string name, std::string text);
+        void                  clearEntities();
+    
         //                    Accessor methods
         int                   getCameraDelta();
         ksWorld *             getWorld();
 
 		//                    Mutators
-		void                  setEntityTilesheet(char * tilesheet);
+		void                  setEntityTilesheet(std::string tilesheet);
         void                  setCameraDelta(int camera_delta);
 
 	private:
@@ -79,6 +86,8 @@ class ksApplication
 		bool                  m_mouse_released;
 		sf::Event             m_evt;
         sf::View              m_world_view;
+        sf::Font              m_font;
+        std::map<std::string, sf::Text> m_text_layer;
 };
 
 #endif

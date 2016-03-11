@@ -55,16 +55,16 @@ class ksEntity
 	protected:
 		//                 Data members
         ksWorld *          m_world;
-        ksPathNode         m_current_node;
         ksWorldWall        m_wall;
+        ksPathNode         m_current_node;
         int                m_width;
         int                m_height;
+		int                m_current_tile;
 		ksRect             m_texture_coord;
 		int                m_upper_tile;
 		int                m_lower_tile;
 		int                m_anim_delay;
 		int                m_frame;
-		int                m_current_tile;
 		bool               m_pressed;
 		bool               m_visible;
 };

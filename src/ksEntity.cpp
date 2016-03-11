@@ -14,10 +14,12 @@
 *	Initialize entity to the position, width, height and 
 *	current tile passed.
 *********************************************************/
-ksEntity::ksEntity(ksWorld * world, ksWorldWall wall, int row, int col, int w, int h, int current_tile)
-    : m_world(world), m_wall(wall), m_width(w), m_height(h), m_current_tile(current_tile), m_frame(0), 
-      m_anim_delay(1), m_lower_tile(current_tile), m_upper_tile(current_tile),
-	  m_pressed(false), m_visible(true)
+ksEntity::ksEntity(ksWorld * world, ksWorldWall wall, 
+                   int row, int col, int w, int h, int current_tile)
+    : m_world(world), m_wall(wall), m_width(w), m_height(h),
+      m_current_tile(current_tile), m_upper_tile(current_tile), 
+      m_lower_tile(current_tile), m_anim_delay(1), m_frame(0), 
+      m_pressed(false), m_visible(true)
 {
 	m_texture_coord.X = (current_tile - (TILE_PER_LINE * (current_tile / TILE_PER_LINE))) * (w * TILE_WIDTH);
 	m_texture_coord.Y = (current_tile / TILE_PER_LINE) * (h * TILE_HEIGHT);

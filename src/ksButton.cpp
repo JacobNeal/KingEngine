@@ -14,13 +14,112 @@
 *   of the control to the passed x and y.
 ********************************************************/
 //ksButton::ksButton(sf::Font * font, std::string text, double x, double y)
-ksButton::ksButton(double x, double y)
+ksButton::ksButton(double x, double y, std::string text, double w, double h)
     : /*m_text(text, font, 12),*/ m_position(x, y), m_width(96.0), m_height(32.0), 
-    m_pressed(false), m_visible(true)
+    m_pressed(false)
 {
-    m_array.setPrimitiveType(sf::Quads);
+    m_array.setPrimitiveType(sf::Triangles);
 
-    m_array.append(sf::Vertex(sf::Vector2f(x - BUTTON_SHADOW_OFFSET,
+    double top_left_x     = x - (w / 2);
+    double top_left_y     = y - (h / 2);
+
+    double top_right_x    = x + (w / 2);
+    double top_right_y    = top_left_y;
+
+    double bottom_right_x = top_right_x;
+    double bottom_right_y = y + (h / 2);
+
+    double bottom_left_x  = top_left_x;
+    double bottom_left_y  = bottom_right_y;
+
+    double border_width   = 5;
+    double border_radius  = w * 0.05;
+
+    sf::Vector2f points[16];
+    sf::Color color(0, 0, 0, 75);
+
+    points[0]  = sf::Vector2f(top_left_x, top_left_y + border_radius);
+    points[1]  = sf::Vector2f(top_left_x + border_radius, top_left_y);
+    points[2]  = sf::Vector2f(top_left_x + border_radius, top_left_y + border_width);
+    points[3]  = sf::Vector2f(top_left_x + border_width, top_left_y + border_radius);
+    points[4]  = sf::Vector2f(top_right_x - border_radius, top_right_y);
+    points[5]  = sf::Vector2f(top_right_x, top_right_y + border_radius);
+    points[6]  = sf::Vector2f(top_right_x - border_width, top_right_y + border_radius);
+    points[7]  = sf::Vector2f(top_right_x - border_radius, top_right_y + border_width);
+    points[8]  = sf::Vector2f(bottom_right_x - border_width, bottom_right_y - border_radius);
+    points[9]  = sf::Vector2f(bottom_right_x, bottom_right_y - border_radius);
+    points[10] = sf::Vector2f(bottom_right_x - border_radius, bottom_right_y);
+    points[11] = sf::Vector2f(bottom_right_x - border_radius, bottom_right_y - border_width);
+    points[12] = sf::Vector2f(bottom_left_x, bottom_left_y - border_radius);
+    points[13] = sf::Vector2f(bottom_left_x + border_width, bottom_left_y - border_radius);
+    points[14] = sf::Vector2f(bottom_left_x + border_radius, bottom_left_y - border_width);
+    points[15] = sf::Vector2f(bottom_left_x + border_radius, bottom_left_y);
+
+    m_array.append(sf::Vertex(points[0], color));
+    m_array.append(sf::Vertex(points[1], color));
+    m_array.append(sf::Vertex(points[3], color));
+
+    m_array.append(sf::Vertex(points[3], color));
+    m_array.append(sf::Vertex(points[1], color));
+    m_array.append(sf::Vertex(points[2], color));
+
+    m_array.append(sf::Vertex(points[1], color));
+    m_array.append(sf::Vertex(points[4], color));
+    m_array.append(sf::Vertex(points[7], color));
+    
+    m_array.append(sf::Vertex(points[2], color));
+    m_array.append(sf::Vertex(points[1], color));
+    m_array.append(sf::Vertex(points[7], color));
+
+    m_array.append(sf::Vertex(points[4], color));
+    m_array.append(sf::Vertex(points[5], color));
+    m_array.append(sf::Vertex(points[7], color));
+
+    m_array.append(sf::Vertex(points[6], color));
+    m_array.append(sf::Vertex(points[5], color));
+    m_array.append(sf::Vertex(points[7], color));
+
+    m_array.append(sf::Vertex(points[6], color));
+    m_array.append(sf::Vertex(points[5], color));
+    m_array.append(sf::Vertex(points[9], color));
+
+    m_array.append(sf::Vertex(points[6], color));
+    m_array.append(sf::Vertex(points[8], color));
+    m_array.append(sf::Vertex(points[9], color));
+
+    m_array.append(sf::Vertex(points[8], color));
+    m_array.append(sf::Vertex(points[9], color));
+    m_array.append(sf::Vertex(points[11], color));
+
+    m_array.append(sf::Vertex(points[9], color));
+    m_array.append(sf::Vertex(points[10], color));
+    m_array.append(sf::Vertex(points[11], color));
+
+    m_array.append(sf::Vertex(points[10], color));
+    m_array.append(sf::Vertex(points[11], color));
+    m_array.append(sf::Vertex(points[15], color));
+
+    m_array.append(sf::Vertex(points[14], color));
+    m_array.append(sf::Vertex(points[11], color));
+    m_array.append(sf::Vertex(points[15], color));
+
+    m_array.append(sf::Vertex(points[13], color));
+    m_array.append(sf::Vertex(points[14], color));
+    m_array.append(sf::Vertex(points[15], color));
+
+    m_array.append(sf::Vertex(points[12], color));
+    m_array.append(sf::Vertex(points[13], color));
+    m_array.append(sf::Vertex(points[15], color));
+
+    m_array.append(sf::Vertex(points[0], color));
+    m_array.append(sf::Vertex(points[3], color));
+    m_array.append(sf::Vertex(points[15], color));
+
+    m_array.append(sf::Vertex(points[0], color));
+    m_array.append(sf::Vertex(points[12], color));
+    m_array.append(sf::Vertex(points[13], color));
+
+    /*m_array.append(sf::Vertex(sf::Vector2f(x - BUTTON_SHADOW_OFFSET,
                                            y + BUTTON_SHADOW_OFFSET), 
                                            sf::Color(50, 50, 50)));
     m_array.append(sf::Vertex(sf::Vector2f(x - BUTTON_SHADOW_OFFSET + m_width, 
@@ -37,6 +136,7 @@ ksButton::ksButton(double x, double y)
     m_array.append(sf::Vertex(sf::Vector2f(x + m_width, y), sf::Color(100, 100, 100)));
     m_array.append(sf::Vertex(sf::Vector2f(x + m_width, y + m_height), sf::Color(100, 100, 100)));
     m_array.append(sf::Vertex(sf::Vector2f(x, y + m_height), sf::Color(100, 100, 100)));
+    */
 
     //m_text.setPosition(x, y);
 }
@@ -101,13 +201,9 @@ bool ksButton::pressed(int mouse_x, int mouse_y)
         mouse_y <= (m_position.Y + m_height))
     {
         m_pressed = true;
-
-        // Invert colors of button (pop effect)
-        for (int count = 0; count < 4; ++count)
-            m_array[count].color = sf::Color(100, 100, 100);
-
-        for (int count = 4; count < 8; ++count)
-            m_array[count].color = sf::Color(50, 50, 50);
+    
+        for (int count = 0; count < m_array.getVertexCount(); ++count)
+            m_array[count].color = sf::Color(0, 0, 0, 255);
     }
     
     return m_pressed;
@@ -147,18 +243,12 @@ void ksButton::popEffect()
 {
     if (!m_pressed)
     {
-        for (int count = 0; count < 4; ++count)
-            m_array[count].color = sf::Color(50, 50, 50);
-
-        for (int count = 4; count < 8; ++count)
-            m_array[count].color = sf::Color(100, 100, 100);
+        for (int count = 0; count < m_array.getVertexCount(); ++count)
+            m_array[count].color = sf::Color(0, 0, 0, 75);
     }
     else
     {
-        for (int count = 0; count < 4; ++count)
-            m_array[count].color = sf::Color(100, 100, 100);
-        
-        for (int count = 4; count < 8; ++count)
-            m_array[count].color = sf::Color(50, 50, 50);
+        for (int count = 0; count < m_array.getVertexCount(); ++count)
+            m_array[count].color = sf::Color(0, 0, 0, 255);
     }
 }

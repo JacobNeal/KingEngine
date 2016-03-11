@@ -37,17 +37,25 @@ class ksComplex : public ksEntity
         //                              Methods
         virtual void                    update();
         void                            move(int row, int col, bool loop = false);
-        void                            seek(int row, int col);
-        void                            flee(int row, int col, int range);
+        void                            seek(ksVector2D vect);
+        void                            flee(ksVector2D vect);
+        void                            arrive(ksVector2D vect);
         void                            pursue(ksComplex * entity);
         void                            evade(ksComplex * entity);
+        void                            avoidObstacles();
         void                            addToGroup(ksComplex * entity);
         void                            clearGroup();
         void                            group();
-    
+        void                            tag();
+        void                            untag();
+
         //                              Accessor methods
         ksPathNode                      getNextPathNode();
-        ksVector2D                      getComplexHeading();
+        ksVector2D                      getHeading();
+        ksVector2D                      getVelocity();
+        ksVector2D                      getPosition();
+        ksVector2D                      getSide();
+        bool                            getTag();
 
     protected:
         //                              Data members
@@ -55,11 +63,25 @@ class ksComplex : public ksEntity
         ksComplexBehavior               m_behavior;
         std::list<ksPathNode>           m_path;
         std::list<ksPathNode>::iterator m_path_iter;
+        ksPathNode                      m_current_path_node;
         bool                            m_loop_path;
+        bool                            m_path_on;
+        ksVector2D                      m_tl_delta;
+        ksVector2D                      m_tr_delta;
+        ksVector2D                      m_bl_delta;
+        ksVector2D                      m_br_delta;
+        ksVector2D                      m_center_delta;
         int                             m_start_row;
         int                             m_start_col;
         int                             m_finish_row;
         int                             m_finish_col;
+
+        sf::Clock                       m_elapsed_time;
+        ksVector2D                      m_heading;
+        ksVector2D                      m_velocity;
+        ksVector2D                      m_position;
+        ksVector2D                      m_side;
+        bool                            m_tag;
 };
 
 #endif

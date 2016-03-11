@@ -27,21 +27,36 @@ class ksComplexBehavior
 
         //                  Methods
         ksPathNode          calculate();
-        ksVector2D          seek(int row, int col);
-        ksVector2D          flee(int row, int col);
-        ksPathNode          pursue(ksComplex * pursuit_target);
-        ksPathNode          evade(ksComplex * evasion_target);
+        ksVector2D          calculateForce();
+        ksVector2D          calculatePrioritizedForce();
+        ksVector2D          seek(ksVector2D position);
+        ksVector2D          flee(ksVector2D position);
+        ksVector2D          arrive(ksVector2D position);
+        ksVector2D          pursue(ksComplex * pursuit_target);
+        ksVector2D          offsetPursue(ksComplex * pursuit_target, ksVector2D offset);
+        ksVector2D          evade(ksComplex * evasion_target);
+        ksVector2D          obstacleAvoidance();
         void                move(int row, int col);
         void                addToGroup(ksComplex * entity);
         void                clearGroup();
 
         // Toggle on or off behaviors
-        void                seekOn(int row, int col);
+        void                seekOn(ksVector2D vect);
         void                seekOff();
-        void                fleeOn(int row, int col, int range);
+        void                fleeOn(ksVector2D vect);
         void                fleeOff();
+        void                arriveOn(ksVector2D vect);
+        void                arriveOff();
+        void                pursuitOn(ksComplex * vehicle);
+        void                pursuitOff();
+        void                offsetPursuitOn(ksComplex * vehicle, ksVector2D offset);
+        void                offsetPursuitOff();
+        void                evasionOn(ksComplex * vehicle);
+        void                evasionOff();
         void                groupOn();
         void                groupOff();
+        void                obstacleOn();
+        void                obstacleOff();
 
         //                  Accessor methods
         ksPathNode          getNextPathNode();
@@ -52,7 +67,14 @@ class ksComplexBehavior
         int                 applyColumnBoundaries(int col);
         ksPathNode          getNodePosition(int row, int col);
         void                moveInc(int transition_num);
-        
+        bool                accumulateForce(ksVector2D force);
+        ksVector2D          getPointToLocalSpace(ksVector2D point, ksVector2D heading,
+                                              ksVector2D side, ksVector2D position);
+        ksVector2D          getPointToWorldSpace(ksVector2D point, ksVector2D heading,
+                                                 ksVector2D side, ksVector2D position);
+        ksVector2D          getVectorToWorldSpace(ksVector2D vect, ksVector2D heading,
+                                               ksVector2D side);
+
         //                  Group behavior
         ksVector2D          separation();
         ksVector2D          alignment();
@@ -66,12 +88,19 @@ class ksComplexBehavior
         bool                m_seek;
         bool                m_flee;
         bool                m_pursuit;
+        bool                m_offset_pursuit;
         bool                m_evasion;
         bool                m_group_on;
         bool                m_path_on;
+        bool                m_obstacle;
+        bool                m_arrive;
 
         ksComplex *         m_pursuit_target;
         ksComplex *         m_evasion_target;
+        ksVector2D          m_pursuit_offset;
+        ksVector2D          m_steering_force;
+
+        ksVector2D          m_target;
 
         std::list<ksPathNode> m_wander_path;
         std::list<ksPathNode>::iterator m_path_iter;

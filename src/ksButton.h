@@ -23,7 +23,7 @@ class ksButton : public ksControl
     public:
         //                         Constructors
 //        ksButton(sf::Font * font, std::string text, double x, double y);
-        ksButton(double x, double y);
+        ksButton(double x, double y, std::string text, double w, double h);
 
         //                         Methods
         virtual void               update();
@@ -45,8 +45,6 @@ class ksButton : public ksControl
         double                     m_width;
         double                     m_height;
         bool                       m_pressed;
-        bool                       m_visible;
-        
 };
 
 #endif

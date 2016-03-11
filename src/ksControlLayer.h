@@ -23,7 +23,7 @@ class ksControlLayer : public sf::Drawable, public sf::Transformable
 {
     public:
         //                  Constructors
-        ksControlLayer(char * tilesheet);
+        ksControlLayer(std::string tilesheet);
 
         //                  Methods
         void                addControl(ksControl * control);
@@ -34,7 +34,7 @@ class ksControlLayer : public sf::Drawable, public sf::Transformable
         void                purge();
 
         //                  Mutators
-        bool                setTilesheet(char * tilesheet);
+        bool                setTilesheet(std::string tilesheet);
 
         //                  Accessor Methods
         int                 getCount();

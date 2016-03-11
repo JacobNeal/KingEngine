@@ -17,14 +17,31 @@ ksWorld::ksWorld(std::string tilesheet)
     : m_width(0), m_height(0), m_depth(0), m_inner_x(0), m_inner_y(0), 
       m_num_of_lights(0), m_tilesheet(tilesheet), m_lighting(true), m_2D(false)
 {
-   m_texture.loadFromFile(tilesheet);
-   m_base_color = sf::Color(50, 50, 50);
+    m_texture.loadFromFile(tilesheet);
+    m_base_color = sf::Color(50, 50, 50);
 
-   m_front_tex  = &m_front;
-   m_left_tex   = &m_left;
-   m_right_tex  = &m_right;
-   m_top_tex    = &m_top;
-   m_bottom_tex = &m_bottom;
+    m_front_tex  = &m_front;
+    m_left_tex   = &m_left;
+    m_right_tex  = &m_right;
+    m_top_tex    = &m_top;
+    m_bottom_tex = &m_bottom;
+
+    m_front_cur_evt  = &m_front_evt;
+    m_left_cur_evt   = &m_left_evt;
+    m_right_cur_evt  = &m_right_evt;
+    m_top_cur_evt    = &m_top_evt;
+    m_bottom_cur_evt = &m_bottom_evt;
+    
+    m_front_num_row  = &m_height;
+    m_front_num_col  = &m_width;
+    m_left_num_row   = &m_height;
+    m_left_num_col   = &m_depth;
+    m_right_num_row  = &m_height;
+    m_right_num_col  = &m_depth;
+    m_top_num_row    = &m_depth;
+    m_top_num_col    = &m_width;
+    m_bottom_num_row = &m_depth;
+    m_bottom_num_col = &m_width;
 }
 
 /********************************************************
@@ -43,7 +60,30 @@ ksWorld::ksWorld(std::string tilesheet, int width, int height, int depth)
     m_texture.loadFromFile(tilesheet);
     m_base_color = sf::Color(50, 50, 50);
 
-    //load(m_width, m_height, m_depth);
+    m_front_tex  = &m_front;
+    m_left_tex   = &m_left;
+    m_right_tex  = &m_right;
+    m_top_tex    = &m_top;
+    m_bottom_tex = &m_bottom;
+
+    m_front_cur_evt  = &m_front_evt;
+    m_left_cur_evt   = &m_left_evt;
+    m_right_cur_evt  = &m_right_evt;
+    m_top_cur_evt    = &m_top_evt;
+    m_bottom_cur_evt = &m_bottom_evt;
+    
+    m_front_num_row  = &m_height;
+    m_front_num_col  = &m_width;
+    m_left_num_row   = &m_height;
+    m_left_num_col   = &m_depth;
+    m_right_num_row  = &m_height;
+    m_right_num_col  = &m_depth;
+    m_top_num_row    = &m_depth;
+    m_top_num_col    = &m_width;
+    m_bottom_num_row = &m_depth;
+    m_bottom_num_col = &m_width;
+
+    load(m_width, m_height, m_depth);
 }
 
 /********************************************************
@@ -56,17 +96,6 @@ void ksWorld::load(int width, int height, int depth, std::string name)
     m_width  = width  > 0 ? width  : 1;
     m_height = height > 0 ? height : 1;
     m_depth  = depth  > 0 ? depth  : 0;
-
-    m_front_num_row  = &m_height;
-    m_front_num_col  = &m_width;
-    m_left_num_row   = &m_height;
-    m_left_num_col   = &m_depth;
-    m_right_num_row  = &m_height;
-    m_right_num_col  = &m_depth;
-    m_top_num_row    = &m_depth;
-    m_top_num_col    = &m_width;
-    m_bottom_num_row = &m_depth;
-    m_bottom_num_col = &m_width;
 
     m_array.clear();
 
@@ -391,6 +420,65 @@ void ksWorld::readTiles(std::string name)
 
         map.close();
     }
+
+    /*          Back Side           */
+    map.open(m_map_name + "/_back.ks");
+
+    if (map.is_open())
+    {
+        m_back.resize(m_height);
+        m_back_light.resize(m_height);
+
+        int tile_type = -1;
+    
+        for (int row = 0; row < m_height; ++row)
+        {
+            m_back[row].resize(m_width);
+            m_back_light[row].resize(m_width);
+            
+            for (int col = 0; col < m_width && !map.eof(); ++col)
+            {
+                map >> tile_type;
+
+                int type_x = ((tile_type - (TILE_PER_LINE * (tile_type / TILE_PER_LINE)))
+                               * TILE_WIDTH) / 2;
+                int type_y = ((tile_type / TILE_PER_LINE) * TILE_HEIGHT) / 2;
+                int type_w = TILE_WIDTH / 2;
+                int type_h = TILE_HEIGHT / 2;
+
+                m_back[row][col].TL = ksVector2D(type_x, type_y);
+                m_back[row][col].TR = ksVector2D(type_x + type_w, type_y);
+                m_back[row][col].BR = ksVector2D(type_x + type_w, type_y + type_h);
+                m_back[row][col].BL = ksVector2D(type_x, type_y + type_h);
+            
+                m_back_light[row][col] = 0;
+            }
+        }
+
+        map.close();
+    }
+    
+    /*          Back Side Evt      */
+    map.open(m_map_name + "/_back_evt.ks");
+
+    if (map.is_open())
+    {
+        int temp = 0;
+        m_back_evt.resize(m_height);
+        
+        for (int row = 0; row < m_height; ++row)
+        {
+            m_back_evt[row].resize(m_width);
+
+            for (int col = 0; col < m_width && !map.eof(); ++col)
+            {
+                map >> temp;
+                m_back_evt[row][col] = temp;
+            }
+        }
+
+        map.close();
+    }
 }
 
 /********************************************************
@@ -601,6 +689,9 @@ void ksWorld::addLight(ksVector2D start, ksWorldWall wall, int row, int col,
 
     if (wall == TOP)
     {
+        if (m_depth <= 0)
+            return;
+
         m_top_light[row][col] = 3;
         temp = calculateTopPosition(row, col);
 
@@ -609,6 +700,9 @@ void ksWorld::addLight(ksVector2D start, ksWorldWall wall, int row, int col,
     }
     else if (wall == BOTTOM)
     {
+        if (m_depth <= 0)
+            return;
+        
         m_bottom_light[row][col] = 3;
         
         temp = calculateBottomPosition(row, col);
@@ -617,6 +711,9 @@ void ksWorld::addLight(ksVector2D start, ksWorldWall wall, int row, int col,
     }
     else if (wall == LEFT)
     {
+        if (m_depth <= 0)
+            return;
+        
         for (int outer_row = row - 2; outer_row < (row + 3); ++outer_row)
         {
             for (int outer_col = col - 2; outer_col < (col + 3); ++outer_col)
@@ -653,6 +750,9 @@ void ksWorld::addLight(ksVector2D start, ksWorldWall wall, int row, int col,
     }
     else if (wall == RIGHT)
     {
+        if (m_depth <= 0)
+            return;
+        
         m_right_light[row][col] = 3;
         
         temp = calculateRightPosition(row, col);
@@ -695,36 +795,42 @@ void ksWorld::toggle2D(ksWorldWall wall)
             m_front_tex     = &m_front;
             m_front_num_row = &m_height;
             m_front_num_col = &m_width;
+            m_front_cur_evt = &m_front_evt;
             break;
         
         case LEFT:
             m_front_tex     = &m_left;
             m_front_num_row = &m_height;
             m_front_num_col = &m_depth;
+            m_front_cur_evt = &m_left_evt;
             break;
 
         case RIGHT:
             m_front_tex     = &m_right;
             m_front_num_row = &m_height;
             m_front_num_col = &m_depth;
+            m_front_cur_evt = &m_right_evt;
             break;
 
         case TOP:
             m_front_tex     = &m_top;
             m_front_num_row = &m_depth;
             m_front_num_col = &m_width;
+            m_front_cur_evt = &m_top_evt;
             break;
 
         case BOTTOM:
             m_front_tex     = &m_bottom;
             m_front_num_row = &m_depth;
             m_front_num_col = &m_width;
+            m_front_cur_evt = &m_bottom_evt;
             break;
 
         default:
             m_front_tex     = &m_front;
             m_front_num_row = &m_height;
             m_front_num_col = &m_width;
+            m_front_cur_evt = &m_front_evt;
     }
 
     // Set flag for 2D perspective.
@@ -740,8 +846,67 @@ void ksWorld::toggle3D()
     m_front_tex     = &m_front;
     m_front_num_row = &m_height;
     m_front_num_col = &m_width;
+    m_front_cur_evt = &m_front_evt;
 
     // Set flag for 3D perspective.
+    m_2D = false;
+
+    calculateTilePositions();
+    updateTilePositions();
+    updateTextureCoordinates();
+}
+
+void ksWorld::rotateLeft()
+{
+    m_front_tex      = &m_left;
+    m_front_num_row  = &m_height;
+    m_front_num_col  = &m_depth;
+
+    m_left_tex       = &m_back;
+    m_left_num_row   = &m_height;
+    m_left_num_col   = &m_width;
+
+    m_right_tex      = &m_front;
+    m_right_num_row  = &m_height;
+    m_right_num_col  = &m_width;
+
+    m_top_tex        = &m_top;
+    m_top_num_row    = &m_depth;
+    m_top_num_col    = &m_width;
+
+    m_bottom_tex     = &m_bottom;
+    m_bottom_num_row = &m_depth;
+    m_bottom_num_col = &m_width;
+
+    m_2D = false;
+
+    calculateTilePositions();
+    updateTilePositions();
+    updateTextureCoordinates();
+}
+
+void ksWorld::rotateRight()
+{
+    m_front_tex      = &m_right;
+    m_front_num_row  = &m_height;
+    m_front_num_col  = &m_depth;
+
+    m_left_tex       = &m_front;
+    m_left_num_row   = &m_height;
+    m_left_num_col   = &m_width;
+
+    m_right_tex      = &m_back;
+    m_right_num_row  = &m_height;
+    m_right_num_col  = &m_width;
+
+    m_top_tex        = &m_top;
+    m_top_num_row    = &m_depth;
+    m_top_num_col    = &m_width;
+
+    m_bottom_tex     = &m_bottom;
+    m_bottom_num_row = &m_depth;
+    m_bottom_num_col = &m_width;
+
     m_2D = false;
 
     calculateTilePositions();
@@ -906,7 +1071,7 @@ void ksWorld::assignTextureCoordinates(std::vector<std::vector<ksTile>> * wall,
 *   Returns the position of a tile in the 3D perspective
 *   relative to the passed width, height, and depth.
 ********************************************************/
-const ksTile & ksWorld::getTilePosition(ksWorldWall wall, int row, int col, int width, int height)
+ksTile ksWorld::getTilePosition(ksWorldWall wall, int row, int col, int width, int height)
 {
     ksTile tile;
     
@@ -975,16 +1140,35 @@ int ksWorld::getLightIntensity(ksWorldWall wall, int row, int col)
 
 int ksWorld::getTileEvent(ksWorldWall wall, int row, int col)
 {
-    if (wall == FRONT)
-        return m_front_evt[row][col];
-    else if (wall == BOTTOM)
-        return m_bottom_evt[row][col];
-    else if (wall == LEFT)
-        return m_left_evt[row][col];
-    else if (wall == RIGHT)
-        return m_right_evt[row][col];
-    else
-        return m_top_evt[row][col];
+    int evt;
+
+    switch (wall)
+    {
+        case FRONT:
+            evt = (*m_front_cur_evt)[row][col];
+            break;
+
+        case LEFT:
+            evt = (*m_left_cur_evt)[row][col];
+            break;
+
+        case RIGHT:
+            evt = (*m_right_cur_evt)[row][col];
+            break;
+
+        case TOP:
+            evt = (*m_top_cur_evt)[row][col];
+            break;
+
+        case BOTTOM:
+            evt = (*m_bottom_cur_evt)[row][col];
+            break;
+
+        default:
+            evt = (*m_front_cur_evt)[row][col];
+    }
+
+    return evt;
 }
 
 int ksWorld::getWallMaxRow(ksWorldWall wall)
@@ -993,6 +1177,8 @@ int ksWorld::getWallMaxRow(ksWorldWall wall)
         return m_depth;
     else if (wall == FRONT || wall == LEFT || wall == RIGHT)
         return m_height;
+    
+    return 0;
 }
 
 int ksWorld::getWallMaxCol(ksWorldWall wall)
@@ -1003,4 +1189,6 @@ int ksWorld::getWallMaxCol(ksWorldWall wall)
         return m_depth;
     else if (wall == FRONT)
         return m_width;
+
+    return 0;
 }

@@ -14,9 +14,9 @@
 *   values.
 ********************************************************/
 ksEffect::ksEffect()
-    : m_number_of_lights(0), m_current_color(1),
-      m_first_duration(0), m_second_duration(0),
-      m_current_frame(0)
+    : m_number_of_lights(0), /*m_current_color(1),*/
+      m_first_duration(0), m_second_duration(0)
+      /*m_current_frame(0)*/
 {
     m_array.setPrimitiveType(sf::Triangles);
 }

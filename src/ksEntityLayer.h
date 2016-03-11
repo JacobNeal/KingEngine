@@ -23,7 +23,7 @@ class ksEntityLayer : public sf::Drawable, public sf::Transformable
 {
 	public:
 		//                      Constructors
-		ksEntityLayer(ksWorld * world, char * tilesheet);
+		ksEntityLayer(ksWorld * world, std::string tilesheet);
 		
 		//                      Methods
 		void                    worldLoaded();
@@ -34,10 +34,11 @@ class ksEntityLayer : public sf::Drawable, public sf::Transformable
 		void                    drawLayer(sf::RenderWindow & app);
 		virtual void            draw(sf::RenderTarget & target, sf::RenderStates states) const;
         void                    sortEntitiesByRow();
+        void                    toggle2D(ksWorldWall wall);
 		void                    purge();
 
 		//                      Mutators
-		bool                    setTilesheet(char * tilesheet);
+		bool                    setTilesheet(std::string tilesheet);
 
 		//                      Accessor methods
 		ksRect                  getRect(int entity_number);

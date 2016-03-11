@@ -71,6 +71,8 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         void            toggleLighting();
         void            toggle2D(ksWorldWall wall);
         void            toggle3D();
+        void            rotateLeft();
+        void            rotateRight();
 
         //              New Methods (refactor)
         void            calculateTilePositions();
@@ -89,7 +91,7 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         int             getInnerY() { return m_inner_y; }
         int             getNumberOfLights() { return m_num_of_lights; }
         bool            isWorldLighting() { return m_lighting; }
-        const ksTile &  getTilePosition(ksWorldWall wall, int row, int col, int width, int height);
+        ksTile          getTilePosition(ksWorldWall wall, int row, int col, int width, int height);
         int             getLightIntensity(ksWorldWall wall, int row, int col);
         int             getTileEvent(ksWorldWall wall, int row, int col);
         int             getWallMaxRow(ksWorldWall wall);
@@ -124,12 +126,18 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         int *           m_bottom_num_row;
         int *           m_bottom_num_col;
 
+        std::vector<std::vector<int>> * m_front_cur_evt;
+        std::vector<std::vector<int>> * m_left_cur_evt;
+        std::vector<std::vector<int>> * m_right_cur_evt;
+        std::vector<std::vector<int>> * m_top_cur_evt;
+        std::vector<std::vector<int>> * m_bottom_cur_evt;
 
         std::vector<std::vector<ksTile>> m_top;
         std::vector<std::vector<ksTile>> m_bottom;
         std::vector<std::vector<ksTile>> m_left;
         std::vector<std::vector<ksTile>> m_right;
         std::vector<std::vector<ksTile>> m_front;
+        std::vector<std::vector<ksTile>> m_back;
 
         std::vector<std::vector<ksTile>> m_top_pos;
         std::vector<std::vector<ksTile>> m_bottom_pos;
@@ -148,12 +156,14 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         std::vector<std::vector<int>>    m_left_evt;
         std::vector<std::vector<int>>    m_right_evt;
         std::vector<std::vector<int>>    m_front_evt;
+        std::vector<std::vector<int>>    m_back_evt;
 
         std::vector<std::vector<int>>    m_top_light;
         std::vector<std::vector<int>>    m_bottom_light;
         std::vector<std::vector<int>>    m_left_light;
         std::vector<std::vector<int>>    m_right_light;
         std::vector<std::vector<int>>    m_front_light;
+        std::vector<std::vector<int>>    m_back_light;
         sf::Color                        m_base_color;
 };
 

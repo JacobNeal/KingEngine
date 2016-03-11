@@ -59,4 +59,29 @@ ksVector2D operator+(const ksVector2D & lhs, const ksVector2D & rhs);
 ksVector2D operator/(const ksVector2D & lhs, const ksVector2D & rhs);
 ksVector2D operator/(const ksVector2D & lhs, double val);
 
+inline ksVector2D VecNormalize(const ksVector2D & vect)
+{
+    ksVector2D v = vect;
+
+    double v_length = v.getLength();
+
+    if (v_length > EPSILON)
+    {
+        v.X /= v_length;
+        v.Y /= v_length;
+    }
+
+    return v;
+}
+
+inline double VecDistanceSq(const ksVector2D & vect, 
+                            const ksVector2D & vect2)
+{
+    double y_separation = vect2.Y - vect.Y;
+    double x_separation = vect2.X - vect.X;
+
+    return (y_separation * y_separation) + 
+           (x_separation * x_separation);
+}
+
 #endif

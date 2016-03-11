@@ -13,7 +13,7 @@
 *   Initialize the control and set the texture to the
 *   path of the tilesheet that was passed.
 ********************************************************/
-ksControlLayer::ksControlLayer(char * tilesheet)
+ksControlLayer::ksControlLayer(std::string tilesheet)
     : m_num_of_controls(0), m_pressedControl(nullptr)
 {
    m_texture.loadFromFile(tilesheet);
@@ -115,7 +115,7 @@ void ksControlLayer::purge()
 *   Change the tilesheet that all the controls in the
 *   layer will use.
 ********************************************************/
-bool ksControlLayer::setTilesheet(char * tilesheet)
+bool ksControlLayer::setTilesheet(std::string tilesheet)
 {
     return m_texture.loadFromFile(tilesheet);
 }
