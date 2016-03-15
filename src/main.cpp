@@ -69,6 +69,21 @@ int main()
                 app.setText("entity_count", "Total count: " + std::to_string(entity_num));
             }
         }
+        else if (scenario_mode == 4)
+        {
+            for (int count = 1; count < 9; ++count)
+                entity_list[count]->arrive(entity_list[0]->getTilePosition().center);
+        }
+        else if (scenario_mode == 1)
+        {
+            if (app.getMouseDown())
+            {
+                int row = (int) app.getMousePosition().Y / 32;
+                int col = (int) app.getMousePosition().X / 32;
+
+                entity_list[0]->move(row, col, true);
+            }
+        }
 
         // Get key input
         if (app.getKeyDown(ksKey::Num1))
@@ -201,6 +216,77 @@ int main()
             app.setText("entity_count", "Total count: " + std::to_string(entity_num));
 
             scenario_mode = 3;
+        }
+        else if (app.getKeyDown(ksKey::Num4))
+        {
+            //**************************************************
+            //      Hybrid Scenario
+            //**************************************************
+
+            app.setText("scenario", "Scenario 4");
+            app.setText("scenario_description", "Hyrbid");
+            app.setText("scenario_directions1", "");
+            app.setText("scenario_directions2", "");
+            app.setText("scenario_directions3", "");
+
+            app.clearEntities();
+            entity_list.clear();
+            entity_num = 0;
+
+            app.loadWorld(25, 20, 0, "maps/exterior_2");
+
+            // Create guard
+            entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), FRONT, 
+                        emitter_row, emitter_col, 1, 2, 10));
+
+            app.addEntity(entity_list[entity_num++]);
+
+            entity_list[0]->setAnimationLower(10);
+            entity_list[0]->setAnimationUpper(12);
+            entity_list[0]->setAnimationDelay(45);
+
+            entity_list[0]->move(12, 2, true);
+
+            std::vector<ksEntity *> flowers;
+
+            int current_flower = 0;
+
+            for (int x = 0; x < 25; ++x)
+            {
+                for (int y = 0; y < 20; ++y)
+                {
+                    if ((x % 3 == 0) && (y % 5 == 0))
+                    {
+                        flowers.push_back(new ksEntity(app.getWorld(), FRONT, y, x, 1, 1, 31));
+                        flowers[current_flower]->setAnimationLower(31);
+                        flowers[current_flower]->setAnimationUpper(32);
+                        flowers[current_flower]->setAnimationDelay(60);
+                        app.addEntity(flowers[current_flower++]);
+                    }
+                }
+            }
+
+            for (int count = 1; count < 9; ++count)
+            {
+                entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), FRONT, 
+                            emitter_row, emitter_col, 1, 1, 45));
+                app.addEntity(entity_list[entity_num++]);
+            }
+            
+            for (int count = 0; count < entity_num; ++count)
+            {
+                for (int count2 = 0; count2 < entity_num; ++count2)
+                {
+                    entity_list[count]->addToGroup(entity_list[count2]);
+                }
+                entity_list[count]->group();
+                entity_list[count]->avoidObstacles();
+            }
+
+            // Update total entity count text
+            app.setText("entity_count", "Total count: " + std::to_string(entity_num));
+
+            scenario_mode = 4;
         }
     }
 

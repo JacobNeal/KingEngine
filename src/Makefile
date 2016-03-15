@@ -1,11 +1,12 @@
-CXX = clang++
+#CXX = clang++
+CXX = g++
 SFML = -framework sfml-window -framework sfml-graphics -framework sfml-system
 LUA = -I/usr/local/Cellular/lua51/5.1.5_3/include -L/usr/local/Cellular/lua51/5.1.5_3/lib -lua
 BOOST = -I/usr/local/Cellular/boost/1.60.0/include -L/usr/local/Cellular/boost/1.60.0/lib -boost
 LUABIND = -I/usr/local/Cellular/luabind/0.9.1_1/include -L/usr/local/Cellular/luabind/0.9.1_1/lib -luabind
 
 # You may instead want to change to -std=c++0x instead of -std=c++11 for older compiler
-CXXFLAGS = -Wall -c -std=c++11
+CXXFLAGS = -Wall -c -std=c++11 -ggdb
 LDFLAGS = $(SFML)
 EXE = KingEngine
 

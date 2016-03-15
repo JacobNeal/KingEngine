@@ -295,7 +295,7 @@ ksVector2D ksComplexBehavior::evade(ksComplex * evasion_target)
 
     // Only consider pursuers if they are within
     // the threat range.
-    double threat_range = 100.0;
+    double threat_range = 200.0;//100.0;
 
     if (to_pursuer.getLengthSq() > threat_range * threat_range)
         return ksVector2D(0, 0);
