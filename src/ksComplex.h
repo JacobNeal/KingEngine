@@ -56,6 +56,7 @@ class ksComplex : public ksEntity
         ksVector2D                      getPosition();
         ksVector2D                      getSide();
         bool                            getTag();
+        int                             getBoundingRadius();
 
     protected:
         //                              Data members
@@ -75,6 +76,7 @@ class ksComplex : public ksEntity
         int                             m_start_col;
         int                             m_finish_row;
         int                             m_finish_col;
+        int                             m_bounding_radius;
 
         sf::Clock                       m_elapsed_time;
         ksVector2D                      m_heading;

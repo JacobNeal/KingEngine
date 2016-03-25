@@ -50,7 +50,7 @@ ksVector2D ksComplexBehavior::calculateForce()
 
             ksVector2D to = entity->getPosition() - m_vehicle->getPosition();
 
-            double range = 50 + 16; // 50 (view distance) + entity->bounding radius
+            double range = 50 + entity->getBoundingRadius(); // 50 (view distance) + entity->bounding radius
 
             if ((entity != m_vehicle) && (to.getLengthSq() < range * range))
                 entity->tag();
@@ -103,7 +103,7 @@ ksVector2D ksComplexBehavior::calculatePrioritizedForce()
 
         ksVector2D to = entity->getPosition() - m_vehicle->getPosition();
 
-        double range = 50 + 16; // 50 (view distance) + entity->bounding radius
+        double range = 50 + entity->getBoundingRadius(); // 50 (view distance) + entity->bounding radius
 
         if ((entity != m_vehicle) && (to.getLengthSq() < range * range))
             entity->tag();
@@ -327,7 +327,7 @@ ksVector2D ksComplexBehavior::obstacleAvoidance()
 
         ksVector2D to = entity->getPosition() - m_vehicle->getPosition();
 
-        double range = detection_length + 16; // detection_length + entity->bounding radius
+        double range = detection_length + entity->getBoundingRadius(); // detection_length + entity->bounding radius
 
         if ((entity != m_vehicle) && (to.getLengthSq() < range * range))
             entity->tag();
@@ -349,7 +349,9 @@ ksVector2D ksComplexBehavior::obstacleAvoidance()
                                                      m_vehicle->getPosition());
             if (local_pos.X >= 0)
             {
-                double expanded_radius = 16 + 16; // entity->bounding radius + m_vehicle->bounding radius
+                // entity->bounding radius + m_vehicle->bounding radius
+                double expanded_radius = entity->getBoundingRadius() + 
+                                         m_vehicle->getBoundingRadius(); 
 
                 if (fabs(local_pos.Y) < expanded_radius)
                 {
@@ -380,12 +382,14 @@ ksVector2D ksComplexBehavior::obstacleAvoidance()
         double multiplier = 1.0 + (detection_length - local_pos_closest.X) / detection_length;
 
         // (closest_obstacle->bounding radius - local_pos_closest.Y) * mutiplier
-        steering_force.Y = (16 - local_pos_closest.Y) * multiplier;
+        steering_force.Y = (closest_obstacle->getBoundingRadius() - local_pos_closest.Y) * 
+                            multiplier;
 
         double braking_weight = 0.2;
 
         // (closest_obstacle->bounding radius - local_pos_closest.X) * braking_weight
-        steering_force.X = (16 - local_pos_closest.X) * braking_weight;
+        steering_force.X = (closest_obstacle->getBoundingRadius() - local_pos_closest.X) * 
+                            braking_weight;
     }
 
     return getVectorToWorldSpace(steering_force, m_vehicle->getHeading(), m_vehicle->getSide());

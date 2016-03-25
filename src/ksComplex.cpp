@@ -20,7 +20,8 @@ ksComplex::ksComplex(ksPathFinder * path_finder, ksWorld * world, ksWorldWall wa
                      ksEntity(world, wall, row, col, w, h, current_tile),
                      m_behavior(path_finder, world, this),
                      m_loop_path(false), m_path_on(false), m_start_row(row), m_start_col(col), 
-                     m_finish_row(0), m_finish_col(0), m_tag(false)
+                     m_finish_row(0), m_finish_col(0), m_bounding_radius((w * TILE_WIDTH) / 2),
+                     m_tag(false)
 {
     m_path_finder = path_finder;
 
@@ -287,3 +288,7 @@ bool ksComplex::getTag()
     return m_tag;
 }
 
+int ksComplex::getBoundingRadius()
+{
+    return m_bounding_radius;
+}
