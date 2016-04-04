@@ -1,12 +1,10 @@
---------------------------KingEngine--------------------------
+# KingEngine
 
-New Features:
+<b>Description:</b>
+2D and limited 3D perspective game engine created with C++ / SFML and scripted game content through Lua.
 
-Currently adding in a limited 3D perspective that allows you
-to view walls in front of you, above you, below you, and to
-the left and right of you.
-
-Example:
+Example of the limited 3D perspective that allows you to view walls in front of you,
+above you, below you, and to the left and right:
         __________________
        |\                /|
        | \ ____________ / |
@@ -19,9 +17,15 @@ Example:
 
 This feature is currently still experimental.
 
+<b>Technologies</b>
+C++, SFML and the Lua scripting language.
+
+<b>Screenshots:</b>
+
+
 --------------------------------------------------------------
 
-Engine Outline:
+<b>Engine Outline:</b>
 
 ksApplication
     ksWorld
