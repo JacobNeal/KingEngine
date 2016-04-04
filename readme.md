@@ -42,7 +42,7 @@ For years I've wanted to program my own 2D game engine with a complete top-down 
 Currently you can contact me at jacob.neal@oit.edu for suggestions on future changes or additions you'd like to
 see in the engine. This is currently my own individual project, but if you'd like to be added as a contributor just reach out to me.<br />
 
-Feedback is always welcome.<br />
+<i>Feedback is always welcome.</i><br />
 
 <b>License:</b><br />
 The MIT License (MIT)<br />
