@@ -1,4 +1,4 @@
-![alt text](src/images/KingEngineLogo.png)
+![alt text](src/images/KingEngineLogo.png)<br />
 
 <b>Description:</b><br />
 A 2D and limited 3D perspective game engine created with C++ / SFML and scripted game content through Lua. This project
@@ -11,6 +11,22 @@ The 3D perspective is still experimental and limited in camera angle, though the
 C++, SFML and the Lua scripting language.
 
 <b>Screenshots:</b><br />
+<i>KingTravel AI Demo screenshots:</i><br /><br />
+![alt text](src/images/KingTravelDemo_1.png)<br />
+Opening 3D perspective splash screen for the KingTravel Demo.<br />
+
+![alt text](src/images/KingTravelDemo_2.png)<br />
+Demonstration of A* pathfinding algorithm.<br />
+In this shot the guard is navigating the puzzle on his own using this algorithm.<br />
+
+![alt text](src/images/KingTravelDemo_3.png)<br />
+Demonstration of Flocking algorithm for group steering behaviors.<br />
+Every wolf in this large pack is actively trying to stay separated from one another,
+aligned with one another, while still staying cohesive with the larger group as they chase after my cursor.<br />
+
+![alt text](src/images/KingTravelDemo_4.png)<br />
+Demonstration of individual steering behaviors for autonomous movement.<br />
+The fox is actively pursuing the future position of the rabbit, while the rabbit evades the future position of the fox.<br />
 
 <b>Installation:</b><br />
 <i>Note: SFML is available under the lib folder of this project. You may need to pull a new version from: https://github.com/SFML/SFML</i><br /><br />
@@ -26,7 +42,7 @@ For years I've wanted to program my own 2D game engine with a complete top-down 
 Currently you can contact me at jacob.neal@oit.edu for suggestions on future changes or additions you'd like to
 see in the engine. This is currently my own individual project, but if you'd like to be added as a contributor just reach out to me.<br />
 
-Feedback is always welcome.<br />
+<i>Feedback is always welcome.</i><br />
 
 <b>License:</b><br />
 The MIT License (MIT)<br />
