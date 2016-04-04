@@ -17,11 +17,12 @@ Opening 3D perspective splash screen for the KingTravel Demo.<br />
 
 ![alt text](src/images/KingTravelDemo_2.png)<br />
 Demonstration of A* pathfinding algorithm.<br />
+In this shot the guard is navigating the puzzle on his own using this algorithm.<br />
 
 ![alt text](src/images/KingTravelDemo_3.png)<br />
 Demonstration of Flocking algorithm for group steering behaviors.<br />
 Every wolf in this large pack is actively trying to stay separated from one another,
-aligned with one another, and stay cohesive with the larger group while chasing after my cursor.<br />
+aligned with one another, while still staying cohesive with the larger group as they chase after my cursor.<br />
 
 ![alt text](src/images/KingTravelDemo_4.png)<br />
 Demonstration of individual steering behaviors for autonomous movement.<br />
