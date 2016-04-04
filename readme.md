@@ -10,7 +10,7 @@ The 3D perspective is still experimental and limited in camera angle, though the
 
 ###<b>Technologies:</b><br />
 ---
-C++, SFML and the Lua scripting language.
+C++, SFML and the Lua scripting language.<br /><br />
 
 ###<b>Screenshots:</b><br />
 ---
