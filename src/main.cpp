@@ -4,7 +4,7 @@
 
 int main()
 {
-	ksApplication app("Regime", 800, 640);
+	ksApplication app("KingTravel", 800, 640);
 	app.setEntityTilesheet("images/voltor_interior.png");
 
     app.insertText(50, 50, "title", "KingTravel", 30, ksColor(0, 0, 0, 100));
