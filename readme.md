@@ -36,7 +36,7 @@ The fox is actively pursuing the future position of the rabbit, while the rabbit
 <i>Note: SFML is available under the lib folder of this project. You may need to pull a new version from: https://github.com/SFML/SFML</i><br /><br />
 1. Modify Makefile by changing the SFML flag to link to your local SFML/lib folder.<br /><br />
 2. Change the CXX flag of the Makefile to match a compiler you have installed. (If you don't use g++)<br /><br />
-3. Navigate to the src file and run "make".<br /><br />
+3. Navigate to the src folder and run "make".<br /><br />
 4. Run <i>KingEngine</i> executable.<br />
 
 <b>Inspiration:</b><br />
