@@ -11,6 +11,10 @@ The 3D perspective is still experimental and limited in camera angle, though the
 C++, SFML and the Lua scripting language.
 
 <b>Screenshots:</b><br />
+<i>KingEngine Particle Engine:</i></br /><br />
+![alt text](src/images/KingEngine_particle_engine.gif)<br />
+Demonstration of the particle engine, lighting system and map generation.<br />
+
 <i>KingTravel AI Demo screenshots:</i><br /><br />
 ![alt text](src/images/KingTravelDemo_1.png)<br />
 Opening 3D perspective splash screen for the KingTravel Demo.<br />
