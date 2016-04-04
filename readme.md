@@ -8,7 +8,7 @@ Craig Reynold's Flocking algorithm to simulate group and individual steering beh
 
 The 3D perspective is still experimental and limited in camera angle, though the KingTravel demo contains an opening splash screen in the 3D view.
 
-###<b>Technologies</b><br />
+###<b>Technologies:</b><br />
 ---
 C++, SFML and the Lua scripting language.
 
