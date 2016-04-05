@@ -1,4 +1,4 @@
-![alt text](src/images/KingEngineLogo.png)<br />
+![alt text](../src/images/KingEngineLogo.png)<br />
 
 ###<b>Description:</b><br />
 ---
@@ -15,22 +15,22 @@ C++, SFML and the Lua scripting language.<br /><br />
 ###<b>Screenshots:</b><br />
 ---
 ####Demonstration of the particle engine, lighting system and map generation.<br />
-![alt text](src/images/KingEngine_particle_engine.gif)<br />
+![alt text](../src/images/KingEngine_particle_engine.gif)<br />
 
 ####Opening 3D perspective splash screen for the KingTravel Demo.<br />
-![alt text](src/images/KingTravelDemo_1.png)<br />
+![alt text](../src/images/KingTravelDemo_1.png)<br />
 
 ####Demonstration of A* pathfinding algorithm.<br />
-![alt text](src/images/KingTravelDemo_2.png)<br />
+![alt text](../src/images/KingTravelDemo_2.png)<br />
 In this shot the guard is navigating the puzzle on his own using this algorithm.<br />
 
 ####Demonstration of Flocking algorithm for group steering behaviors.<br />
-![alt text](src/images/KingTravelDemo_3.png)<br />
+![alt text](../src/images/KingTravelDemo_3.png)<br />
 Every wolf in this large pack is actively trying to stay separated from one another,
 aligned with one another, while still staying cohesive with the larger group as they chase after my cursor.<br />
 
 ####Demonstration of individual steering behaviors for autonomous movement.<br />
-![alt text](src/images/KingTravelDemo_4.png)<br />
+![alt text](../src/images/KingTravelDemo_4.png)<br />
 The fox is actively pursuing the future position of the rabbit, while the rabbit evades the future position of the fox.<br />
 
 ###<b>Installation:</b><br />
