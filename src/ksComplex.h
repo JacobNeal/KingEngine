@@ -31,7 +31,7 @@ class ksComplex : public ksEntity
 {
     public:
         //                              Constructors
-        ksComplex(ksPathFinder * path_finder, ksWorld * world, ksWorldWall wall, int row, int col, 
+        ksComplex(ksPathFinder * path_finder, ksWorld * world, int x, int y, int z, 
                   int w, int h, int current_tile);
 
         //                              Methods

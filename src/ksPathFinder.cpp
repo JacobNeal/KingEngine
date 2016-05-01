@@ -32,13 +32,13 @@ std::list<ksPathNode> ksPathFinder::calculatePath(ksEntity * entity, int finish_
     std::list<ksPathNode>::iterator iter;
     std::list<ksPathNode> navigated_nodes;
     
-    m_wall = entity->getWall();
     m_entity = entity;
 
-    current_node = createPathNode(entity->getRow(), entity->getColumn());
+    current_node = createPathNode((int) entity->Y() / TILE_WIDTH,
+                                  (int) entity->X() / TILE_WIDTH);
     
     // If the end goal isn't reachable, don't even try.
-    if (m_world->getTileEvent(m_wall, finish_row, finish_col) != 0)
+    if (m_world->getTileEvent(BOTTOM, finish_row, finish_col) != 0)
     {
         navigated_nodes.push_back(current_node);
         return navigated_nodes;
@@ -167,7 +167,7 @@ void ksPathFinder::findAdjacentNodes(ksPathNode current,
         std::vector<ksPathNode> & adjacent)
 {
     // Top
-    if ((current.row - 1) >= 0 && m_world->getTileEvent(m_wall, current.row - 1, current.col) == 0)
+    if ((current.row - 1) >= 0 && m_world->getTileEvent(BOTTOM, current.row - 1, current.col) == 0)
     {
         ksPathNode top = createPathNode(current.row - 1, current.col);
         top.parent  = new ksPathNode(current);
@@ -177,7 +177,7 @@ void ksPathFinder::findAdjacentNodes(ksPathNode current,
     }
 
     // Left
-    if ((current.col - 1) >= 0 && m_world->getTileEvent(m_wall, current.row, current.col - 1) == 0)
+    if ((current.col - 1) >= 0 && m_world->getTileEvent(BOTTOM, current.row, current.col - 1) == 0)
     {
         ksPathNode left = createPathNode(current.row, current.col - 1);
         left.parent  = new ksPathNode(current);
@@ -186,11 +186,11 @@ void ksPathFinder::findAdjacentNodes(ksPathNode current,
         adjacent.push_back(left);
     }
 
-    int max_row = m_world->getWallMaxRow(m_entity->getWall());
-    int max_col = m_world->getWallMaxCol(m_entity->getWall());
+    int max_row = m_world->getWallMaxRow(BOTTOM);
+    int max_col = m_world->getWallMaxCol(BOTTOM);
 
     // Bottom
-    if ((current.row + 1) < max_row && m_world->getTileEvent(m_wall, current.row + 1, current.col) == 0)
+    if ((current.row + 1) < max_row && m_world->getTileEvent(BOTTOM, current.row + 1, current.col) == 0)
     {
         ksPathNode bottom = createPathNode(current.row + 1, current.col);
         bottom.parent  = new ksPathNode(current);
@@ -200,7 +200,7 @@ void ksPathFinder::findAdjacentNodes(ksPathNode current,
     }
         
     // Right
-    if ((current.col + 1) < max_col && m_world->getTileEvent(m_wall, current.row, current.col + 1) == 0)
+    if ((current.col + 1) < max_col && m_world->getTileEvent(BOTTOM, current.row, current.col + 1) == 0)
     {
         ksPathNode right = createPathNode(current.row, current.col + 1);
         right.parent  = new ksPathNode(current);
@@ -261,16 +261,28 @@ bool ksPathFinder::foundInOpen(ksPathNode current)
 ksPathNode ksPathFinder::createPathNode(int row, int col)
 {
     ksPathNode node;
-    ksTile temp = m_world->getTilePosition(m_entity->getWall(), row, col,
-                                           m_entity->getWidth(),
-                                           m_entity->getHeight());
 
-    node.TL       = temp.TL;
-    node.TR       = temp.TR;
-    node.BL       = temp.BL;
-    node.BR       = temp.BR;
-    node.center.X = temp.TL.X + ((temp.TR.X - temp.TL.X) / 2);
-    node.center.Y = temp.TL.Y + ((temp.BL.Y - temp.TL.Y) / 2);
+    double left_x = ((double) col / m_world->getMapCol()) * TILE_WIDTH;
+    double top_y  = 1.0 - ((double) m_entity->getHeight() / m_world->getHeight());
+    double z      = ((double) row / m_world->getMapRow()) * TILE_WIDTH;
+
+    sf::Vector2f top_left       = m_world->transform3D(left_x, top_y, z);
+    sf::Vector2f top_right      = m_world->transform3D(left_x + m_entity->getWidth(), top_y, z);
+    sf::Vector2f bottom_right   = m_world->transform3D(left_x + m_entity->getWidth(), 
+                                  top_y + m_entity->getHeight(), z);
+    sf::Vector2f bottom_left    = m_world->transform3D(left_x, top_y + m_entity->getHeight(), z);
+
+    node.TL.X     = top_left.x;
+    node.TL.Y     = top_left.y;
+    node.TR.X     = top_right.x;
+    node.TR.Y     = top_right.y;
+    node.BR.X     = bottom_right.x;
+    node.BR.Y     = bottom_right.y;
+    node.BL.X     = bottom_left.x;
+    node.BL.Y     = bottom_left.y;
+
+    node.center.X = node.TL.X + ((node.TR.X - node.TL.X) / 2);
+    node.center.Y = node.TL.Y + ((node.BL.Y - node.TL.Y) / 2);
     node.row      = row;
     node.col      = col;
     node.g_score  = 0;

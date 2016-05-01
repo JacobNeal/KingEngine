@@ -21,6 +21,9 @@
 #include "ksEntityLayer.h"
 #include "ksControlLayer.h"
 #include "ksPathFinder.h"
+#include "ksParticleEmitter.h"
+#include "defines.h"
+#include <iostream>
 //#include "ksWorld.h"
 
 #define ksKey sf::Keyboard
@@ -57,19 +60,18 @@ class ksApplication
         void                  decreaseCameraDepth();
         ksPathNode            calculateWorldNode(int x, int y);
         void                  toggleWorldLighting();
-        void                  toggleWorld2D(ksWorldWall wall);
         void                  toggleWorld3D();
-        void                  rotateWorldLeft();
-        void                  rotateWorldRight();
         void                  insertText(double x, double y, 
                                          std::string name, std::string text,
                                          int size = 20, ksColor color = ksColor(255, 255, 255));
         void                  setText(std::string name, std::string text);
         void                  clearEntities();
+        void                  addParticleEmitter(ksParticleEmitter * emitter);
     
         //                    Accessor methods
         int                   getCameraDelta();
         ksWorld *             getWorld();
+        int                   getSmallestOrientation();
 
 		//                    Mutators
 		void                  setEntityTilesheet(std::string tilesheet);
@@ -88,6 +90,7 @@ class ksApplication
         sf::View              m_world_view;
         sf::Font              m_font;
         std::map<std::string, sf::Text> m_text_layer;
+        ksParticleEmitter *   m_emitter;
 };
 
 #endif

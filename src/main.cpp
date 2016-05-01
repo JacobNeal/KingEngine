@@ -24,11 +24,10 @@ int main()
                    20, ksColor(0, 0, 0, 75));
 
     app.loadWorld(8, 4, 8, "maps/exterior");
-
-    // Toggle the lighting in order to not see any lighting / shadows in
-    // the engine.
-    app.toggleWorldLighting();
-    app.addLight(ksVector2D(-1, -1), LEFT, 2, 2, ksColor(255, 255, 0, 50), ksColor(80, 80, 0, 50));
+    
+    // World, Color, Location, size, num, velocity, and reach (time to live)
+    ksParticleEmitter emitter(app.getWorld(), sf::Color(0, 0, 255, 200), sf::Vector3f(0, 0, -192), 8, 20, 20, 60);
+    app.addParticleEmitter(&emitter);
 
     ksPathFinder path_finder(app.getWorld());
     
@@ -37,8 +36,8 @@ int main()
 
     int scenario_mode = 0;
 
-    int emitter_row = 1;
-    int emitter_col = 12; 
+    int emitter_x = 400;
+    int emitter_z = 128;
 
 	while (app.isOpen())
 	{
@@ -48,12 +47,12 @@ int main()
         if (scenario_mode == 2)
         {
             for (int count = 0; count < entity_num; ++count)
-                entity_list[count]->arrive(app.getMousePosition());
+                entity_list[count]->arrive(ksVector2D(0, 128));
             
             if (app.getKeyDown(ksKey::Space))
             {
-                entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), FRONT, 
-                            emitter_row, emitter_col, 1, 1, 45));
+                entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), emitter_x, 640,
+                            emitter_z, 32, 32, 45));
                 app.addEntity(entity_list[entity_num++]);
             
                 for (int count = 0; count < entity_num; ++count)
@@ -61,6 +60,7 @@ int main()
                     for (int count2 = 0; count2 < entity_num; ++count2)
                     {
                         entity_list[count]->addToGroup(entity_list[count2]);
+                        entity_list[count]->arrive(ksVector2D(0, 128));
                     }
                     entity_list[count]->group();
                     entity_list[count]->avoidObstacles();
@@ -103,10 +103,10 @@ int main()
             entity_list.clear();
             entity_num = 0;
 
-            app.loadWorld(25, 20, 0, "maps/exterior_3");
+            app.loadWorld(25, 20, 0, "maps/exterior");
             
-            entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), FRONT, 
-                        emitter_row, emitter_col, 1, 1, 46));
+            entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), emitter_x, 640, 
+                        emitter_z, 32, 32, 46));
 
             app.addEntity(entity_list[entity_num++]);
 
@@ -134,7 +134,7 @@ int main()
             entity_list.clear();
             entity_num = 0;
 
-            app.loadWorld(25, 20, 0, "maps/exterior_2");
+            app.loadWorld(8, 4, 8, "maps/exterior");
     
             std::vector<ksEntity *> flowers;
 
@@ -146,7 +146,8 @@ int main()
                 {
                     if ((x % 3 == 0) && (y % 5 == 0))
                     {
-                        flowers.push_back(new ksEntity(app.getWorld(), FRONT, y, x, 1, 1, 31));
+                        flowers.push_back(new ksEntity(app.getWorld(), x * TILE_WIDTH, 640, 
+                            y * TILE_HEIGHT, 32, 32, 31));
                         flowers[current_flower]->setAnimationLower(31);
                         flowers[current_flower]->setAnimationUpper(32);
                         flowers[current_flower]->setAnimationDelay(60);
@@ -157,8 +158,8 @@ int main()
 
             for (int count = 0; count < 8; ++count)
             {
-                entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), FRONT, 
-                            emitter_row, emitter_col, 1, 1, 45));
+                entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), emitter_x, 640,
+                            emitter_z, 32, 32, 45));
                 app.addEntity(entity_list[entity_num++]);
             }
             
@@ -167,6 +168,7 @@ int main()
                 for (int count2 = 0; count2 < entity_num; ++count2)
                 {
                     entity_list[count]->addToGroup(entity_list[count2]);
+                    entity_list[count]->arrive(ksVector2D(0, 128));
                 }
                 entity_list[count]->group();
                 entity_list[count]->avoidObstacles();
@@ -197,12 +199,12 @@ int main()
             app.loadWorld(25, 20, 0, "maps/exterior_2");
 
             // Create rabbit entity.
-            entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), FRONT,
-                        emitter_row, emitter_col, 1, 1, 35));
+            entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), emitter_x, 640,
+                        emitter_z, 32, 32, 35));
 
             // Create fox entity.
-            entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), FRONT,
-                        emitter_row + 5, emitter_col + 2, 1, 1, 34));
+            entity_list.push_back(new ksComplex(&path_finder, app.getWorld(),
+                        emitter_x + 160, 640, emitter_z + 64, 32, 32, 34));
 
             // Set the rabbit to evade the fox,
             // and the fox to pursue the rabbit.
@@ -236,8 +238,8 @@ int main()
             app.loadWorld(25, 20, 0, "maps/exterior_2");
 
             // Create guard
-            entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), FRONT, 
-                        emitter_row, emitter_col, 1, 2, 10));
+            entity_list.push_back(new ksComplex(&path_finder, app.getWorld(),
+                        emitter_x, 640, emitter_z, 32, 64, 10));
 
             app.addEntity(entity_list[entity_num++]);
 
@@ -257,7 +259,8 @@ int main()
                 {
                     if ((x % 3 == 0) && (y % 5 == 0))
                     {
-                        flowers.push_back(new ksEntity(app.getWorld(), FRONT, y, x, 1, 1, 31));
+                        flowers.push_back(new ksEntity(app.getWorld(), x * TILE_WIDTH, 640, 
+                            y * TILE_HEIGHT, 32, 32, 31));
                         flowers[current_flower]->setAnimationLower(31);
                         flowers[current_flower]->setAnimationUpper(32);
                         flowers[current_flower]->setAnimationDelay(60);
@@ -268,8 +271,8 @@ int main()
 
             for (int count = 1; count < 9; ++count)
             {
-                entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), FRONT, 
-                            emitter_row, emitter_col, 1, 1, 45));
+                entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), 
+                            emitter_x, 640, emitter_z, 32, 32, 45));
                 app.addEntity(entity_list[entity_num++]);
             }
             
@@ -287,6 +290,10 @@ int main()
             app.setText("entity_count", "Total count: " + std::to_string(entity_num));
 
             scenario_mode = 4;
+        }
+        else if (app.getMouseDown())
+        {
+            app.increaseCameraDepth();
         }
     }
 

@@ -15,7 +15,10 @@
 ********************************************************/
 ksWorld::ksWorld(std::string tilesheet)
     : m_width(0), m_height(0), m_depth(0), m_inner_x(0), m_inner_y(0), 
-      m_num_of_lights(0), m_tilesheet(tilesheet), m_lighting(true), m_2D(false)
+      m_num_of_lights(0), m_tilesheet(tilesheet), m_lighting(true), m_2D(false),
+      m_world_width_px(0), m_world_height_px(0), m_world_depth_px(0),
+      m_map_row_num(0), m_map_col_num(0), m_map_depth_num(0),
+      m_camera_x(0), m_camera_y(0), m_camera_z(0)
 {
     m_texture.loadFromFile(tilesheet);
     m_base_color = sf::Color(50, 50, 50);
@@ -52,7 +55,7 @@ ksWorld::ksWorld(std::string tilesheet)
 ********************************************************/
 ksWorld::ksWorld(std::string tilesheet, int width, int height, int depth)
     : m_width(width), m_height(height), m_depth(depth), m_inner_x(0), m_inner_y(0),
-      m_tilesheet(tilesheet), m_lighting(true)
+      m_tilesheet(tilesheet), m_lighting(true), m_2D(false)
 {
     if (m_depth < 0)
         m_depth = 0;
@@ -97,6 +100,16 @@ void ksWorld::load(int width, int height, int depth, std::string name)
     m_height = height > 0 ? height : 1;
     m_depth  = depth  > 0 ? depth  : 0;
 
+    m_world_width_px  = 800;
+    m_world_height_px = 640;
+    m_world_depth_px  = 256;
+    m_map_row_num     = 4;
+    m_map_col_num     = 8;
+    m_map_depth_num   = 8;
+    m_camera_x        = m_world_width_px / 2;
+    m_camera_y        = m_world_height_px / 2;
+    m_camera_z        = m_world_depth_px;
+    
     m_array.clear();
 
     if (name != "")
@@ -110,9 +123,11 @@ void ksWorld::load(int width, int height, int depth, std::string name)
     m_inner_x = (m_outer_width_px / 2) - ((m_width * TILE_WIDTH) / 2);
     m_inner_y = (m_outer_height_px / 2) - ((m_height * TILE_HEIGHT) / 2);
 
-    calculateTilePositions();
-    updateTilePositions();
-    updateTextureCoordinates();
+    transform3DWorld(m_world_width_px, m_world_height_px, m_world_depth_px,
+                     m_map_row_num, m_map_col_num, m_map_depth_num);
+    //calculateTilePositions();
+    //updateTilePositions();
+    //updateTextureCoordinates();
 }
 
 /********************************************************
@@ -481,134 +496,6 @@ void ksWorld::readTiles(std::string name)
     }
 }
 
-/********************************************************
-*   calculateLeftPosition
-*
-*   Calculate a tile's 4 points on the left wall.
-********************************************************/
-ksTile ksWorld::calculateLeftPosition(int row, int col)
-{
-    ksTile tile;
-    ksTile front = calculateFrontPosition(row, 0);
-
-    double row_tl_y = (m_outer_height_px / m_height) * row;
-    double row_bl_y = (m_outer_height_px / m_height) * (row + 1);
-
-    tile.TL.X = (col * TILE_WIDTH);
-    tile.TR.X = ((col + 1) * TILE_WIDTH);
-    tile.BL.X = tile.TL.X;
-    tile.BR.X = tile.TR.X;
-
-    tile.TL.Y = row_tl_y + (((front.TL.Y - row_tl_y) / m_depth) * col);
-    tile.TR.Y = row_tl_y + (((front.TL.Y - row_tl_y) / m_depth) * (col + 1));
-    tile.BL.Y = row_bl_y + (((front.BL.Y - row_bl_y) / m_depth) * col);
-    tile.BR.Y = row_bl_y + (((front.BL.Y - row_bl_y) / m_depth) * (col + 1));
-
-    return tile;
-}
-
-/********************************************************
-*   calculateRightPosition
-*
-*   Calculate a tile's 4 points on the right wall.
-********************************************************/
-ksTile ksWorld::calculateRightPosition(int row, int col)
-{
-    ksTile tile;
-    ksTile front = calculateFrontPosition(row, m_width - 1);
-
-    double row_tr_y = (m_outer_height_px / m_height) * row;
-    double row_br_y = (m_outer_height_px / m_height) * (row + 1);
-
-    tile.TL.X = m_inner_x + (m_width * TILE_WIDTH) + (col * TILE_WIDTH);
-    tile.TR.X = m_inner_x + (m_width * TILE_WIDTH) + ((col + 1) * TILE_WIDTH);
-    tile.BL.X = tile.TL.X;
-    tile.BR.X = tile.TR.X;
-
-    tile.TL.Y = row_tr_y + (((front.TR.Y - row_tr_y) / m_depth) * (m_depth - col));
-    tile.TR.Y = row_tr_y + (((front.TR.Y - row_tr_y) / m_depth) * ((m_depth - col) - 1));
-    tile.BL.Y = row_br_y + (((front.BR.Y - row_br_y) / m_depth) * (m_depth - col));
-    tile.BR.Y = row_br_y + (((front.BR.Y - row_br_y) / m_depth) * ((m_depth - col) - 1));
-
-    return tile;
-}
-
-/********************************************************
-*   calculateTopPosition
-*
-*   Calculate a tile's 4 points on the top wall.
-********************************************************/
-ksTile ksWorld::calculateTopPosition(int row, int col)
-{
-    ksTile tile;
-    ksTile front = calculateFrontPosition(0, col);
-
-    double col_tl_x = (m_outer_width_px / m_width) * col;
-    double col_tr_x = (m_outer_width_px / m_width) * (col + 1);
-
-    tile.TL.Y = (row * TILE_HEIGHT);
-    tile.BL.Y = ((row + 1) * TILE_HEIGHT);
-    tile.TR.Y = tile.TL.Y;
-    tile.BR.Y = tile.BL.Y;
-
-    tile.TL.X = col_tl_x + (((front.TL.X - col_tl_x) / m_depth) * row);
-    tile.BL.X = col_tl_x + (((front.TL.X - col_tl_x) / m_depth) * (row + 1));
-    tile.TR.X = col_tr_x + (((front.TR.X - col_tr_x) / m_depth) * row);
-    tile.BR.X = col_tr_x + (((front.TR.X - col_tr_x) / m_depth) * (row + 1));
-
-    return tile;
-}
-
-/********************************************************
-*   calculateBottomPosition
-*
-*   Calculate a tile's 4 points on the bottom wall.
-********************************************************/
-ksTile ksWorld::calculateBottomPosition(int row, int col)
-{
-    ksTile tile;
-    ksTile front = calculateFrontPosition(m_height - 1, col);
-
-    double col_bl_x = (m_outer_width_px / m_width) * col;
-    double col_br_x = (m_outer_width_px / m_width) * (col + 1);
-
-    tile.TL.Y = m_inner_y + (m_height * TILE_HEIGHT) + (row * TILE_HEIGHT);
-    tile.BL.Y = m_inner_y + (m_height * TILE_HEIGHT) + ((row + 1) * TILE_HEIGHT);
-    tile.TR.Y = tile.TL.Y;
-    tile.BR.Y = tile.BL.Y;
-
-    tile.TL.X = col_bl_x + (((front.BL.X - col_bl_x) / m_depth) * (m_depth - row));
-    tile.BL.X = col_bl_x + (((front.BL.X - col_bl_x) / m_depth) * ((m_depth - row) - 1));
-    tile.TR.X = col_br_x + (((front.BR.X - col_br_x) / m_depth) * (m_depth - row));
-    tile.BR.X = col_br_x + (((front.BR.X - col_br_x) / m_depth) * ((m_depth - row) - 1));
-
-    return tile;
-}
-
-/********************************************************
-*   calculateFrontPosition
-*
-*   Calculate a tile's 4 points on the front wall.
-********************************************************/
-ksTile ksWorld::calculateFrontPosition(int row, int col)
-{
-    ksTile tile;
-
-    tile.TL.X = (col * TILE_WIDTH) + m_inner_x;
-    tile.TL.Y = (row * TILE_HEIGHT) + m_inner_y;
-    
-    tile.TR.X = ((col + 1) * TILE_WIDTH) + m_inner_x;
-    tile.TR.Y = tile.TL.Y;
-
-    tile.BL.X = tile.TL.X;
-    tile.BL.Y = ((row + 1) * TILE_HEIGHT) + m_inner_x;
-
-    tile.BR.X = tile.TR.X;
-    tile.BR.Y = tile.BL.Y;
-
-    return tile;
-}
-
 ksPathNode ksWorld::calculateFrontNode(int screen_x, int screen_y)
 {
     ksPathNode node;
@@ -617,7 +504,7 @@ ksPathNode ksWorld::calculateFrontNode(int screen_x, int screen_y)
     node.row = (screen_y - m_inner_y) / TILE_HEIGHT;
     node.col = (screen_x - m_inner_x) / TILE_WIDTH;
 
-    position = calculateFrontPosition(node.row, node.col);
+//    position = calculateFrontPosition(node.row, node.col);
 
     node.TL  = position.TL;
     node.TR  = position.TR;
@@ -637,7 +524,7 @@ ksPathNode ksWorld::calculateBottomNode(int screen_x, int screen_y)
     node.row = ((screen_y - m_inner_y - (m_height * TILE_HEIGHT)) / TILE_HEIGHT) - 1;
     node.col = (screen_x * m_width) / m_outer_width_px;
 
-    position = calculateBottomPosition(node.row, node.col);
+//    position = calculateBottomPosition(node.row, node.col);
 
     node.TL  = position.TL;
     node.TR  = position.TR;
@@ -693,7 +580,7 @@ void ksWorld::addLight(ksVector2D start, ksWorldWall wall, int row, int col,
             return;
 
         m_top_light[row][col] = 3;
-        temp = calculateTopPosition(row, col);
+//        temp = calculateTopPosition(row, col);
 
         end.X = temp.TL.X + (fabs(temp.TR.X - temp.TL.X) / 2);
         end.Y = temp.TL.Y + (fabs(temp.TR.Y - temp.TL.Y) / 2);
@@ -705,7 +592,7 @@ void ksWorld::addLight(ksVector2D start, ksWorldWall wall, int row, int col,
         
         m_bottom_light[row][col] = 3;
         
-        temp = calculateBottomPosition(row, col);
+//        temp = calculateBottomPosition(row, col);
         end.X = temp.TL.X + (fabs(temp.TR.X - temp.TL.X) / 2);
         end.Y = temp.TL.Y + (fabs(temp.TR.Y - temp.TL.Y) / 2);
     }
@@ -744,7 +631,7 @@ void ksWorld::addLight(ksVector2D start, ksWorldWall wall, int row, int col,
 
         m_left_light[row][col] += 1;
 
-        temp = calculateLeftPosition(row, col);
+//        temp = calculateLeftPosition(row, col);
         end.X = temp.TL.X + (fabs(temp.TR.X - temp.TL.X) / 2);
         end.Y = temp.TL.Y + (fabs(temp.TL.Y - temp.TR.Y) / 2);
     }
@@ -755,7 +642,7 @@ void ksWorld::addLight(ksVector2D start, ksWorldWall wall, int row, int col,
         
         m_right_light[row][col] = 3;
         
-        temp = calculateRightPosition(row, col);
+//        temp = calculateRightPosition(row, col);
         end.X = temp.TL.X + (fabs(temp.TR.X - temp.TL.X) / 2);
         end.Y = temp.TL.Y + (fabs(temp.TR.Y - temp.TL.Y) / 2);
     }
@@ -763,7 +650,7 @@ void ksWorld::addLight(ksVector2D start, ksWorldWall wall, int row, int col,
     {
         m_front_light[row][col] = 3;
         
-        temp = calculateFrontPosition(row, col);
+//        temp = calculateFrontPosition(row, col);
         end.X = temp.TL.X + (fabs(temp.TR.X - temp.TL.X) / 2);
         end.Y = temp.TL.Y + (fabs(temp.TR.Y - temp.TL.Y) / 2);
     }
@@ -856,64 +743,6 @@ void ksWorld::toggle3D()
     updateTextureCoordinates();
 }
 
-void ksWorld::rotateLeft()
-{
-    m_front_tex      = &m_left;
-    m_front_num_row  = &m_height;
-    m_front_num_col  = &m_depth;
-
-    m_left_tex       = &m_back;
-    m_left_num_row   = &m_height;
-    m_left_num_col   = &m_width;
-
-    m_right_tex      = &m_front;
-    m_right_num_row  = &m_height;
-    m_right_num_col  = &m_width;
-
-    m_top_tex        = &m_top;
-    m_top_num_row    = &m_depth;
-    m_top_num_col    = &m_width;
-
-    m_bottom_tex     = &m_bottom;
-    m_bottom_num_row = &m_depth;
-    m_bottom_num_col = &m_width;
-
-    m_2D = false;
-
-    calculateTilePositions();
-    updateTilePositions();
-    updateTextureCoordinates();
-}
-
-void ksWorld::rotateRight()
-{
-    m_front_tex      = &m_right;
-    m_front_num_row  = &m_height;
-    m_front_num_col  = &m_depth;
-
-    m_left_tex       = &m_front;
-    m_left_num_row   = &m_height;
-    m_left_num_col   = &m_width;
-
-    m_right_tex      = &m_back;
-    m_right_num_row  = &m_height;
-    m_right_num_col  = &m_width;
-
-    m_top_tex        = &m_top;
-    m_top_num_row    = &m_depth;
-    m_top_num_col    = &m_width;
-
-    m_bottom_tex     = &m_bottom;
-    m_bottom_num_row = &m_depth;
-    m_bottom_num_col = &m_width;
-
-    m_2D = false;
-
-    calculateTilePositions();
-    updateTilePositions();
-    updateTextureCoordinates();
-}
-
 void ksWorld::calculateTilePositions()
 {
     // Front
@@ -923,8 +752,8 @@ void ksWorld::calculateTilePositions()
     {
         m_front_pos[row].resize((*m_front_num_col));
 
-        for (int col = 0; col < (*m_front_num_col); ++col)
-            m_front_pos[row][col] = calculateFrontPosition(row, col);
+//        for (int col = 0; col < (*m_front_num_col); ++col)
+//            m_front_pos[row][col] = calculateFrontPosition(row, col);
     }
 
     // Left
@@ -934,8 +763,8 @@ void ksWorld::calculateTilePositions()
     {
         m_left_pos[row].resize((*m_left_num_col));
 
-        for (int col = 0; col < (*m_left_num_col); ++col)
-            m_left_pos[row][col] = calculateLeftPosition(row, col);
+//        for (int col = 0; col < (*m_left_num_col); ++col)
+//            m_left_pos[row][col] = calculateLeftPosition(row, col);
     }
 
     // Right
@@ -945,8 +774,8 @@ void ksWorld::calculateTilePositions()
     {
         m_right_pos[row].resize((*m_right_num_col));
 
-        for (int col = 0; col < (*m_right_num_col); ++col)
-            m_right_pos[row][col] = calculateRightPosition(row, col);
+//        for (int col = 0; col < (*m_right_num_col); ++col)
+//            m_right_pos[row][col] = calculateRightPosition(row, col);
     }
 
     // Top
@@ -956,8 +785,8 @@ void ksWorld::calculateTilePositions()
     {
         m_top_pos[row].resize((*m_top_num_col));
 
-        for (int col = 0; col < (*m_top_num_col); ++col)
-            m_top_pos[row][col] = calculateTopPosition(row, col);
+//        for (int col = 0; col < (*m_top_num_col); ++col)
+//            m_top_pos[row][col] = calculateTopPosition(row, col);
     }
 
     // Bottom
@@ -967,8 +796,8 @@ void ksWorld::calculateTilePositions()
     {
         m_bottom_pos[row].resize((*m_bottom_num_col));
 
-        for (int col = 0; col < (*m_bottom_num_col); ++col)
-            m_bottom_pos[row][col] = calculateBottomPosition(row, col);
+//        for (int col = 0; col < (*m_bottom_num_col); ++col)
+//            m_bottom_pos[row][col] = calculateBottomPosition(row, col);
     }
 }
 
@@ -1061,6 +890,331 @@ void ksWorld::assignTextureCoordinates(std::vector<std::vector<ksTile>> * wall,
             m_array[pos++].texCoords = sf::Vector2f((*wall)[row][col].BR.X, (*wall)[row][col].BR.Y);
             m_array[pos++].texCoords = sf::Vector2f((*wall)[row][col].BL.X, (*wall)[row][col].BL.Y);
             m_array[pos++].texCoords = sf::Vector2f((*wall)[row][col].TL.X, (*wall)[row][col].TL.Y);
+        }
+    }
+}
+
+/********************************************************
+*   transform3D
+*
+*   Returns the transformed (x, y, z) position to a
+*   2D drawable coordinate.
+********************************************************/
+sf::Vector2f ksWorld::transform3D(double x, double y, double z)
+{
+    int pos_x = x * m_world_width_px;
+    int pos_y = y * m_world_height_px;
+    int pos_z = z * m_world_depth_px;
+
+    sf::Vector2f position;
+
+    position.x = ((m_camera_z * (pos_x - m_camera_x)) / (m_camera_z + pos_z)) + m_camera_x;
+    position.y = ((m_camera_z * (pos_y - m_camera_y)) / (m_camera_z + pos_z)) + m_camera_y;
+    
+    return position;
+}
+
+/********************************************************
+*   transform3D
+*
+*   Returns the transformed (x, y, z) position to a
+*   2D drawable coordinate.
+********************************************************/
+sf::Vector2f ksWorld::transform3D(sf::Vector3f position)
+{
+    sf::Vector2f screen_position;
+    
+    position.x = ((m_camera_z * (position.x - m_camera_x)) / (m_camera_z + position.z)) +
+        m_camera_x;
+    position.y = ((m_camera_z * (position.y - m_camera_y)) / (m_camera_z + position.z)) +
+        m_camera_y;
+    
+    return screen_position;
+}
+
+/********************************************************
+*   transform2D
+*
+*   Returns the transformed (x, y) screen coordinate
+*   to a 3D world coordinate.
+********************************************************/
+sf::Vector3f ksWorld::transform2D(double x, double y)
+{
+    sf::Vector3f position;
+
+    return position;
+}
+
+sf::Vector2f ksWorld::transform3DWithPixelValue(int x, int y, int z)
+{
+    sf::Vector2f position;
+
+    position.x = ((m_camera_z * (x - m_camera_x)) / (m_camera_z + z)) +
+        m_camera_x;
+    position.y = ((m_camera_z * (y - m_camera_y)) / (m_camera_z + z)) +
+        m_camera_y;
+
+    return position;
+}
+
+/********************************************************
+*   render3DWorld
+*
+*   Renders the 3D world, based on the transformed
+*   coordinates of a read in map.
+********************************************************/
+void ksWorld::transform3DWorld(int world_width_px, int world_height_px, 
+                               int world_depth_px, int map_row_num, 
+                               int map_col_num, int map_depth_num)
+{
+    // Set world data, for use in transformations
+    // and accessor methods.
+    m_world_width_px    = world_width_px;
+    m_world_height_px   = world_height_px;
+    m_world_depth_px    = world_depth_px;
+    m_map_row_num       = map_row_num;
+    m_map_col_num       = map_col_num;
+    m_map_depth_num     = map_depth_num;
+
+    int index = 0;
+    m_array.clear();
+    m_array.resize((map_row_num * map_col_num * 6) +
+                   (map_col_num * map_depth_num * 12) +
+                   (map_row_num * map_depth_num * 12));
+
+    // Transform all the world walls
+    transformFrontWall(index, map_row_num, map_col_num);
+    transformTopWall(index, map_col_num, map_depth_num);
+    transformBottomWall(index, map_col_num, map_depth_num);
+    transformLeftWall(index, map_row_num, map_depth_num);
+    transformRightWall(index, map_row_num, map_depth_num);
+}
+
+void ksWorld::applyTextureCoordinates()
+{
+    int index = 0;
+    m_array.clear();
+    m_array.resize((m_map_row_num * m_map_col_num * 6) +
+                   (m_map_col_num * m_map_depth_num * 12) +
+                   (m_map_row_num * m_map_depth_num * 12));
+
+    // 
+    for (int row = 0; row < m_map_row_num; ++row)
+    {
+        for (int col = 0; col < m_map_col_num; ++col)
+        {
+            m_array[index].texCoords     = sf::Vector2f(m_front[row][col].TL.X,
+                                                        m_front[row][col].TL.Y);
+            m_array[index + 1].texCoords = sf::Vector2f(m_front[row][col].TR.X,
+                                                        m_front[row][col].TR.Y);
+            m_array[index + 2].texCoords = sf::Vector2f(m_front[row][col].BR.X,
+                                                        m_front[row][col].BR.Y);
+            m_array[index + 3].texCoords = sf::Vector2f(m_front[row][col].BL.X,
+                                                        m_front[row][col].BL.Y);
+            m_array[index + 4].texCoords = sf::Vector2f(m_front[row][col].TL.X,
+                                                        m_front[row][col].TL.Y);
+            m_array[index + 5].texCoords = sf::Vector2f(m_front[row][col].BR.X,
+                                                        m_front[row][col].BR.Y);
+        }
+    }
+}
+
+/********************************************************
+*   transformFrontWall
+*
+*   Renders the front wall of the 3D world, based on the 
+*   coordinates of: map/_front.ks
+********************************************************/
+void ksWorld::transformFrontWall(int & index, int map_row_num, int map_col_num)
+{
+    for (int row = 0; row < map_row_num; ++row)
+    {
+        for (int col = 0; col < map_col_num; ++col)
+        {
+            m_array[index].position      = transform3D((double) col / map_col_num,
+                                                      (double) row / map_row_num, 1.0);
+            m_array[index].texCoords     = sf::Vector2f(m_front[row][col].TL.X,
+                                                        m_front[row][col].TL.Y);
+
+            m_array[index + 1].position  = transform3D((double) (col + 1) / map_col_num,
+                                                      (double) row / map_row_num, 1.0);
+            m_array[index + 1].texCoords = sf::Vector2f(m_front[row][col].TR.X,
+                                                        m_front[row][col].TR.Y);
+
+            m_array[index + 2].position  = transform3D((double) (col + 1) / map_col_num,
+                                                      (double) (row + 1) / map_row_num, 1.0);
+            m_array[index + 2].texCoords = sf::Vector2f(m_front[row][col].BR.X,
+                                                        m_front[row][col].BR.Y);
+
+            m_array[index + 3].position  = transform3D((double) col / map_col_num,
+                                                      (double) (row + 1) / map_row_num, 1.0);
+            m_array[index + 3].texCoords = sf::Vector2f(m_front[row][col].BL.X,
+                                                        m_front[row][col].BR.Y);
+
+            m_array[index + 4] = m_array[index];
+            m_array[index + 5] = m_array[index + 2];
+            
+            index += 6;
+        }
+    }
+}
+
+/********************************************************
+*   transformTopWall
+*
+*   Renders the top wall of the 3D world, based on the 
+*   coordinates of: map/_top.ks
+********************************************************/
+void ksWorld::transformTopWall(int & index, int map_col_num, int map_depth_num)
+{
+    for (int depth = 0; depth < map_depth_num; ++depth)
+    {
+        for (int col = 0; col < map_col_num; ++col)
+        {
+            m_array[index].position      = transform3D((double) col / map_col_num, 0.0,
+                                                      (double) depth / map_depth_num);
+            m_array[index].texCoords     = sf::Vector2f(m_top[depth][col].TL.X,
+                                                        m_top[depth][col].TL.Y);
+
+            m_array[index + 1].position  = transform3D((double) (col + 1) / map_col_num, 0.0,
+                                                      (double) depth / map_depth_num);
+            m_array[index + 1].texCoords = sf::Vector2f(m_top[depth][col].TR.X,
+                                                        m_top[depth][col].TR.Y);
+
+            m_array[index + 2].position  = transform3D((double) (col + 1) / map_col_num, 0.0,
+                                                      (double) (depth + 1) / map_depth_num);
+            m_array[index + 2].texCoords = sf::Vector2f(m_top[depth][col].BR.X,
+                                                        m_top[depth][col].BR.Y);
+
+            m_array[index + 3].position  = transform3D((double) col / map_col_num, 0.0,
+                                                      (double) (depth + 1) / map_depth_num);
+            m_array[index + 3].texCoords = sf::Vector2f(m_top[depth][col].BL.X,
+                                                        m_top[depth][col].BL.Y);
+
+            m_array[index + 4] = m_array[index];
+            m_array[index + 5] = m_array[index + 2];
+
+            index += 6;
+        }
+    }
+}
+
+/********************************************************
+*   transformBottomWall
+*
+*   Renders the bottom wall of the 3D world, based on the 
+*   coordinates of: map/_bottom.ks
+********************************************************/
+void ksWorld::transformBottomWall(int & index, int map_col_num, int map_depth_num)
+{
+    for (int depth = 0; depth < map_depth_num; ++depth)
+    {
+        for (int col = 0; col < map_col_num; ++col)
+        {
+            m_array[index].position = transform3D((double) col / map_col_num, 1.0,
+                                                  (double) depth / map_depth_num);
+            m_array[index].texCoords = sf::Vector2f(m_bottom[depth][col].TL.X,
+                                                    m_bottom[depth][col].TL.Y);
+
+            m_array[index + 1].position = transform3D((double) (col + 1) / map_col_num, 1.0,
+                                                      (double) depth / map_depth_num);
+            m_array[index + 1].texCoords = sf::Vector2f(m_bottom[depth][col].TR.X,
+                                                        m_bottom[depth][col].TR.Y);
+
+            m_array[index + 2].position = transform3D((double) (col + 1) / map_col_num, 1.0,
+                                                      (double) (depth + 1) / map_depth_num);
+            m_array[index + 2].texCoords = sf::Vector2f(m_bottom[depth][col].BR.X,
+                                                        m_bottom[depth][col].BR.Y);
+
+            m_array[index + 3].position = transform3D((double) col / map_col_num, 1.0,
+                                                      (double) (depth + 1) / map_depth_num);
+            m_array[index + 3].texCoords = sf::Vector2f(m_bottom[depth][col].BL.X,
+                                                        m_bottom[depth][col].BL.Y);
+
+            m_array[index + 4] = m_array[index];
+            m_array[index + 5] = m_array[index + 2];
+
+            index += 6;
+        }
+    }
+}
+
+/********************************************************
+*   transformLeftWall
+*
+*   Renders the left wall of the 3D world, based on the 
+*   coordinates of: map/_left.ks
+********************************************************/
+void ksWorld::transformLeftWall(int & index, int map_row_num, int map_depth_num)
+{
+    for (int row = 0; row < map_row_num; ++row)
+    {
+        for (int depth = 0; depth < map_depth_num; ++depth)
+        {
+            m_array[index].position = transform3D(0.0, (double) row / map_row_num,
+                                                  (double) depth / map_depth_num);
+            m_array[index].texCoords = sf::Vector2f(m_left[row][depth].TL.X,
+                                                    m_left[row][depth].TL.Y);
+
+            m_array[index + 1].position = transform3D(0.0, (double) row / map_row_num,
+                                                      (double) (depth + 1) / map_depth_num);
+            m_array[index + 1].texCoords = sf::Vector2f(m_left[row][depth].TR.X,
+                                                        m_left[row][depth].TR.Y);
+
+            m_array[index + 2].position = transform3D(0.0, (double) (row + 1) / map_row_num,
+                                                      (double) (depth + 1) / map_depth_num);
+            m_array[index + 2].texCoords = sf::Vector2f(m_left[row][depth].BR.X,
+                                                        m_left[row][depth].BR.Y);
+
+            m_array[index + 3].position = transform3D(0.0, (double) (row + 1) / map_row_num,
+                                                      (double) depth / map_depth_num);
+            m_array[index + 3].texCoords = sf::Vector2f(m_left[row][depth].BL.X,
+                                                        m_left[row][depth].BL.Y);
+
+            m_array[index + 4] = m_array[index];
+            m_array[index + 5] = m_array[index + 2];
+
+            index += 6;
+        }
+    }
+}
+
+/********************************************************
+*   transformRightWall
+*
+*   Renders the right wall of the 3D world, based on the 
+*   coordinates of: map/_right.ks
+********************************************************/
+void ksWorld::transformRightWall(int & index, int map_row_num, int map_depth_num)
+{
+    for (int row = 0; row < map_row_num; ++row)
+    {
+        for (int depth = 0; depth < map_depth_num; ++depth)
+        {
+            m_array[index].position = transform3D(1.0, (double) row / map_row_num,
+                                                  (double) depth / map_depth_num);
+            m_array[index].texCoords = sf::Vector2f(m_right[row][depth].TL.X,
+                                                    m_right[row][depth].TL.Y);
+
+            m_array[index + 1].position = transform3D(1.0, (double) row / map_row_num,
+                                                      (double) (depth + 1) / map_depth_num);
+            m_array[index + 1].texCoords = sf::Vector2f(m_right[row][depth].TR.X,
+                                                        m_right[row][depth].TR.Y);
+    
+            m_array[index + 2].position = transform3D(1.0, (double) (row + 1) / map_row_num,
+                                                      (double) (depth + 1) / map_depth_num);
+            m_array[index + 2].texCoords = sf::Vector2f(m_right[row][depth].BR.X,
+                                                        m_right[row][depth].BR.Y);
+
+            m_array[index + 3].position = transform3D(1.0, (double) (row + 1) / map_row_num,
+                                                      (double) depth / map_depth_num);
+            m_array[index + 3].texCoords = sf::Vector2f(m_right[row][depth].BL.X,
+                                                        m_right[row][depth].BL.Y);
+
+            m_array[index + 4] = m_array[index];
+            m_array[index + 5] = m_array[index + 2];
+
+            index += 6;
         }
     }
 }
@@ -1191,4 +1345,19 @@ int ksWorld::getWallMaxCol(ksWorldWall wall)
         return m_width;
 
     return 0;
+}
+
+int ksWorld::getMapCol()
+{
+    return m_map_col_num;
+}
+
+int ksWorld::getMapRow()
+{
+    return m_map_row_num;
+}
+
+int ksWorld::getMapDepth()
+{
+    return m_map_depth_num;
 }

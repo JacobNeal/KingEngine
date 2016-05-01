@@ -649,7 +649,7 @@ ksVector2D ksComplexBehavior::getPathHeading()
 ********************************************************/
 int ksComplexBehavior::applyRowBoundaries(int row)
 {
-    int max_row = m_world->getWallMaxRow(m_vehicle->getWall());
+    int max_row = m_world->getWallMaxRow(BOTTOM);
 
     if (row < 0)
         row = 0;
@@ -667,7 +667,7 @@ int ksComplexBehavior::applyRowBoundaries(int row)
 ********************************************************/
 int ksComplexBehavior::applyColumnBoundaries(int col)
 {
-    int max_col = m_world->getWallMaxCol(m_vehicle->getWall());
+    int max_col = m_world->getWallMaxCol(BOTTOM);
 
     if (col < 0)
         col = 0;
@@ -687,7 +687,7 @@ int ksComplexBehavior::applyColumnBoundaries(int col)
 ksPathNode ksComplexBehavior::getNodePosition(int row, int col)
 {
     ksPathNode temp;
-    ksTile position = m_world->getTilePosition(m_vehicle->getWall(), row, col,
+    ksTile position = m_world->getTilePosition(BOTTOM, row, col,
             m_vehicle->getWidth(), m_vehicle->getHeight());
 
     temp.TL       = position.TL;

@@ -12,8 +12,8 @@ EXE = KingEngine
 
 all: $(EXE)
 
-$(EXE): main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o
-	$(CXX) $(LDFLAGS) main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o -o $@
+$(EXE): main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksParticleEmitter.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o
+	$(CXX) $(LDFLAGS) main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksParticleEmitter.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o -o $@
 
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) main.cpp -o $@
@@ -26,6 +26,9 @@ ksComplexBehavior.o: ksComplexBehavior.cpp
 
 ksApplication.o: ksApplication.cpp
 	$(CXX) $(CXXFLAGS) ksApplication.cpp -o $@
+
+ksParticleEmitter.o: ksParticleEmitter.cpp
+	$(CXX) $(CXXFLAGS) ksParticleEmitter.cpp -o $@
 
 ksWorld.o: ksWorld.cpp
 	$(CXX) $(CXXFLAGS) ksWorld.cpp -o $@

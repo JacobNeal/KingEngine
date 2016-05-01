@@ -17,7 +17,8 @@ ksApplication::ksApplication()
 	: m_window(sf::VideoMode::getDesktopMode(), "KingEngine"),
 	m_world("images/voltor_interior.png"), m_camera_depth(0), 
     m_entity_layer(&m_world, "images/default.png"), 
-    m_control_layer("images/portal_obj.png"), m_mouse_released(false)
+    m_control_layer("images/portal_obj.png"), m_mouse_released(false),
+    m_emitter(nullptr)
 {
 	m_window.setFramerateLimit(FRAMERATE);
     m_font.loadFromFile("images/minecraft.ttf");
@@ -33,7 +34,8 @@ ksApplication::ksApplication(std::string app_title, int app_width, int app_heigh
 	: m_window(sf::VideoMode(app_width, app_height, 32), app_title.c_str()),
 	m_world("images/voltor_interior.png"), m_camera_depth(0), 
     m_entity_layer(&m_world, "images/default.png"), 
-    m_control_layer("images/portal_obj.png"), m_mouse_released(false)
+    m_control_layer("images/portal_obj.png"), m_mouse_released(false),
+    m_emitter(nullptr)
 {
 	m_window.setFramerateLimit(FRAMERATE);
     m_font.loadFromFile("images/minecraft.ttf");
@@ -52,8 +54,15 @@ bool ksApplication::isOpen()
     m_window.setView(m_world_view);
     m_world.drawWorld(m_window);
 
-    m_window.setView(m_window.getDefaultView());
+//    m_window.setView(m_window.getDefaultView());
 	m_entity_layer.drawLayer(m_window);
+    
+    if (m_emitter != nullptr)
+    {
+        m_emitter->update();
+        m_window.draw(*m_emitter);
+    }
+        
 	m_control_layer.drawLayer(m_window);
     
     for (std::map<std::string, sf::Text>::iterator iter = m_text_layer.begin();
@@ -82,6 +91,27 @@ bool ksApplication::isOpen()
 				if (m_evt.key.code == it->first)
 					m_key_down[it->first] = true;
 			}
+
+            if (m_evt.key.code == sf::Keyboard::Key::Up)
+            {
+                if (m_emitter != nullptr)
+                    m_emitter->moveEmitter(0, 0, 5);
+            }
+            else if (m_evt.key.code == sf::Keyboard::Key::Down)
+            {
+                if (m_emitter != nullptr)
+                    m_emitter->moveEmitter(0, 0, -5);
+            }
+            else if (m_evt.key.code == sf::Keyboard::Key::Right)
+            {
+                if (m_emitter != nullptr)
+                    m_emitter->rotate(1.0);
+            }
+            else if (m_evt.key.code == sf::Keyboard::Key::Left)
+            {
+                if (m_emitter != nullptr)
+                    m_emitter->rotate(-1.0);
+            }
 		}
 		else if (m_evt.type == sf::Event::KeyReleased)
 		{
@@ -92,6 +122,32 @@ bool ksApplication::isOpen()
 					m_key_down[it->first] = false;
 			}
 		}
+        else if (m_evt.type == sf::Event::Resized)
+        {
+            int new_width = 0;
+            int new_height = 0;
+            double heightProportionToWidth = 0.8; 
+                //m_window.getSize().y / m_window.getSize().x;
+
+            // Set width to the smallest orientation
+            new_width = m_evt.size.width < m_evt.size.height ? 
+                m_evt.size.width : m_evt.size.height;
+            
+            // Scale height proptionate to the new width
+            new_height = new_width * heightProportionToWidth;
+
+            // Center the world
+            m_world_view.reset(sf::FloatRect(0.f, 0.f, 800.f, 640.f));
+            
+            double world_px_y = (m_evt.size.height - new_height) / 2;
+            double world_top = world_px_y / m_evt.size.height;
+            double height_scale = 1.0 - (world_top * 2);
+
+            m_world_view.setViewport(sf::FloatRect(0.f, world_top, 1.f, height_scale));
+
+            std::cout << "Viewport: 0, " << world_top << ", 1, "
+                      << height_scale << "\n";
+        }
 		else if (m_evt.type == sf::Event::Closed)
 			m_window.close();
 
@@ -240,9 +296,8 @@ void ksApplication::loadWorld(int width, int height, int depth, std::string name
     
     m_camera_depth = depth;
     
-    m_world_view.reset(sf::FloatRect(0, 0, (width + (depth * 2)) * TILE_WIDTH, 
-                                           (height + (depth * 2)) * TILE_HEIGHT));
-    m_world_view.setCenter(400, 320);
+    m_world_view.reset(sf::FloatRect(0, 0, 800, 640));
+    m_world_view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 }
 
 /*********************************************************
@@ -253,7 +308,16 @@ void ksApplication::loadWorld(int width, int height, int depth, std::string name
 *********************************************************/
 void ksApplication::increaseCameraDepth()
 {
-    setCameraDelta(m_camera_depth - 1);
+    sf::Vector2f top_left = m_world.transform3D(0.0, 0.0, 0.125);
+    sf::Vector2f top_right = m_world.transform3D(1.0, 0.0, 0.125);
+    sf::Vector2f bottom_left = m_world.transform3D(0.0, 1.0, 0.125);
+
+    int width = top_right.x - top_left.x;
+    int height = bottom_left.y - top_left.y;
+
+    double scale = (double) (width + height) / (800 + 640);
+    
+    m_world_view.zoom(scale);
 }
 
 /*********************************************************
@@ -264,7 +328,16 @@ void ksApplication::increaseCameraDepth()
 *********************************************************/
 void ksApplication::decreaseCameraDepth()
 {
-    setCameraDelta(m_camera_depth + 1);
+    sf::Vector2f top_left = m_world.transform3D(0.0, 0.0, -0.125);
+    sf::Vector2f top_right = m_world.transform3D(1.0, 0.0, -0.125);
+    sf::Vector2f bottom_left = m_world.transform3D(0.0, 1.0, -0.125);
+
+    int width = top_right.x - top_left.x;
+    int height = bottom_left.y - top_left.y;
+
+    double scale = (double) (width + height) / (800 + 640);
+    
+    m_world_view.zoom(scale);
 }
 
 ksPathNode ksApplication::calculateWorldNode(int screen_x, int screen_y)
@@ -281,7 +354,7 @@ ksPathNode ksApplication::calculateWorldNode(int screen_x, int screen_y)
     else if (temp.col >= m_world.getWidth())
         temp.col = m_world.getWidth() - 1;
 
-    ksTile position = m_world.calculateBottomPosition(temp.row, temp.col);
+    ksTile position; //= m_world.calculateBottomPosition(temp.row, temp.col);
 
     temp.TL = position.TL;
     temp.TR = position.TR;
@@ -296,26 +369,9 @@ void ksApplication::toggleWorldLighting()
     m_world.toggleLighting();
 }
 
-void ksApplication::toggleWorld2D(ksWorldWall wall)
-{
-    m_world.toggle2D(wall);
-    m_entity_layer.toggle2D(FRONT);
-}
-
 void ksApplication::toggleWorld3D()
 {
     m_world.toggle3D();
-    m_entity_layer.toggle2D(BOTTOM);
-}
-
-void ksApplication::rotateWorldLeft()
-{
-    m_world.rotateLeft();
-}
-
-void ksApplication::rotateWorldRight()
-{
-    m_world.rotateRight();
 }
 
 void ksApplication::insertText(double x, double y, std::string name, 
@@ -361,6 +417,18 @@ ksWorld * ksApplication::getWorld()
 }
 
 /*********************************************************
+*   getSmallestOrientation
+*
+*   Returns the smallest orientation of the window, based
+*   on the width and height.
+*********************************************************/
+int ksApplication::getSmallestOrientation()
+{
+    return m_window.getSize().x < m_window.getSize().y ?
+        (int) m_window.getSize().x : (int) m_window.getSize().y;
+}
+
+/*********************************************************
 *   setEntityTilesheet
 *
 *   Set the tilesheet for the base game entity layer.
@@ -392,4 +460,15 @@ void ksApplication::setCameraDelta(int camera_delta)
 
         m_world_view.zoom((float) new_area / current_area);
     }
+}
+
+/*********************************************************
+*   addParticleEmitter
+*
+*   Add a reference to a particle emitter so that it can
+*   be drawn in the application window.
+*********************************************************/
+void ksApplication::addParticleEmitter(ksParticleEmitter * emitter)
+{
+    m_emitter = emitter;
 }

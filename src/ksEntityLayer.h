@@ -34,7 +34,6 @@ class ksEntityLayer : public sf::Drawable, public sf::Transformable
 		void                    drawLayer(sf::RenderWindow & app);
 		virtual void            draw(sf::RenderTarget & target, sf::RenderStates states) const;
         void                    sortEntitiesByRow();
-        void                    toggle2D(ksWorldWall wall);
 		void                    purge();
 
 		//                      Mutators

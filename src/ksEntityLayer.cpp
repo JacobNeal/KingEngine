@@ -18,8 +18,6 @@ ksEntityLayer::ksEntityLayer(ksWorld * world, std::string tilesheet)
 	: m_world(world), m_num_of_entities(0), m_pressedEntity(nullptr)
 {
 	m_texture.loadFromFile(tilesheet);
-	//if (!m_texture.loadFromFile(tilesheet))
-        //ErrorReport.reportNewError("Couldn't load tilesheet.");
 }
 
 /*********************************************************
@@ -109,13 +107,6 @@ void ksEntityLayer::drawLayer(sf::RenderWindow & app)
 
             ksPathNode tile = m_entities[count]->getTilePosition();
 
-            //int height = ((tile.TR.X - tile.TL.X) / m_entities[count]->getTextureCoord().W) *
-            //             m_entities[count]->getTextureCoord().H;
-            //tile.TL.X = tile.BL.X;
-            //tile.TL.Y = tile.BL.Y - height;
-            //tile.TR.X = tile.BR.X;
-            //tile.TR.Y = tile.BR.Y - height;
-
 		    int vec  = count * 4;
 
     		m_array[vec].position     = sf::Vector2f(tile.TL.X, tile.TL.Y);
@@ -133,20 +124,7 @@ void ksEntityLayer::drawLayer(sf::RenderWindow & app)
 		    m_array[vec + 2].texCoords = sf::Vector2f(x + w, y + h);
 		    m_array[vec + 3].texCoords = sf::Vector2f(x, y + h);
 
-            int light = 255;
-        
-            if (m_world->isWorldLighting())
-            {
-                light = BASE_LIGHT_INTENSITY + (m_world->getNumberOfLights() * LIGHT_INTENSITY_MULT)
-                    + (50 * m_world->getLightIntensity(m_entities[count]->getWall(),
-                                                       m_entities[count]->getRow(),
-                                                       m_entities[count]->getColumn()));
-            }
-
-            if (light > 255)
-                light = 255;
-
-            sf::Color color = sf::Color(light, light, light);
+            sf::Color color = sf::Color(255, 255, 255);
 
             m_array[vec].color     = color;
             m_array[vec + 1].color = color;
@@ -159,7 +137,7 @@ void ksEntityLayer::drawLayer(sf::RenderWindow & app)
 }
 
 /*********************************************************
-*	drawLayer
+*	draw
 *
 *	The overloaded SFML pure virtual method for drawing
 *	an sf::Drawable type.
@@ -186,12 +164,6 @@ void ksEntityLayer::sortEntitiesByRow()
             }
         }
     }
-}
-
-void ksEntityLayer::toggle2D(ksWorldWall wall)
-{
-    for (int count = 0; count < m_num_of_entities; ++count)
-        m_entities[count]->setWall(wall);
 }
 
 /*********************************************************

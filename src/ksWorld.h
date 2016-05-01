@@ -25,7 +25,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-
 #include "ksTile.h"
 #include "ksEffect.h"
 #include "ksPathNode.h"
@@ -55,11 +54,6 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         //              Methods
         void            load(int width, int height, int depth, std::string name="");
         void            readTiles(std::string name);
-        ksTile          calculateLeftPosition(int row, int col);
-        ksTile          calculateRightPosition(int row, int col);
-        ksTile          calculateTopPosition(int row, int col);
-        ksTile          calculateBottomPosition(int row, int col);
-        ksTile          calculateFrontPosition(int row, int col);
         ksPathNode      calculateFrontNode(int screen_x, int screen_y);
         ksPathNode      calculateBottomNode(int screen_x, int screen_y);
         virtual void    draw(sf::RenderTarget & target, sf::RenderStates states) const;
@@ -71,8 +65,6 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         void            toggleLighting();
         void            toggle2D(ksWorldWall wall);
         void            toggle3D();
-        void            rotateLeft();
-        void            rotateRight();
 
         //              New Methods (refactor)
         void            calculateTilePositions();
@@ -82,11 +74,30 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         void            updateTextureCoordinates();
         void            assignTextureCoordinates(std::vector<std::vector<ksTile>> * wall,
                                                  int & pos, int max_row, int max_col);
+        sf::Vector2f    transform3D(double x, double y, double z);
+        sf::Vector2f    transform3D(sf::Vector3f position);
+        sf::Vector3f    transform2D(double x, double y);
+        sf::Vector2f    transform3DWithPixelValue(int x, int y, int z);
+        void            transform3DWorld(int world_width_px, 
+                                      int world_height_px, int world_depth_px, 
+                                      int map_row_num, int map_col_num, 
+                                      int map_depth_num);
+        void            applyTextureCoordinates();
+        void            transformFrontWall(int & index, int map_row_num,
+                                           int map_col_num);
+        void            transformTopWall(int & index, int map_col_num,
+                                         int map_depth_num);
+        void            transformBottomWall(int & index, int map_col_num,
+                                            int map_depth_num);
+        void            transformLeftWall(int & index, int map_row_num,
+                                          int map_depth_num);
+        void            transformRightWall(int & index, int map_row_num,
+                                           int map_depth_num);
 
         //              Accessor methods
-        int             getWidth() { return m_width; }
-        int             getHeight() { return m_height; }
-        int             getDepth() { return m_depth; }
+        int             getWidth() { return m_world_width_px; }
+        int             getHeight() { return m_world_height_px; }
+        int             getDepth() { return m_world_depth_px; }
         int             getInnerX() { return m_inner_x; }
         int             getInnerY() { return m_inner_y; }
         int             getNumberOfLights() { return m_num_of_lights; }
@@ -96,6 +107,9 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         int             getTileEvent(ksWorldWall wall, int row, int col);
         int             getWallMaxRow(ksWorldWall wall);
         int             getWallMaxCol(ksWorldWall wall);
+        int             getMapCol();
+        int             getMapRow();
+        int             getMapDepth();
 
     private:
         //              Data members
@@ -165,6 +179,17 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         std::vector<std::vector<int>>    m_front_light;
         std::vector<std::vector<int>>    m_back_light;
         sf::Color                        m_base_color;
+
+        // World rendering refactor members
+        int                              m_world_width_px;
+        int                              m_world_height_px;
+        int                              m_world_depth_px;
+        int                              m_map_row_num;
+        int                              m_map_col_num;
+        int                              m_map_depth_num;
+        int                              m_camera_x;
+        int                              m_camera_y;
+        int                              m_camera_z;
 };
 
 #endif

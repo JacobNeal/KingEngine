@@ -15,19 +15,20 @@
 *   referenced that has been passed and calls the 
 *   constructor of the base game entity class.
 ********************************************************/
-ksComplex::ksComplex(ksPathFinder * path_finder, ksWorld * world, ksWorldWall wall, int row, int col,
+ksComplex::ksComplex(ksPathFinder * path_finder, ksWorld * world, int x, int y, int z,
                      int w, int h, int current_tile) :
-                     ksEntity(world, wall, row, col, w, h, current_tile),
+                     ksEntity(world, x, y, z, w, h, current_tile),
                      m_behavior(path_finder, world, this),
-                     m_loop_path(false), m_path_on(false), m_start_row(row), m_start_col(col), 
+                     m_loop_path(false), m_path_on(false), m_start_row(0), m_start_col(0), 
                      m_finish_row(0), m_finish_col(0), m_bounding_radius((w * TILE_WIDTH) / 2),
                      m_tag(false)
 {
     m_path_finder = path_finder;
 
-    ksTile temp = world->getTilePosition(wall, row, col, w, h);
-
-    m_position  = temp.TL;
+    sf::Vector2f temp_vect = world->transform3D(0.5, 1.0, 0.5);
+    
+    m_position.X = temp_vect.x;
+    m_position.Y = temp_vect.y;
     m_velocity  = ksVector2D(0, 0);
     m_heading   = ksVector2D(0, 0);
 }
@@ -116,18 +117,36 @@ void ksComplex::update()
             m_position.X = 1;
         if (m_position.X <= 0)
             m_position.X = 799;
-        if (m_position.Y >= 640)
+        if (m_position.Y >= 256)
             m_position.Y = 1;
         if (m_position.Y <= 0)
-            m_position.Y = 639;
+            m_position.Y = 255;
 
-        m_current_node.TL   = m_position;
-        m_current_node.TR.X = m_position.X + 32;
-        m_current_node.TR.Y = m_position.Y;
-        m_current_node.BR.X = m_position.X + 32;
-        m_current_node.BR.Y = m_position.Y + 64;
-        m_current_node.BL.X = m_position.X;
-        m_current_node.BL.Y = m_position.Y + 64;
+        double heightProportionToWorld = (double) 64 / m_world->getDepth();
+
+        sf::Vector2f top_left = m_world->transform3D((double) m_position.X / m_world->getWidth(),
+            1.0 - heightProportionToWorld, (double) m_position.Y / m_world->getDepth());
+        
+        sf::Vector2f top_right = 
+            m_world->transform3D((double) (m_position.X + 64) / m_world->getWidth(),
+                   1.0 - heightProportionToWorld, (double) m_position.Y / m_world->getDepth());
+
+        sf::Vector2f bottom_right =
+            m_world->transform3D((double) (m_position.X + 64) / m_world->getWidth(),
+                   1.0, (double) m_position.Y / m_world->getDepth());
+
+        sf::Vector2f bottom_left =
+            m_world->transform3D((double) m_position.X / m_world->getWidth(), 1.0,
+                   (double) m_position.Y / m_world->getDepth());
+
+        m_current_node.TL.X = top_left.x;
+        m_current_node.TL.Y = top_left.y;
+        m_current_node.TR.X = top_right.x;
+        m_current_node.TR.Y = top_right.y;
+        m_current_node.BR.X = bottom_right.x;
+        m_current_node.BR.Y = bottom_right.y;
+        m_current_node.BL.X = bottom_left.x;
+        m_current_node.BL.Y = bottom_left.y;
     }
 }
 

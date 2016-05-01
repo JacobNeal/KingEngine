@@ -14,26 +14,20 @@
 *	Initialize entity to the position, width, height and 
 *	current tile passed.
 *********************************************************/
-ksEntity::ksEntity(ksWorld * world, ksWorldWall wall, 
-                   int row, int col, int w, int h, int current_tile)
-    : m_world(world), m_wall(wall), m_width(w), m_height(h),
-      m_current_tile(current_tile), m_upper_tile(current_tile), 
-      m_lower_tile(current_tile), m_anim_delay(1), m_frame(0), 
-      m_pressed(false), m_visible(true)
+ksEntity::ksEntity(ksWorld * world, int x, int y, int z, int w, int h, 
+        int current_tile)
+    : m_world(world), m_current_tile(current_tile), 
+      m_upper_tile(current_tile), m_lower_tile(current_tile), 
+      m_anim_delay(1), m_frame(0), m_pressed(false), m_visible(true),
+      m_x(x), m_y(y), m_z(z), m_w(w), m_h(h)
 {
-	m_texture_coord.X = (current_tile - (TILE_PER_LINE * (current_tile / TILE_PER_LINE))) * (w * TILE_WIDTH);
-	m_texture_coord.Y = (current_tile / TILE_PER_LINE) * (h * TILE_HEIGHT);
-	m_texture_coord.W = (w * TILE_WIDTH);
-	m_texture_coord.H = (h * TILE_HEIGHT);
+	m_texture_coord.X = (current_tile - (TILE_PER_LINE * (current_tile / TILE_PER_LINE))) * w;
+	m_texture_coord.Y = (current_tile / TILE_PER_LINE) * h;
+	m_texture_coord.W = w;
+	m_texture_coord.H = h;
     
-    ksTile temp = world->getTilePosition(wall, row, col, w, h);
-
-    m_current_node.row = row;
-    m_current_node.col = col;
-    m_current_node.TL  = temp.TL;
-    m_current_node.TR  = temp.TR;
-    m_current_node.BL  = temp.BL;
-    m_current_node.BR  = temp.BR;
+    m_current_node.row = 0;
+    m_current_node.col = 0;
 }
 
 /*********************************************************
@@ -128,22 +122,14 @@ void ksEntity::setVisible(bool visible)
 	m_visible = visible;
 }
 
+/*********************************************************
+*   setTilePosition
+*
+*   Set the position of the entity to the passed path node.
+*********************************************************/
 void ksEntity::setTilePosition(ksPathNode node)
 {
     m_current_node = node;
-}
-
-void ksEntity::setWall(ksWorldWall wall)
-{
-    m_wall = wall;
-    
-    ksTile temp = m_world->getTilePosition(m_wall, m_current_node.row,
-                                         m_current_node.col, m_width, m_height);
-
-    m_current_node.TL  = temp.TL;
-    m_current_node.TR  = temp.TR;
-    m_current_node.BL  = temp.BL;
-    m_current_node.BR  = temp.BR;
 }
 
 /*********************************************************
@@ -173,7 +159,7 @@ const ksRect & ksEntity::getTextureCoord()
 ********************************************************/
 int ksEntity::getWidth()
 {
-    return m_width;
+    return m_w;
 }
 
 /********************************************************
@@ -183,39 +169,7 @@ int ksEntity::getWidth()
 ********************************************************/
 int ksEntity::getHeight()
 {
-    return m_height;
-}
-
-/********************************************************
-*   getRow
-*
-*   Returns the row that the entity is on. 
-********************************************************/
-int ksEntity::getRow()
-{
-    return m_current_node.row;
-}
-
-/********************************************************
-*   getColumn
-*
-*   Returns the column that the entity is on.
-********************************************************/
-int ksEntity::getColumn()
-{
-    return m_current_node.col;
-}
-
-/********************************************************
-*   getWall
-*
-*   Returns the enum for the wall type to determine
-*   which wall the entity is on and how to use the row 
-*   and column members.
-********************************************************/
-ksWorldWall ksEntity::getWall()
-{
-    return m_wall;
+    return m_h;
 }
 
 /*********************************************************
@@ -236,4 +190,19 @@ bool ksEntity::isPressed()
 bool ksEntity::isVisible()
 {
 	return m_visible;
+}
+
+int ksEntity::X()
+{
+    return m_x;
+}
+
+int ksEntity::Y()
+{
+    return m_y;
+}
+
+int ksEntity::Z()
+{
+    return m_z;
 }
