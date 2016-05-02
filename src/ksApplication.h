@@ -22,6 +22,7 @@
 #include "ksControlLayer.h"
 #include "ksPathFinder.h"
 #include "ksParticleEmitter.h"
+#include "ksLightSystem.h"
 #include "defines.h"
 #include <iostream>
 //#include "ksWorld.h"
@@ -67,6 +68,7 @@ class ksApplication
         void                  setText(std::string name, std::string text);
         void                  clearEntities();
         void                  addParticleEmitter(ksParticleEmitter * emitter);
+        void                  addLightSystem(ksLightSystem * system);
     
         //                    Accessor methods
         int                   getCameraDelta();
@@ -91,6 +93,7 @@ class ksApplication
         sf::Font              m_font;
         std::map<std::string, sf::Text> m_text_layer;
         ksParticleEmitter *   m_emitter;
+        ksLightSystem *       m_light_system;
 };
 
 #endif

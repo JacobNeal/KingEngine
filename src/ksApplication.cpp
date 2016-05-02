@@ -18,7 +18,7 @@ ksApplication::ksApplication()
 	m_world("images/voltor_interior.png"), m_camera_depth(0), 
     m_entity_layer(&m_world, "images/default.png"), 
     m_control_layer("images/portal_obj.png"), m_mouse_released(false),
-    m_emitter(nullptr)
+    m_emitter(nullptr), m_light_system(nullptr)
 {
 	m_window.setFramerateLimit(FRAMERATE);
     m_font.loadFromFile("images/minecraft.ttf");
@@ -35,7 +35,7 @@ ksApplication::ksApplication(std::string app_title, int app_width, int app_heigh
 	m_world("images/voltor_interior.png"), m_camera_depth(0), 
     m_entity_layer(&m_world, "images/default.png"), 
     m_control_layer("images/portal_obj.png"), m_mouse_released(false),
-    m_emitter(nullptr)
+    m_emitter(nullptr), m_light_system(nullptr)
 {
 	m_window.setFramerateLimit(FRAMERATE);
     m_font.loadFromFile("images/minecraft.ttf");
@@ -56,6 +56,9 @@ bool ksApplication::isOpen()
 
 //    m_window.setView(m_window.getDefaultView());
 	m_entity_layer.drawLayer(m_window);
+    
+    if (m_light_system != nullptr)
+        m_window.draw(*m_light_system);
     
     if (m_emitter != nullptr)
     {
@@ -471,4 +474,15 @@ void ksApplication::setCameraDelta(int camera_delta)
 void ksApplication::addParticleEmitter(ksParticleEmitter * emitter)
 {
     m_emitter = emitter;
+}
+
+/*********************************************************
+*   addLightSystem
+*
+*   Add a reference to a light system so that it can be
+*   drawn in the application window.
+*********************************************************/
+void ksApplication::addLightSystem(ksLightSystem * system)
+{
+    m_light_system = system;
 }

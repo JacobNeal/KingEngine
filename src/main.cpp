@@ -28,6 +28,9 @@ int main()
     // World, Color, Location, size, num, velocity, and reach (time to live)
     ksParticleEmitter emitter(app.getWorld(), sf::Color(0, 0, 255, 200), sf::Vector3f(0, 0, -192), 8, 20, 20, 60);
     app.addParticleEmitter(&emitter);
+    
+    ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 0, 100), sf::Color(0, 0, 0, 255));
+    app.addLightSystem(&lighting);
 
     ksPathFinder path_finder(app.getWorld());
     
