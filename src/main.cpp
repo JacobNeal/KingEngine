@@ -30,6 +30,7 @@ int main()
     app.addParticleEmitter(&emitter);
     
     ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 0, 100), sf::Color(0, 0, 0, 255));
+    lighting.addLight(sf::Vector3f(0, 0, 64), 256, sf::Color(255, 200, 0, 200));
     app.addLightSystem(&lighting);
 
     ksPathFinder path_finder(app.getWorld());

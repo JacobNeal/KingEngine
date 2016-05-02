@@ -25,14 +25,19 @@ class ksLightSystem : public sf::Drawable, public sf::Transformable
         ksLightSystem(ksWorld * world, sf::Color light_base_color, sf::Color dark_base_color);
             
         //                       Methods
+        void                     addLight(sf::Vector3f position, int diameter, sf::Color color);
         void                     draw(sf::RenderTarget & target, sf::RenderStates states) const;
         
     private:
+        void                     updateWallShadows();
+        
         //                       Members
         ksWorld *                m_world;
         sf::Color                m_light_base_color;
         sf::Color                m_dark_base_color;
         sf::VertexArray          m_array;
+        int                      m_number_of_lights;
+        int                      m_deepest_light_z;
 };
 
 #endif
