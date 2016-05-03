@@ -107,13 +107,15 @@ bool ksApplication::isOpen()
             }
             else if (m_evt.key.code == sf::Keyboard::Key::Right)
             {
-                if (m_emitter != nullptr)
-                    m_emitter->rotate(1.0);
+                // if (m_emitter != nullptr)
+                //     m_emitter->rotate(1.0);
+                m_world_view.rotate(1.0);
             }
             else if (m_evt.key.code == sf::Keyboard::Key::Left)
             {
-                if (m_emitter != nullptr)
-                    m_emitter->rotate(-1.0);
+                // if (m_emitter != nullptr)
+                //     m_emitter->rotate(-1.0);
+                m_world_view.rotate(-1.0);
             }
 		}
 		else if (m_evt.type == sf::Event::KeyReleased)

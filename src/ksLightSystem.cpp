@@ -6,6 +6,7 @@
 ********************************************************/
 
 #include "ksLightSystem.h"
+#include <iostream>
 
 /*********************************************************
 *	ksLightSystem
@@ -171,36 +172,24 @@ void ksLightSystem::addLight(sf::Vector3f position, int diameter, sf::Color colo
     if (position.z > m_deepest_light_z)
     {
         m_deepest_light_z = position.z;
-        updateWallShadows();
+        //updateWallShadows();
     }
     
     for (int count = 0; count < 54; ++count)
     {
         if (m_array[count].color == m_dark_base_color)
         {
-            m_array[count].color.a -= 75;
-            
-            if (m_array[count].color.a < 0)
-                m_array[count].color.a = 0;
+            if ((m_world->getDepth() - m_deepest_light_z) >= 0 && (m_world->getDepth() - m_deepest_light_z) <= 255)
+                m_array[count].color.a = m_world->getDepth() - m_deepest_light_z;
+            else
+                m_array[count].color.a = 255;
         }
-        // else if (m_array[count].color == m_light_base_color)
-        // {
-        //     m_array[count].color.a -= 75;
-            
-        //     if (m_array[count].color.a < 0)
-        //         m_array[count].color.a = 0;
-        // }
     }
     
-    m_dark_base_color.a -= 75;
-    
-    if (m_dark_base_color.a < 0)
-        m_dark_base_color.a = 0;
-        
-    // m_light_base_color.a -= 75;
-    
-    // if (m_light_base_color.a < 0)
-    //     m_light_base_color.a = 0;
+    if ((m_world->getDepth() - m_deepest_light_z) >= 0 && (m_world->getDepth() - m_deepest_light_z) <= 255)
+        m_dark_base_color.a = m_world->getDepth() - m_deepest_light_z;
+    else
+        m_dark_base_color.a = 255;
         
     for (int count = 30; count < 54; ++count)
         m_array[count].color = m_light_base_color;

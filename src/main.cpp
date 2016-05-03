@@ -4,24 +4,25 @@
 
 int main()
 {
-	ksApplication app("KingTravel", 800, 640);
+	ksApplication app("KingEngine", 800, 640);
 	app.setEntityTilesheet("images/voltor_interior.png");
 
-    app.insertText(50, 50, "title", "KingTravel", 30, ksColor(0, 0, 0, 100));
-    app.insertText(50, 80, "subtitle", "Simulation", 20, ksColor(0, 0, 0, 75));
+    app.insertText(53, 53, "title", "KingEngine", 30, ksColor(0, 0, 0, 200));
+    app.insertText(50, 50, "title2", "KingEngine", 30, ksColor(255, 255, 255, 200));
+    app.insertText(50, 85, "subtitle", "Particle Demo", 20, ksColor(0, 0, 0, 200));
 
-    app.insertText(350, 50, "scenario", "", 20, ksColor(0, 0, 0, 100));
-    app.insertText(350, 70, "scenario_description", "", 20, ksColor(0, 0, 0, 100));
+    // app.insertText(350, 50, "scenario", "", 20, ksColor(0, 0, 0, 100));
+    // app.insertText(350, 70, "scenario_description", "", 20, ksColor(0, 0, 0, 100));
 
-    app.insertText(600, 50, "entity_count", "", 20, ksColor(0, 0, 0, 100));
+    // app.insertText(600, 50, "entity_count", "", 20, ksColor(0, 0, 0, 100));
 
-    // Directions displayed on screen
-    app.insertText(50, 120, "scenario_directions1", "Press 1 for patrolling guard scenario",
-                   20, ksColor(0, 0, 0, 75));
-    app.insertText(50, 140, "scenario_directions2", "Press 2 for pack of wolves scenario",
-                   20, ksColor(0, 0, 0, 75));
-    app.insertText(50, 160, "scenario_directions3", "Press 3 for rabbit and fox scenario",
-                   20, ksColor(0, 0, 0, 75));
+    // // Directions displayed on screen
+    // app.insertText(50, 120, "scenario_directions1", "Press 1 for patrolling guard scenario",
+    //                20, ksColor(0, 0, 0, 75));
+    // app.insertText(50, 140, "scenario_directions2", "Press 2 for pack of wolves scenario",
+    //                20, ksColor(0, 0, 0, 75));
+    // app.insertText(50, 160, "scenario_directions3", "Press 3 for rabbit and fox scenario",
+    //                20, ksColor(0, 0, 0, 75));
 
     app.loadWorld(8, 4, 8, "maps/exterior");
     
@@ -30,7 +31,7 @@ int main()
     app.addParticleEmitter(&emitter);
     
     ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 0, 100), sf::Color(0, 0, 0, 255));
-    lighting.addLight(sf::Vector3f(0, 0, 64), 256, sf::Color(255, 200, 0, 200));
+    lighting.addLight(sf::Vector3f(128, 128, 256), 256, sf::Color(255, 200, 0, 255));
     app.addLightSystem(&lighting);
 
     ksPathFinder path_finder(app.getWorld());
@@ -51,7 +52,7 @@ int main()
         if (scenario_mode == 2)
         {
             for (int count = 0; count < entity_num; ++count)
-                entity_list[count]->arrive(ksVector2D(0, 128));
+                entity_list[count]->arrive(ksVector2D(128, 128));
             
             if (app.getKeyDown(ksKey::Space))
             {
@@ -64,7 +65,7 @@ int main()
                     for (int count2 = 0; count2 < entity_num; ++count2)
                     {
                         entity_list[count]->addToGroup(entity_list[count2]);
-                        entity_list[count]->arrive(ksVector2D(0, 128));
+                        entity_list[count]->arrive(ksVector2D(128, 128));
                     }
                     entity_list[count]->group();
                     entity_list[count]->avoidObstacles();
@@ -172,7 +173,7 @@ int main()
                 for (int count2 = 0; count2 < entity_num; ++count2)
                 {
                     entity_list[count]->addToGroup(entity_list[count2]);
-                    entity_list[count]->arrive(ksVector2D(0, 128));
+                    entity_list[count]->arrive(ksVector2D(128, 128));
                 }
                 entity_list[count]->group();
                 entity_list[count]->avoidObstacles();
