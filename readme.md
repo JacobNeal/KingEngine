@@ -14,11 +14,9 @@ C++, SFML and the Lua scripting language.<br /><br />
 
 ###<b>Screenshots:</b><br />
 ---
-####Demonstration of the particle engine, lighting system and map generation.<br />
+####Demonstration of the particle engine, and lighting system.<br />
+![alt text](src/images/KingEngine_particle_demo.gif)<br />
 ![alt text](src/images/KingEngine_particle_engine.gif)<br />
-
-####Opening 3D perspective splash screen for the KingTravel Demo.<br />
-![alt text](src/images/KingTravelDemo_1.png)<br />
 
 ####Demonstration of A* pathfinding algorithm.<br />
 ![alt text](src/images/KingTravelDemo_2.png)<br />
