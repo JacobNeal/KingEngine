@@ -17,6 +17,7 @@
 #define KS_APPLICATION_H
 
 #include <SFML/Graphics.hpp>
+#include <list>
 #include <map>
 #include "ksEntityLayer.h"
 #include "ksControlLayer.h"
@@ -24,6 +25,7 @@
 #include "ksParticleEmitter.h"
 #include "ksLightSystem.h"
 #include "defines.h"
+#include "ksScene.h"
 #include <iostream>
 //#include "ksWorld.h"
 
@@ -70,6 +72,9 @@ class ksApplication
         void                  addParticleEmitter(ksParticleEmitter * emitter);
         void                  addLightSystem(ksLightSystem * system);
         void                  run();
+        void                  addScene(ksScene<double> * scene);
+        void                  startSequence();
+        void                  pauseSequence();
     
         //                    Accessor methods
         int                   getCameraDelta();
@@ -97,6 +102,9 @@ class ksApplication
         std::map<std::string, sf::Text> m_text_layer;
         ksParticleEmitter *   m_emitter;
         ksLightSystem *       m_light_system;
+        std::list<ksScene<double> *> m_scenes;
+        std::list<ksScene<double> *>::iterator m_current_scene;
+        bool                  m_scene_paused;
 };
 
 #endif

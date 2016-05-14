@@ -18,12 +18,13 @@ ksApplication::ksApplication()
 	m_world("images/voltor_interior.png"), m_camera_depth(0), 
     m_entity_layer(&m_world, "images/default.png"), 
     m_control_layer("images/portal_obj.png"), m_mouse_released(false),
-    m_emitter(nullptr), m_light_system(nullptr)
+    m_emitter(nullptr), m_light_system(nullptr), m_scene_paused(false)
 {
 	m_window.setFramerateLimit(FRAMERATE);
     m_font = new sf::Font;
     m_font->loadFromFile("images/minecraft.ttf");
     m_gui_view = m_window.getDefaultView();
+    m_current_scene = m_scenes.begin();
 }
 
 /*********************************************************
@@ -37,12 +38,13 @@ ksApplication::ksApplication(std::string app_title, int app_width, int app_heigh
 	m_world("images/voltor_interior.png"), m_camera_depth(0), 
     m_entity_layer(&m_world, "images/default.png"), 
     m_control_layer("images/portal_obj.png"), m_mouse_released(false),
-    m_emitter(nullptr), m_light_system(nullptr)
+    m_emitter(nullptr), m_light_system(nullptr), m_scene_paused(false)
 {
 	m_window.setFramerateLimit(FRAMERATE);
     m_font = new sf::Font;
     m_font->loadFromFile("images/minecraft.ttf");
     m_gui_view = m_window.getDefaultView();
+    m_current_scene = m_scenes.begin();
 }
 
 /*********************************************************
@@ -157,7 +159,8 @@ bool ksApplication::isOpen()
         else if (m_evt.type == sf::Event::Resized)
         {
             // Center the world view
-            m_world_view.setCenter(sf::Vector2f(m_evt.size.width, m_evt.size.height) / 2.0f);
+            //m_world_view = sf::View(sf::FloatRect(0.f, 0.f, 800, 640));
+            m_world_view.setCenter(m_evt.size.width / 2, m_evt.size.height / 2);
             
             std::cout << "Center: " << (m_evt.size.width / 2) << ", " << (m_evt.size.height / 2) << '\n';
             
@@ -185,6 +188,17 @@ bool ksApplication::isOpen()
 		else
 			m_mouse_released = false;
 	}
+    
+    if (!m_scene_paused)
+    {
+        // Update the current scene
+        if (m_current_scene != m_scenes.end())
+            (*m_current_scene)->update();
+        
+        // Advance current scene if it's finished.
+        if (m_current_scene != m_scenes.end() && (*m_current_scene)->isDone())
+            ++m_current_scene;
+    }
 
 	return m_window.isOpen();
 }
@@ -505,4 +519,23 @@ void ksApplication::addLightSystem(ksLightSystem * system)
 void ksApplication::run()
 {
     while (isOpen()) ;
+}
+
+void ksApplication::addScene(ksScene<double> * scene)
+{
+    m_scenes.push_back(scene);
+    m_current_scene = m_scenes.begin();
+}
+
+void ksApplication::startSequence()
+{
+    m_scene_paused = false;
+    
+    if (m_current_scene == m_scenes.end())
+        m_current_scene = m_scenes.begin();
+}
+
+void ksApplication::pauseSequence()
+{
+    m_scene_paused = true;
 }

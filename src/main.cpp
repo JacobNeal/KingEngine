@@ -3,7 +3,9 @@
 #include "ksPathFinder.h"
 #include "ksButton.h"
 #include "ksContainer.h"
-#include "ksLabel.h"
+#include "ksTransition.h"
+#include "ksScene.h"
+#include <string>
 
 int main()
 {
@@ -77,15 +79,51 @@ int main()
     int emitter_x = 400;
     int emitter_z = 128;
     
+    double alpha_value = 255.0;
+    double alpha_value2 = 255.0;
+    
+    ksScene<double> scene;
+    
+    // 60 frames / (30 frames / sec) = 2 seconds
+    scene.addTransition(ksTransition<double>(&alpha_value, 0, 30));
+    scene.addTransition(ksTransition<double>(&alpha_value2, 0, 60));
+    
+    double alpha_value3 = 255.0;
+    double alpha_value4 = 255.0;
+    
+    ksScene<double> scene2;
+    
+    scene2.addTransition(ksTransition<double>(&alpha_value3, 0, 30));
+    scene2.addTransition(ksTransition<double>(&alpha_value4, 0, 60));
+    
+    app.addScene(&scene);
+    app.addScene(&scene2);
+    
     // Run the app without a main loop
     //app.run();
 
     while (app.isOpen())
     {
         if (button1.isPressed())
+            app.pauseSequence();
+        else if (button2.isPressed())
+            app.startSequence();
+        
+        if (!scene.isDone())
         {
-            button1.setText("Clicked.");
+            button1.setColor(ksColor(30, 30, 30, (int) alpha_value));
+            button2.setColor(ksColor(30, 30, 30, (int) alpha_value2));
         }
+        else
+            button3.setText("Finished.");
+            
+        if (!scene2.isDone())
+        {
+            button4.setColor(ksColor(30, 30, 30, (int) alpha_value3));
+            button5.setColor(ksColor(30, 30, 30, (int) alpha_value4));
+        }
+        else
+            button6.setText("Finished.");
     }
 
 	return 0;
