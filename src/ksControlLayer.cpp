@@ -17,7 +17,7 @@ ksControlLayer::ksControlLayer(std::string tilesheet)
     : m_num_of_controls(0), m_pressedControl(nullptr)
 {
    m_texture.loadFromFile(tilesheet);
-   m_array.setPrimitiveType(sf::Quads);
+   m_array.setPrimitiveType(sf::Triangles);
 }
 
 /********************************************************
@@ -41,16 +41,7 @@ void ksControlLayer::addControl(ksControl * control)
 void ksControlLayer::drawLayer(sf::RenderWindow & app)
 {
     for (int count = 0; count < m_num_of_controls; ++count)
-    {
-        sf::VertexArray * temp = m_controls[count]->getVertexArray();
-
-        for (int vertex_count = 0; 
-                 vertex_count < temp->getVertexCount(); 
-                 ++vertex_count)
-            m_array.append((*temp)[vertex_count]);
-    }
-
-    app.draw(*this);
+        m_controls[count]->drawControl(app);
 }
 
 /********************************************************

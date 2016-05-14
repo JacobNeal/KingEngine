@@ -7,6 +7,7 @@
 
 #include "ksWorld.h"
 #include <iostream>
+#include <math.h>
 
 /********************************************************
 *   ksWorld
@@ -990,6 +991,17 @@ void ksWorld::transform3DWorld(int world_width_px, int world_height_px,
     transformRightWall(index, map_row_num, map_depth_num);
 }
 
+/********************************************************
+*   transform2DWorld
+*
+*   Transforms the world into a flat 2D plain of the
+*   front wall.
+********************************************************/
+void ksWorld::transform2DWorld()
+{
+    transform3DWorld(m_world_width_px, m_world_height_px, 1, m_map_row_num, m_map_col_num, m_map_depth_num);
+}
+
 void ksWorld::applyTextureCoordinates()
 {
     int index = 0;
@@ -1217,6 +1229,26 @@ void ksWorld::transformRightWall(int & index, int map_row_num, int map_depth_num
             index += 6;
         }
     }
+}
+
+/********************************************************
+*   moveCamera
+*
+*   Move the camera's perspective by the passed
+*   (x, y, z) values.
+********************************************************/
+void ksWorld::moveCamera(int x, int y, int z)
+{
+    m_camera_x += x;
+    m_camera_y += y;
+    //m_camera_z += z;
+    std::cout << "Map depth: " << m_map_depth_num << '\n';
+    m_map_depth_num -= z;
+    m_camera_z += (z * 32);
+    std::cout << "New Map depth: " << m_map_depth_num << '\n';
+    
+    transform3DWorld(m_world_width_px, m_world_height_px, m_world_depth_px,
+        m_map_row_num, m_map_col_num, m_map_depth_num);
 }
 
 /********************************************************

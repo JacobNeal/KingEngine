@@ -21,7 +21,9 @@ ksApplication::ksApplication()
     m_emitter(nullptr), m_light_system(nullptr)
 {
 	m_window.setFramerateLimit(FRAMERATE);
-    m_font.loadFromFile("images/minecraft.ttf");
+    m_font = new sf::Font;
+    m_font->loadFromFile("images/minecraft.ttf");
+    m_gui_view = m_window.getDefaultView();
 }
 
 /*********************************************************
@@ -38,7 +40,9 @@ ksApplication::ksApplication(std::string app_title, int app_width, int app_heigh
     m_emitter(nullptr), m_light_system(nullptr)
 {
 	m_window.setFramerateLimit(FRAMERATE);
-    m_font.loadFromFile("images/minecraft.ttf");
+    m_font = new sf::Font;
+    m_font->loadFromFile("images/minecraft.ttf");
+    m_gui_view = m_window.getDefaultView();
 }
 
 /*********************************************************
@@ -65,14 +69,17 @@ bool ksApplication::isOpen()
         m_emitter->update();
         m_window.draw(*m_emitter);
     }
-        
-	m_control_layer.drawLayer(m_window);
+    
+    //m_window.setView(m_window.getDefaultView());
+    m_window.setView(m_gui_view);
     
     for (std::map<std::string, sf::Text>::iterator iter = m_text_layer.begin();
          iter != m_text_layer.end(); iter++)
     {
         m_window.draw(iter->second);
     }
+    
+	m_control_layer.drawLayer(m_window);
 
     m_window.display();
 
@@ -97,25 +104,45 @@ bool ksApplication::isOpen()
 
             if (m_evt.key.code == sf::Keyboard::Key::Up)
             {
-                if (m_emitter != nullptr)
-                    m_emitter->moveEmitter(0, 0, 5);
+                // if (m_emitter != nullptr)
+                //     m_emitter->moveEmitter(0, 0, 5);
+                m_world.moveCamera(0, 0, 1);
+                
+                if (m_light_system != nullptr)
+                    m_light_system->updateWallShadows();
             }
             else if (m_evt.key.code == sf::Keyboard::Key::Down)
             {
-                if (m_emitter != nullptr)
-                    m_emitter->moveEmitter(0, 0, -5);
+                // if (m_emitter != nullptr)
+                //     m_emitter->moveEmitter(0, 0, -5);
+                m_world.moveCamera(0, 0, -1);
+                
+                if (m_light_system != nullptr)
+                    m_light_system->updateWallShadows();
             }
             else if (m_evt.key.code == sf::Keyboard::Key::Right)
             {
                 // if (m_emitter != nullptr)
                 //     m_emitter->rotate(1.0);
-                m_world_view.rotate(1.0);
+                //m_world_view.rotate(1.0);
+                m_world.moveCamera(20, 0, 0);
+                
+                if (m_light_system != nullptr)
+                    m_light_system->updateWallShadows();
             }
             else if (m_evt.key.code == sf::Keyboard::Key::Left)
             {
                 // if (m_emitter != nullptr)
                 //     m_emitter->rotate(-1.0);
-                m_world_view.rotate(-1.0);
+                //m_world_view.rotate(-1.0);
+                m_world.moveCamera(-20, 0, 0);
+                
+                if (m_light_system != nullptr)
+                    m_light_system->updateWallShadows();
+            }
+            else if (m_evt.key.code == sf::Keyboard::Key::Space)
+            {
+                m_world.transform2DWorld();
             }
 		}
 		else if (m_evt.type == sf::Event::KeyReleased)
@@ -129,29 +156,13 @@ bool ksApplication::isOpen()
 		}
         else if (m_evt.type == sf::Event::Resized)
         {
-            int new_width = 0;
-            int new_height = 0;
-            double heightProportionToWidth = 0.8; 
-                //m_window.getSize().y / m_window.getSize().x;
-
-            // Set width to the smallest orientation
-            new_width = m_evt.size.width < m_evt.size.height ? 
-                m_evt.size.width : m_evt.size.height;
+            // Center the world view
+            m_world_view.setCenter(sf::Vector2f(m_evt.size.width, m_evt.size.height) / 2.0f);
             
-            // Scale height proptionate to the new width
-            new_height = new_width * heightProportionToWidth;
-
-            // Center the world
-            m_world_view.reset(sf::FloatRect(0.f, 0.f, 800.f, 640.f));
+            std::cout << "Center: " << (m_evt.size.width / 2) << ", " << (m_evt.size.height / 2) << '\n';
             
-            double world_px_y = (m_evt.size.height - new_height) / 2;
-            double world_top = world_px_y / m_evt.size.height;
-            double height_scale = 1.0 - (world_top * 2);
-
-            m_world_view.setViewport(sf::FloatRect(0.f, world_top, 1.f, height_scale));
-
-            std::cout << "Viewport: 0, " << world_top << ", 1, "
-                      << height_scale << "\n";
+            m_gui_view.setCenter(sf::Vector2f(m_evt.size.width, m_evt.size.height) / 2.0f);
+            m_gui_view.setSize(sf::Vector2f(m_evt.size.width, m_evt.size.height));
         }
 		else if (m_evt.type == sf::Event::Closed)
 			m_window.close();
@@ -165,13 +176,10 @@ bool ksApplication::isOpen()
             {
                 m_mouse_released = false;
             }
-            else
-            {
-                if (m_entity_layer.pressEntity(sf::Mouse::getPosition(m_window).x,
-				    sf::Mouse::getPosition(m_window).y))
-			    {
-				    m_mouse_released = false;
-			    }
+            else if (m_entity_layer.pressEntity(sf::Mouse::getPosition(m_window).x,
+	           sf::Mouse::getPosition(m_window).y))
+			{
+                m_mouse_released = false;
             }
 		}
 		else
@@ -276,17 +284,6 @@ void ksApplication::addControl(ksControl * control)
 }
 
 /*********************************************************
-*   addLight
-*
-*   Add a light that is projected from the start position
-*   onto a particular tile on the wall.
-*********************************************************/
-void ksApplication::addLight(ksVector2D start, ksWorldWall wall, int row, int col, ksColor first, ksColor second)
-{
-    m_world.addLight(start, wall, row, col, first, second);
-}
-
-/*********************************************************
 *   loadWorld
 *
 *   Loads the perspective game world using the passed
@@ -382,7 +379,7 @@ void ksApplication::toggleWorld3D()
 void ksApplication::insertText(double x, double y, std::string name, 
                                std::string text, int size, ksColor color)
 {
-    m_text_layer.insert(std::pair<std::string, sf::Text>(name, sf::Text(text, m_font)));
+    m_text_layer.insert(std::pair<std::string, sf::Text>(name, sf::Text(text, *m_font)));
     m_text_layer[name].setPosition(x, y);
     m_text_layer[name].setCharacterSize(size);
     m_text_layer[name].setColor(color);
@@ -431,6 +428,16 @@ int ksApplication::getSmallestOrientation()
 {
     return m_window.getSize().x < m_window.getSize().y ?
         (int) m_window.getSize().x : (int) m_window.getSize().y;
+}
+
+/*********************************************************
+*   getFont
+*
+*   Returns a reference to the font used in the application.
+*********************************************************/
+sf::Font * ksApplication::getFont()
+{
+    return m_font;
 }
 
 /*********************************************************
@@ -487,4 +494,15 @@ void ksApplication::addParticleEmitter(ksParticleEmitter * emitter)
 void ksApplication::addLightSystem(ksLightSystem * system)
 {
     m_light_system = system;
+}
+
+/*********************************************************
+*   run
+*
+*   Allow the developer to just run the application without
+*   creating a main loop in external code.
+*********************************************************/
+void ksApplication::run()
+{
+    while (isOpen()) ;
 }

@@ -82,6 +82,7 @@ class ksWorld : public sf::Drawable, public sf::Transformable
                                       int world_height_px, int world_depth_px, 
                                       int map_row_num, int map_col_num, 
                                       int map_depth_num);
+        void            transform2DWorld();
         void            applyTextureCoordinates();
         void            transformFrontWall(int & index, int map_row_num,
                                            int map_col_num);
@@ -93,6 +94,7 @@ class ksWorld : public sf::Drawable, public sf::Transformable
                                           int map_depth_num);
         void            transformRightWall(int & index, int map_row_num,
                                            int map_depth_num);
+        void            moveCamera(int x, int y, int z);
 
         //              Accessor methods
         int             getWidth() { return m_world_width_px; }

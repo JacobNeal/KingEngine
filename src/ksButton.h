@@ -14,37 +14,34 @@
 #define KS_BUTTON_H
 
 #include <SFML/Graphics.hpp>
-#include "ksVector2D.h"
-#include "ksControl.h"
-#include "defines.h"
+#include "ksContainer.h"
+#include "ksLabel.h"
 
 class ksButton : public ksControl
 {
     public:
         //                         Constructors
-//        ksButton(sf::Font * font, std::string text, double x, double y);
-        ksButton(double x, double y, std::string text, double w, double h);
+        ksButton(sf::Font * font, std::string text, double w, double h, ksColor color = ksColor(45, 45, 48), 
+                 ksColor pressed_color = ksColor(30, 30, 30), double radius = 16, int resolution = 4);
 
         //                         Methods
-        virtual void               update();
-        virtual void               drawControl(sf::RenderWindow * app);
-        virtual void               move(double x, double y);
-        virtual sf::VertexArray *  getVertexArray();
+        virtual void               drawControl(sf::RenderWindow & app);
+        virtual void               moveControl(double x, double y);
         virtual bool               pressed(int mouse_x, int mouse_y);
         virtual bool               isPressed();
+        virtual void               released();
+        virtual void               setCenter(double x, double y);
+        void                       setColor(ksColor color);
+        virtual void               setControlPosition(double x, double y);
         virtual void               setPressed(bool pressed);
+        void                       setText(std::string str);
 
     private:
-        //                         Private methods
-        void                       popEffect();
-
         //                         Data members
-        sf::VertexArray            m_array;
-        //sf::Text                   m_text;
-        ksVector2D                 m_position;
-        double                     m_width;
-        double                     m_height;
-        bool                       m_pressed;
+        ksContainer                m_container;
+        ksLabel                    m_label;
+        ksColor                    m_color;
+        ksColor                    m_pressed_color;
 };
 
 #endif

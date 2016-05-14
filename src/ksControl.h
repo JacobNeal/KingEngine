@@ -20,12 +20,12 @@ class ksControl
 {
     public:
         //                         Methods
-        virtual void               update() = 0;
-//        virtual void               drawControl() = 0;
-        virtual void               move(double x, double y) = 0;
-        virtual sf::VertexArray *  getVertexArray() = 0;
+        virtual void               drawControl(sf::RenderWindow & app) = 0;
+        virtual void               moveControl(double x, double y) = 0;
         virtual bool               pressed(int mouse_x, int mouse_y) = 0;
         virtual bool               isPressed() = 0;
+        virtual void               setCenter(double x, double y) = 0;
+        virtual void               setControlPosition(double x, double y) = 0;
         virtual void               setPressed(bool pressed) = 0;
 };
 

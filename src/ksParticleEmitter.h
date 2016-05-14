@@ -20,6 +20,7 @@
 #include <SFML/Graphics.hpp>
 #include "ksWorld.h"
 #include "ksParticle.h"
+#include "defines.h"
 
 class ksParticleEmitter : public sf::Drawable, public sf::Transformable
 {

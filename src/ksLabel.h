@@ -22,18 +22,22 @@ class ksLabel : public ksControl
 {
     public:
         //                         Constructors
-        ksLabel(std::string str, double x, double y);
+        ksLabel(sf::Font * font, std::string str, double x, double y);
 
         //                         Methods
-        virtual void               update();
-        virtual void               move(double x, double y);
-        virtual sf::VertexArray *  getVertexArray();
+        virtual void               drawControl(sf::RenderWindow & app);
+        virtual void               moveControl(double x, double y);
+        virtual bool               pressed(int mouse_x, int mouse_y);
+        virtual bool               isPressed();
+        virtual void               setCenter(double x, double y);
+        virtual void               setControlPosition(double x, double y);
+        virtual void               setPressed(bool pressed);
+        void                       setText(std::string str);
 
     private:
         //                         Data members
-        sf::VertexArray            m_array;
         ksVector2D                 m_position;
-        std::string                m_string;
+        sf::Text                   m_text;
         bool                       m_pressed;
         bool                       m_visible;
 };

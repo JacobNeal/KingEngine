@@ -27,10 +27,9 @@ class ksLightSystem : public sf::Drawable, public sf::Transformable
         //                       Methods
         void                     addLight(sf::Vector3f position, int diameter, sf::Color color);
         void                     draw(sf::RenderTarget & target, sf::RenderStates states) const;
-        
-    private:
         void                     updateWallShadows();
         
+    private:
         //                       Members
         ksWorld *                m_world;
         sf::Color                m_light_base_color;

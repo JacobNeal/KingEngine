@@ -23,6 +23,9 @@ ksParticleEmitter::ksParticleEmitter(ksWorld * world, sf::Color color, sf::Vecto
     
     // Using triangle primitives for OpenGL ES compliance
     m_array.setPrimitiveType(sf::Triangles);
+    
+    // Resize vertex array of particles (1000 quads * 6 vertices = 6000 vertices)
+    m_array.resize(MAX_PARTICLES * 6);
 }
 
 /*********************************************************
@@ -120,9 +123,14 @@ void ksParticleEmitter::update()
 {
     // Generate new particles each frame.
     for (int count = 0; count < m_num; ++count)
-        m_particles.push_back(generateParticle());
+    {
+        if (m_particles.size() < MAX_PARTICLES)
+            m_particles.push_back(generateParticle());
+        else
+            break;
+    }
     
-    m_array.resize(m_particles.size() * 6);
+    //m_array.resize(m_particles.size() * 6);
         
     for (int particle = 0; particle < m_particles.size(); ++particle)
     {
@@ -133,7 +141,6 @@ void ksParticleEmitter::update()
         {
             m_particles.erase(m_particles.begin() + particle);
             --particle;
-            m_array.resize(m_particles.size() * 6);
         }
         else
         {

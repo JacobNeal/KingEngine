@@ -69,11 +69,13 @@ class ksApplication
         void                  clearEntities();
         void                  addParticleEmitter(ksParticleEmitter * emitter);
         void                  addLightSystem(ksLightSystem * system);
+        void                  run();
     
         //                    Accessor methods
         int                   getCameraDelta();
         ksWorld *             getWorld();
         int                   getSmallestOrientation();
+        sf::Font *            getFont();
 
 		//                    Mutators
 		void                  setEntityTilesheet(std::string tilesheet);
@@ -90,7 +92,8 @@ class ksApplication
 		bool                  m_mouse_released;
 		sf::Event             m_evt;
         sf::View              m_world_view;
-        sf::Font              m_font;
+        sf::View              m_gui_view;
+        sf::Font *            m_font;
         std::map<std::string, sf::Text> m_text_layer;
         ksParticleEmitter *   m_emitter;
         ksLightSystem *       m_light_system;
