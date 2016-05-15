@@ -144,10 +144,6 @@ bool ksApplication::isOpen()
                 if (m_light_system != nullptr)
                     m_light_system->updateWallShadows();
             }
-            else if (m_evt.key.code == sf::Keyboard::Key::Space)
-            {
-                m_world.transform2DWorld();
-            }
 		}
 		else if (m_evt.type == sf::Event::KeyReleased)
 		{

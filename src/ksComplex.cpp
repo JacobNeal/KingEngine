@@ -105,7 +105,7 @@ void ksComplex::update()
             m_velocity               += acceleration * time; // v = a * t
 
             //m_velocity.truncate(150); // Results in 5 pixels / frame (150 pixels / sec * 1 sec / 30 frames)
-            m_velocity.truncate(300); // Results in 10 pixels / frame (300 pixels / sec * 1 sec / 30 frames)
+            m_velocity.truncate(300); // Results in 10 pixels / frame (300  pixels / sec * 1 sec / 30 frames)
         
             m_position               += m_velocity * time; // p = v * t
 
@@ -118,14 +118,14 @@ void ksComplex::update()
             m_elapsed_time.restart();
 
             // Loop entity around boundaries.
-            if (m_position.X >= m_world->getWidth())
-                m_position.X = 1;
-            if (m_position.X <= 0)
-                m_position.X = m_world->getWidth() - 1;
-            if (m_position.Y >= m_world->getDepth())
-                m_position.Y = 1;
-            if (m_position.Y <= 0)
-                m_position.Y = m_world->getDepth() - 1;
+            if (m_position.X > m_world->getWidth())
+                m_position.X = m_world->getWidth();
+            if (m_position.X < 0)
+                m_position.X = 0;
+            if (m_position.Y > m_world->getDepth())
+                m_position.Y = m_world->getDepth();
+            if (m_position.Y < 0)
+                m_position.Y = 0;
 
             m_x = m_position.X;
             m_z = m_position.Y;

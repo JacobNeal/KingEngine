@@ -25,8 +25,13 @@ int main()
     ksParticleEmitter emitter(app.getWorld(), sf::Color(0, 0, 255, 200), sf::Vector3f(0, 0, -600), 8, 20, 20, 60);
     app.addParticleEmitter(&emitter);
     
-    ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 0, 100), sf::Color(0, 0, 0, 255));
-    lighting.addLight(sf::Vector3f(128, 128, 800), 256, sf::Color(255, 200, 0, 255));
+    // Sunny day
+    // ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 0, 100), sf::Color(0, 0, 0, 255));
+    // lighting.addLight(sf::Vector3f(128, 128, 800), 256, sf::Color(255, 200, 0, 255));
+    
+    // Nightime
+    ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 255, 120), sf::Color(0, 0, 255, 60));
+    //lighting.addLight(sf::Vector3f(128, 128, 800), 256, sf::Color(255, 255, 200, 255));
     app.addLightSystem(&lighting);
     
     // Create a wrapper for a column of rows of buttons.
@@ -114,11 +119,12 @@ int main()
     ksEntity tree(app.getWorld(), 600, 0, 800, 2, 4, 18);
     app.addEntity(&tree);
     
-    ksComplex ent(&path_finder, app.getWorld(), 400, 200, 32, 1, 2, 10);
+    // ksComplex ent(&path_finder, app.getWorld(), 400, 200, 32, 1, 2, 10);
+    ksComplex ent(&path_finder, app.getWorld(), 400, 200, 32, 2, 2, 30);
     app.addEntity(&ent);
-    ent.setAnimationLower(10);
-    ent.setAnimationUpper(12);
-    ent.setAnimationDelay(60);
+    ent.setAnimationLower(27);
+    ent.setAnimationUpper(29);
+    ent.setAnimationDelay(30);
     ent.toggleBehavior();
     
     // Add wolves.
@@ -127,10 +133,10 @@ int main()
     
     for (int count = 0; count < 8; ++count)
     {
-        entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), emitter_x, 200, emitter_z, 1, 2, 10));
-        entity_list[entity_num]->setAnimationLower(10);
-        entity_list[entity_num]->setAnimationUpper(12);
-        entity_list[entity_num]->setAnimationDelay(60);
+        entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), emitter_x, 200, emitter_z, 2, 2, 30));
+        entity_list[entity_num]->setAnimationLower(30);
+        entity_list[entity_num]->setAnimationUpper(35);
+        entity_list[entity_num]->setAnimationDelay(5);
         app.addEntity(entity_list[entity_num++]);
     }
     
@@ -159,29 +165,53 @@ int main()
         {
             app.startSequence();
         }
+        
+        // Set default animation for player
+        ent.setAnimationLower(27);
+        ent.setAnimationUpper(29);
+        ent.setAnimationDelay(30);
+        
         if (app.getKeyDown(ksKey::W))
         {
             if ((ent.Z() + 50) < app.getWorld()->getDepth())
                 ent.moveEntity(0, 0, 50);
+            
+            ent.setAnimationLower(37);
+            ent.setAnimationUpper(42);
+            ent.setAnimationDelay(5);
         }
         if (app.getKeyDown(ksKey::S))
         {
             if ((ent.Z() - 50) > 0)
                 ent.moveEntity(0, 0, -50);
+                
+            ent.setAnimationLower(30);
+            ent.setAnimationUpper(35);
+            ent.setAnimationDelay(5);
         }
         if (app.getKeyDown(ksKey::A))
         {
             if ((ent.X() - 25) > 0)
                 ent.moveEntity(-25, 0, 0);
+                
+            ent.setAnimationLower(55);
+            ent.setAnimationUpper(60);
+            ent.setAnimationDelay(5);
         }
         if (app.getKeyDown(ksKey::D))
         {
             if ((ent.X() + 25) < app.getWorld()->getWidth())
                 ent.moveEntity(25, 0, 0);
+                
+            ent.setAnimationLower(46);
+            ent.setAnimationUpper(51);
+            ent.setAnimationDelay(5);
         }
         
         for (int count = 0; count < entity_num; ++count)
+        {
             entity_list[count]->arrive(ksVector2D(ent.X(), ent.Z()));
+        }
         
         if (title_fade_in.isDone())
             track.update();
@@ -189,13 +219,13 @@ int main()
         if (title_fade_in.isDone() && !title_fade_out.isDone())
         {
             // Get the sun's position.
-            ksVector3f temp = lighting.getLightPosition(0);
+            //ksVector3f temp = lighting.getLightPosition(0);
             
             // Update the sun's z coordinate.
-            temp.z = sun_z_position;
+            //temp.z = sun_z_position;
             
             // Update the position of the light source.
-            lighting.setLightPosition(0, temp.x, temp.y, temp.z);
+            //lighting.setLightPosition(0, temp.x, temp.y, temp.z);
             //lighting.addLight(sf::Vector3f(128, 128, sun_z_position), 256, sf::Color(255, 200, 0, 255));
         }
         
