@@ -259,6 +259,33 @@ void ksLightSystem::setLightPosition(int index, int x, int y, int z)
     m_array[temp + 21].position   = center;
     m_array[temp + 22].position   = m_world->transform3DWithPixelValue(position.x, position.y - radius, position.z);
     m_array[temp + 23].position   = m_world->transform3DWithPixelValue(position.x + edge, position.y - edge, position.z);
+    
+    // Update the wall shadows with the light sources new position;
+    // Push the wall shadows back further from the light
+    if (position.z > m_deepest_light_z)
+    {
+        m_deepest_light_z = position.z;
+        //updateWallShadows();
+    }
+    
+    for (int count = 0; count < 54; ++count)
+    {
+        if (m_array[count].color == m_dark_base_color)
+        {
+            if ((m_world->getDepth() - m_deepest_light_z) >= 0 && (m_world->getDepth() - m_deepest_light_z) <= 255)
+                m_array[count].color.a = m_world->getDepth() - m_deepest_light_z;
+            else
+                m_array[count].color.a = 255;
+        }
+    }
+    
+    if ((m_world->getDepth() - m_deepest_light_z) >= 0 && (m_world->getDepth() - m_deepest_light_z) <= 255)
+        m_dark_base_color.a = m_world->getDepth() - m_deepest_light_z;
+    else
+        m_dark_base_color.a = 255;
+        
+    for (int count = 30; count < 54; ++count)
+        m_array[count].color = m_light_base_color;
 }
 
 /*********************************************************
@@ -281,7 +308,12 @@ void ksLightSystem::draw(sf::RenderTarget & target, sf::RenderStates states) con
 *********************************************************/
 void ksLightSystem::updateWallShadows()
 {
-    // Check for the deepest z value.
+    // // Check for the deepest z value.
+    // m_deepest_light_z = 0.0;
+    
+    // for (int count = 0; count < m_number_of_lights; ++count)
+    //     if (m_lights[count].getPosition().z < m_deepest_light_z)
+    //         m_deepest_light_z = m_lights[count].getPosition().z;
     
     // Left
     m_array[0].position     = m_world->transform3DWithPixelValue(0, 0, m_deepest_light_z);

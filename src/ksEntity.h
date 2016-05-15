@@ -30,9 +30,7 @@ class ksEntity
 		//                 Methods
 		void               animate();
 		virtual void       update();
-        //void               move(ksDirection direction);
-
-		//                 Mutators
+        void               moveEntity(int x, int y, int z);
 		void               setAnimationLower(int lower_tile);
 		void               setAnimationUpper(int upper_tile);
 		void               setAnimationDelay(int frame_delay);

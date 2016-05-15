@@ -103,7 +103,7 @@ void ksEntityLayer::drawLayer(sf::RenderWindow & app)
         if (m_entities[count]->isVisible())
         {
             // Update each entities animation before drawing.
-		    m_entities[count]->animate();
+		    //m_entities[count]->animate();
 
             ksPathNode tile = m_entities[count]->getTilePosition();
 

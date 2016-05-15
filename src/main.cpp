@@ -11,25 +11,25 @@
 int main()
 {
 	ksApplication app("KingEngine", 800, 640);
-	app.setEntityTilesheet("images/voltor_interior.png");
+	app.setEntityTilesheet("images/voltor_interior2.png");
 
     app.insertText(53, 53, "title", "KingEngine", 30, ksColor(0, 0, 0, 200));
     app.insertText(50, 50, "title2", "KingEngine", 30, ksColor(255, 255, 255, 200));
     app.insertText(50, 85, "subtitle", "Particle Demo", 20, ksColor(0, 0, 0, 200));
 
-    app.loadWorld(800, 640, 256, "maps/exterior");
+    app.loadWorld(800, 400, 800, "maps/exterior");
     
     // World, Color, Location, size, num, velocity, and reach (time to live)
     // ksParticleEmitter emitter(app.getWorld(), sf::Color(0, 0, 255, 200), sf::Vector3f(0, 0, -192), 8, 20, 20, 60);
-    ksParticleEmitter emitter(app.getWorld(), sf::Color(0, 0, 255, 200), sf::Vector3f(0, 0, -192), 8, 20, 20, 60);
+    ksParticleEmitter emitter(app.getWorld(), sf::Color(0, 0, 255, 200), sf::Vector3f(0, 0, -600), 8, 20, 20, 60);
     app.addParticleEmitter(&emitter);
     
     ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 0, 100), sf::Color(0, 0, 0, 255));
-    lighting.addLight(sf::Vector3f(128, 128, 0), 256, sf::Color(255, 200, 0, 255));
+    lighting.addLight(sf::Vector3f(128, 128, 800), 256, sf::Color(255, 200, 0, 255));
     app.addLightSystem(&lighting);
     
     // Create a wrapper for a column of rows of buttons.
-    ksContainer column(800, 640, ksAlign::COLUMN, ksColor(255, 0, 0, 255), 0);
+    ksContainer column(800, 640, ksAlign::COLUMN, ksColor(0, 0, 0, 0), 0);
     app.addControl(&column);
     
     double container_alpha = 255.0;
@@ -102,7 +102,7 @@ int main()
     ksAudioTrack track("audio/sorrow.ogg", 120, 100);
     
     double title_alpha = 0.0;
-    double sun_z_position = 0.0;
+    double sun_z_position = 800.0;
     
     ksScene<double> title_fade_in;
     title_fade_in.addTransition(ksTransition<double>(&title_alpha, 200.0, 120));
@@ -110,10 +110,19 @@ int main()
     ksScene<double> title_fade_out;
     title_fade_out.addTransition(ksTransition<double>(&title_alpha, 0.0, 120));
     title_fade_out.addTransition(ksTransition<double>(&container_alpha, 0.0, 120));
-    title_fade_out.addTransition(ksTransition<double>(&sun_z_position, 256.0, 120));
+    //title_fade_out.addTransition(ksTransition<double>(&sun_z_position, 800.0, 120));
 
     app.addScene(&title_fade_in);
     app.addScene(&title_fade_out);
+    
+    ksEntity tree(app.getWorld(), 600, 0, 800, 2, 4, 18);
+    app.addEntity(&tree);
+    
+    ksEntity ent(app.getWorld(), 400, 200, 32, 1, 2, 10);
+    app.addEntity(&ent);
+    ent.setAnimationLower(10);
+    ent.setAnimationUpper(12);
+    ent.setAnimationDelay(60);
     
     // Run the app without a main loop
     //app.run();
@@ -128,9 +137,25 @@ int main()
         {
             app.startSequence();
         }
-        else if (app.getKeyDown(ksKey::W))
+        if (app.getKeyDown(ksKey::W))
         {
-            //lighting.moveLight(0, 0, 0, 2);
+            if ((ent.Z() + 50) < app.getWorld()->getDepth())
+                ent.moveEntity(0, 0, 50);
+        }
+        if (app.getKeyDown(ksKey::S))
+        {
+            if ((ent.Z() - 50) > 0)
+                ent.moveEntity(0, 0, -50);
+        }
+        if (app.getKeyDown(ksKey::A))
+        {
+            if ((ent.X() - 25) > 0)
+                ent.moveEntity(-25, 0, 0);
+        }
+        if (app.getKeyDown(ksKey::D))
+        {
+            if ((ent.X() + 25) < app.getWorld()->getWidth())
+                ent.moveEntity(25, 0, 0);
         }
         
         if (title_fade_in.isDone())
@@ -146,12 +171,14 @@ int main()
             
             // Update the position of the light source.
             lighting.setLightPosition(0, temp.x, temp.y, temp.z);
+            //lighting.addLight(sf::Vector3f(128, 128, sun_z_position), 256, sf::Color(255, 200, 0, 255));
         }
         
         app.setTextColor("title", ksColor(0, 0, 0, title_alpha));
         app.setTextColor("title2", ksColor(255, 255, 255, title_alpha));
         app.setTextColor("subtitle", ksColor(0, 0, 0, title_alpha));
-        column.setColor(ksColor(255, 0, 0, container_alpha));
+        column.setColor(ksColor(0, 0, 0, container_alpha));
+        //ent.animate();
     }
 
 	return 0;

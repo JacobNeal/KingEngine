@@ -14,7 +14,6 @@
 #define KS_SCENE_H
 
 #include "ksTransition.h"
-#include <iostream>
 #include <list>
 
 template <typename T>

@@ -14,8 +14,6 @@
 #ifndef KS_TRANSITION_H
 #define KS_TRANSITION_H
 
-#include <iostream>
-
 template <typename T>
 class ksTransition
 {
@@ -132,8 +130,6 @@ void ksTransition<T>::update()
         
         // Update the current frame.
         m_current_frame++;
-        
-        std::cout << "Current Frame: " << m_current_frame << '\t' << m_delta_state << '\t' << isDone() << '\n';
     }
 }
 

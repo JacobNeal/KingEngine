@@ -914,18 +914,10 @@ sf::Vector2f ksWorld::transform3DWithPixelValue(int x, int y, int z)
 {
     sf::Vector2f position;
 
-    if (m_camera_z + z == 0)
-    {
-        position.x = m_camera_x;
-        position.y = m_camera_y;
-    }
-    else
-    {
-        position.x = ((m_camera_z * (x - m_camera_x)) / (m_camera_z + z)) +
-            m_camera_x;
-        position.y = ((m_camera_z * (y - m_camera_y)) / (m_camera_z + z)) +
-            m_camera_y;
-    }
+    position.x = ((m_camera_z * (x - m_camera_x)) / (m_camera_z + z)) +
+        m_camera_x;
+    position.y = ((m_camera_z * (y - m_camera_y)) / (m_camera_z + z)) +
+        m_camera_y;
 
     return position;
 }

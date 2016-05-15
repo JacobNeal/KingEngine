@@ -21,13 +21,26 @@ ksEntity::ksEntity(ksWorld * world, int x, int y, int z, int w, int h,
       m_anim_delay(1), m_frame(0), m_pressed(false), m_visible(true),
       m_x(x), m_y(y), m_z(z), m_w(w), m_h(h)
 {
-	m_texture_coord.X = (current_tile - (TILE_PER_LINE * (current_tile / TILE_PER_LINE))) * w;
-	m_texture_coord.Y = (current_tile / TILE_PER_LINE) * h;
-	m_texture_coord.W = w;
-	m_texture_coord.H = h;
+	m_texture_coord.X = (current_tile - (TILE_PER_LINE * (current_tile / TILE_PER_LINE))) * (w * TILE_WIDTH);
+	m_texture_coord.Y = (current_tile / TILE_PER_LINE) * (h * TILE_WIDTH);
+	m_texture_coord.W = (w * TILE_WIDTH);
+	m_texture_coord.H = (h * TILE_HEIGHT);
     
     m_current_node.row = 0;
     m_current_node.col = 0;
+    
+    // Transform the 3D world position into screen coordinates.
+    sf::Vector2f TL = m_world->transform3DWithPixelValue(m_x, m_y, m_z);
+    sf::Vector2f TR = m_world->transform3DWithPixelValue(m_x + (((double) m_w / m_world->getMapCol()) * m_world->getWidth()), m_y, m_z);
+    sf::Vector2f BR = m_world->transform3DWithPixelValue(m_x + (((double) m_w / m_world->getMapCol()) * m_world->getWidth()), 
+        m_y + (((double) m_h / m_world->getMapRow()) * m_world->getHeight()), m_z);
+    sf::Vector2f BL = m_world->transform3DWithPixelValue(m_x, m_y + (((double) m_h / m_world->getMapRow()) * m_world->getHeight()), m_z);
+    
+    // Set the current path node to the screen coordinates.
+    m_current_node.TL = ksVector2D(TL.x, TL.y);
+    m_current_node.TR = ksVector2D(TR.x, TR.y);
+    m_current_node.BR = ksVector2D(BR.x, BR.y);
+    m_current_node.BL = ksVector2D(BL.x, BL.y);
 }
 
 /*********************************************************
@@ -43,8 +56,8 @@ void ksEntity::animate()
 		m_frame = 1;
 		m_current_tile = m_lower_tile;
 
-		m_texture_coord.X = (m_current_tile - (TILE_PER_LINE * (m_current_tile / TILE_PER_LINE))) * m_texture_coord.W;
-		m_texture_coord.Y = (m_current_tile / TILE_PER_LINE) * m_texture_coord.H;
+		m_texture_coord.X = (m_current_tile - (TILE_PER_LINE * (m_current_tile / TILE_PER_LINE))) * (m_texture_coord.W * TILE_WIDTH);
+		m_texture_coord.Y = (m_current_tile / TILE_PER_LINE) * (m_texture_coord.H * TILE_WIDTH);
 	}
 	else if (m_frame % m_anim_delay == 0)
 	{
@@ -53,8 +66,8 @@ void ksEntity::animate()
 		else
 			++m_current_tile;
 
-		m_texture_coord.X = (m_current_tile - (TILE_PER_LINE * (m_current_tile / TILE_PER_LINE))) * m_texture_coord.W;
-		m_texture_coord.Y = (m_current_tile / TILE_PER_LINE) * m_texture_coord.H;
+		m_texture_coord.X = (m_current_tile - (TILE_PER_LINE * (m_current_tile / TILE_PER_LINE))) * (m_texture_coord.W * TILE_WIDTH);
+		m_texture_coord.Y = (m_current_tile / TILE_PER_LINE) * (m_texture_coord.H * TILE_WIDTH);
 	}
 	++m_frame;
 
@@ -205,4 +218,24 @@ int ksEntity::Y()
 int ksEntity::Z()
 {
     return m_z;
+}
+
+void ksEntity::moveEntity(int x, int y, int z)
+{
+    m_x += x;
+    m_y += y;
+    m_z += z;
+    
+    // Transform the 3D world position into screen coordinates.
+    sf::Vector2f TL = m_world->transform3DWithPixelValue(m_x, m_y, m_z);
+    sf::Vector2f TR = m_world->transform3DWithPixelValue(m_x + (((double) m_w / m_world->getMapCol()) * m_world->getWidth()), m_y, m_z);
+    sf::Vector2f BR = m_world->transform3DWithPixelValue(m_x + (((double) m_w / m_world->getMapCol()) * m_world->getWidth()), 
+        m_y + (((double) m_h / m_world->getMapRow()) * m_world->getHeight()), m_z);
+    sf::Vector2f BL = m_world->transform3DWithPixelValue(m_x, m_y + (((double) m_h / m_world->getMapRow()) * m_world->getHeight()), m_z);
+    
+    // Set the current path node to the screen coordinates.
+    m_current_node.TL = ksVector2D(TL.x, TL.y);
+    m_current_node.TR = ksVector2D(TR.x, TR.y);
+    m_current_node.BR = ksVector2D(BR.x, BR.y);
+    m_current_node.BL = ksVector2D(BL.x, BL.y);
 }

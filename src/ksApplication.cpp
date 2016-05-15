@@ -6,6 +6,7 @@
 ********************************************************/
 
 #include "ksApplication.h"
+#include <iostream>
 
 /*********************************************************
 *   ksApplication
@@ -160,12 +161,21 @@ bool ksApplication::isOpen()
         {
             // Center the world view
             //m_world_view = sf::View(sf::FloatRect(0.f, 0.f, 800, 640));
-            m_world_view.setCenter(sf::Vector2f(m_evt.size.width, m_evt.size.height) / 2.0f);
-            m_world_view.setSize(sf::Vector2f(m_evt.size.width, m_evt.size.height));
-            m_world.resizeWorld(m_evt.size.width, m_evt.size.height);
+            //m_world_view.setCenter(sf::Vector2f(m_evt.size.width, m_evt.size.height) / 2.0f);
+            //m_world_view.setSize(sf::Vector2f(m_evt.size.width, m_evt.size.height));
+            //m_world.resizeWorld(m_evt.size.width, m_evt.size.height);
             
-            std::cout << "Center: " << (m_evt.size.width / 2) << ", " << (m_evt.size.height / 2) << '\n';
+            double heightProportionateToWidth = (double) m_world.getHeight() / m_world.getWidth();
+    
+            double new_width = m_evt.size.width;
+            double new_height = heightProportionateToWidth * new_width;
+            float viewport_height = (float) 1.f - ((m_evt.size.height - new_height) / m_evt.size.height);
+            float viewport_top = (float) ((m_evt.size.height - new_height) / 2) / m_evt.size.height;
             
+            //m_world_view.reset(sf::FloatRect(0, 0, width, height));
+            m_world_view.setViewport(sf::FloatRect(0.0f, viewport_top, 1.f, viewport_height));
+            
+            // Resize the GUI view
             m_gui_view.setCenter(sf::Vector2f(m_evt.size.width, m_evt.size.height) / 2.0f);
             m_gui_view.setSize(sf::Vector2f(m_evt.size.width, m_evt.size.height));
         }
@@ -314,8 +324,15 @@ void ksApplication::loadWorld(int width, int height, int depth, std::string name
     
     m_camera_depth = depth;
     
-    m_world_view.reset(sf::FloatRect(0, 0, 800, 640));
-    m_world_view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+    double heightProportionateToWidth = (double) height / width;
+    
+    double new_width = m_window.getSize().x;
+    double new_height = heightProportionateToWidth * new_width;
+    float viewport_height = (float) 1.f - ((m_window.getSize().y - new_height) / m_window.getSize().y);
+    float viewport_top = (float) ((m_window.getSize().y - new_height) / 2) / m_window.getSize().y;
+    
+    m_world_view.reset(sf::FloatRect(0, 0, width, height));
+    m_world_view.setViewport(sf::FloatRect(0.0f, viewport_top, 1.f, viewport_height));
 }
 
 /*********************************************************
