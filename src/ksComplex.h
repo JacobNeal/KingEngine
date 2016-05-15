@@ -48,6 +48,7 @@ class ksComplex : public ksEntity
         void                            group();
         void                            tag();
         void                            untag();
+        void                            toggleBehavior();
 
         //                              Accessor methods
         ksPathNode                      getNextPathNode();
@@ -84,6 +85,7 @@ class ksComplex : public ksEntity
         ksVector2D                      m_position;
         ksVector2D                      m_side;
         bool                            m_tag;
+        bool                            m_behavior_on;
 };
 
 #endif

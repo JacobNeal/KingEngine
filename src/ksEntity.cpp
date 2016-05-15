@@ -56,8 +56,8 @@ void ksEntity::animate()
 		m_frame = 1;
 		m_current_tile = m_lower_tile;
 
-		m_texture_coord.X = (m_current_tile - (TILE_PER_LINE * (m_current_tile / TILE_PER_LINE))) * (m_texture_coord.W * TILE_WIDTH);
-		m_texture_coord.Y = (m_current_tile / TILE_PER_LINE) * (m_texture_coord.H * TILE_WIDTH);
+		m_texture_coord.X = (m_current_tile - (TILE_PER_LINE * (m_current_tile / TILE_PER_LINE))) * m_texture_coord.W;
+		m_texture_coord.Y = (m_current_tile / TILE_PER_LINE) * m_texture_coord.H;
 	}
 	else if (m_frame % m_anim_delay == 0)
 	{
@@ -66,12 +66,10 @@ void ksEntity::animate()
 		else
 			++m_current_tile;
 
-		m_texture_coord.X = (m_current_tile - (TILE_PER_LINE * (m_current_tile / TILE_PER_LINE))) * (m_texture_coord.W * TILE_WIDTH);
-		m_texture_coord.Y = (m_current_tile / TILE_PER_LINE) * (m_texture_coord.H * TILE_WIDTH);
+		m_texture_coord.X = (m_current_tile - (TILE_PER_LINE * (m_current_tile / TILE_PER_LINE))) * m_texture_coord.W;
+		m_texture_coord.Y = (m_current_tile / TILE_PER_LINE) * m_texture_coord.H;
 	}
 	++m_frame;
-
-    update();
 }
 
 /********************************************************
@@ -226,6 +224,11 @@ void ksEntity::moveEntity(int x, int y, int z)
     m_y += y;
     m_z += z;
     
+    updateScreenPosition();
+}
+
+void ksEntity::updateScreenPosition()
+{
     // Transform the 3D world position into screen coordinates.
     sf::Vector2f TL = m_world->transform3DWithPixelValue(m_x, m_y, m_z);
     sf::Vector2f TR = m_world->transform3DWithPixelValue(m_x + (((double) m_w / m_world->getMapCol()) * m_world->getWidth()), m_y, m_z);

@@ -21,16 +21,18 @@ ksComplex::ksComplex(ksPathFinder * path_finder, ksWorld * world, int x, int y, 
                      m_behavior(path_finder, world, this),
                      m_loop_path(false), m_path_on(false), m_start_row(0), m_start_col(0), 
                      m_finish_row(0), m_finish_col(0), m_bounding_radius((w * TILE_WIDTH) / 2),
-                     m_tag(false)
+                     m_tag(false), m_behavior_on(true)
 {
     m_path_finder = path_finder;
 
-    sf::Vector2f temp_vect = world->transform3D(0.5, 1.0, 0.5);
+    sf::Vector2f temp_vect = world->transform3DWithPixelValue(x, y, z);
     
     m_position.X = temp_vect.x;
     m_position.Y = temp_vect.y;
     m_velocity  = ksVector2D(0, 0);
     m_heading   = ksVector2D(0, 0);
+    
+    updateScreenPosition();
 }
 
 /********************************************************
@@ -41,33 +43,51 @@ ksComplex::ksComplex(ksPathFinder * path_finder, ksWorld * world, int x, int y, 
 ********************************************************/
 void ksComplex::update()
 {
-    if (m_path_on == true)
+    if (m_behavior_on)
     {
-        if (m_path.size() > 0 && m_path_iter != m_path.end())
+        if (m_path_on == true)
         {
-            // Take 10 steps between nodes.
-            int transition = 10;
-
-            // Move entity incrementally toward the next node.
-            m_current_node.TL.X     += m_tl_delta.X / transition;
-            m_current_node.TL.Y     += m_tl_delta.Y / transition;
-            m_current_node.TR.X     += m_tr_delta.X / transition;
-            m_current_node.TR.Y     += m_tr_delta.Y / transition;
-            m_current_node.BL.X     += m_bl_delta.X / transition;
-            m_current_node.BL.Y     += m_bl_delta.Y / transition;
-            m_current_node.BR.X     += m_br_delta.X / transition;
-            m_current_node.BR.Y     += m_br_delta.Y / transition;
-            m_current_node.center.X += m_center_delta.X / transition;
-            m_current_node.center.Y += m_center_delta.Y / transition;
-
-            if (m_current_node.center.X >= ((*m_path_iter).center.X - 2) &&
-                m_current_node.center.X <= ((*m_path_iter).center.X + 2) &&
-                m_current_node.center.Y >= ((*m_path_iter).center.Y - 2) &&
-                m_current_node.center.Y <= ((*m_path_iter).center.Y + 2))
+            if (m_path.size() > 0 && m_path_iter != m_path.end())
             {
+                // Take 10 steps between nodes.
+                int transition = 10;
+
+                // Move entity incrementally toward the next node.
+                m_current_node.TL.X     += m_tl_delta.X / transition;
+                m_current_node.TL.Y     += m_tl_delta.Y / transition;
+                m_current_node.TR.X     += m_tr_delta.X / transition;
+                m_current_node.TR.Y     += m_tr_delta.Y / transition;
+                m_current_node.BL.X     += m_bl_delta.X / transition;
+                m_current_node.BL.Y     += m_bl_delta.Y / transition;
+                m_current_node.BR.X     += m_br_delta.X / transition;
+                m_current_node.BR.Y     += m_br_delta.Y / transition;
+                m_current_node.center.X += m_center_delta.X / transition;
+                m_current_node.center.Y += m_center_delta.Y / transition;
+
+                if (m_current_node.center.X >= ((*m_path_iter).center.X - 2) &&
+                    m_current_node.center.X <= ((*m_path_iter).center.X + 2) &&
+                    m_current_node.center.Y >= ((*m_path_iter).center.Y - 2) &&
+                    m_current_node.center.Y <= ((*m_path_iter).center.Y + 2))
+                {
+                    m_current_node = (*m_path_iter);
+                    m_path_iter++;
+                    
+                    m_tl_delta = (*m_path_iter).TL - m_current_node.TL;
+                    m_tr_delta = (*m_path_iter).TR - m_current_node.TR;
+                    m_bl_delta = (*m_path_iter).BL - m_current_node.BL;
+                    m_br_delta = (*m_path_iter).BR - m_current_node.BR;
+                    m_center_delta = (*m_path_iter).center - m_current_node.center;
+                }
+            }
+            else if (m_loop_path)
+            {
+                // Reverse the list of path nodes.     
+                m_path.reverse();
+
+                m_path_iter = m_path.begin();
                 m_current_node = (*m_path_iter);
                 m_path_iter++;
-                
+
                 m_tl_delta = (*m_path_iter).TL - m_current_node.TL;
                 m_tr_delta = (*m_path_iter).TR - m_current_node.TR;
                 m_bl_delta = (*m_path_iter).BL - m_current_node.BL;
@@ -75,78 +95,45 @@ void ksComplex::update()
                 m_center_delta = (*m_path_iter).center - m_current_node.center;
             }
         }
-        else if (m_loop_path)
+        else
         {
-            // Reverse the list of path nodes.     
-            m_path.reverse();
+            // New update
+            float time = m_elapsed_time.getElapsedTime().asSeconds();
+            
+            ksVector2D steering_force = m_behavior.calculatePrioritizedForce();
+            ksVector2D acceleration   = steering_force / 1.0; // a = F / m
+            m_velocity               += acceleration * time; // v = a * t
 
-            m_path_iter = m_path.begin();
-            m_current_node = (*m_path_iter);
-            m_path_iter++;
-
-            m_tl_delta = (*m_path_iter).TL - m_current_node.TL;
-            m_tr_delta = (*m_path_iter).TR - m_current_node.TR;
-            m_bl_delta = (*m_path_iter).BL - m_current_node.BL;
-            m_br_delta = (*m_path_iter).BR - m_current_node.BR;
-            m_center_delta = (*m_path_iter).center - m_current_node.center;
-        }
-    }
-    else
-    {
-        // New update
-        float time = m_elapsed_time.getElapsedTime().asSeconds();
+            //m_velocity.truncate(150); // Results in 5 pixels / frame (150 pixels / sec * 1 sec / 30 frames)
+            m_velocity.truncate(300); // Results in 10 pixels / frame (300 pixels / sec * 1 sec / 30 frames)
         
-        ksVector2D steering_force = m_behavior.calculatePrioritizedForce();
-        ksVector2D acceleration   = steering_force / 1.0; // a = F / m
-        m_velocity               += acceleration * time; // v = a * t
+            m_position               += m_velocity * time; // p = v * t
 
-        m_velocity.truncate(150); // Results in 5 pixels / frame (150 pixels / sec * 1 sec / 30 frames)
-    
-        m_position               += m_velocity * time; // p = v * t
+            if (m_velocity.getLengthSq() > 0.00000001)
+            {
+                m_heading = VecNormalize(m_velocity);
+                m_side = m_heading.getPerpendicularVector();
+            }
 
-        if (m_velocity.getLengthSq() > 0.00000001)
-        {
-            m_heading = VecNormalize(m_velocity);
-            m_side = m_heading.getPerpendicularVector();
+            m_elapsed_time.restart();
+
+            // Loop entity around boundaries.
+            if (m_position.X >= m_world->getWidth())
+                m_position.X = 1;
+            if (m_position.X <= 0)
+                m_position.X = m_world->getWidth() - 1;
+            if (m_position.Y >= m_world->getDepth())
+                m_position.Y = 1;
+            if (m_position.Y <= 0)
+                m_position.Y = m_world->getDepth() - 1;
+
+            m_x = m_position.X;
+            m_z = m_position.Y;
+            
+            // Update the position of the complex entity on
+            // the screen.
+            updateScreenPosition();
         }
-
-        m_elapsed_time.restart();
-
-        // Loop entity around boundaries.
-        if (m_position.X >= 800)
-            m_position.X = 1;
-        if (m_position.X <= 0)
-            m_position.X = 799;
-        if (m_position.Y >= 256)
-            m_position.Y = 1;
-        if (m_position.Y <= 0)
-            m_position.Y = 255;
-
-        double heightProportionToWorld = (double) 64 / m_world->getDepth();
-
-        sf::Vector2f top_left = m_world->transform3D((double) m_position.X / m_world->getWidth(),
-            1.0 - heightProportionToWorld, (double) m_position.Y / m_world->getDepth());
-        
-        sf::Vector2f top_right = 
-            m_world->transform3D((double) (m_position.X + 64) / m_world->getWidth(),
-                   1.0 - heightProportionToWorld, (double) m_position.Y / m_world->getDepth());
-
-        sf::Vector2f bottom_right =
-            m_world->transform3D((double) (m_position.X + 64) / m_world->getWidth(),
-                   1.0, (double) m_position.Y / m_world->getDepth());
-
-        sf::Vector2f bottom_left =
-            m_world->transform3D((double) m_position.X / m_world->getWidth(), 1.0,
-                   (double) m_position.Y / m_world->getDepth());
-
-        m_current_node.TL.X = top_left.x;
-        m_current_node.TL.Y = top_left.y;
-        m_current_node.TR.X = top_right.x;
-        m_current_node.TR.Y = top_right.y;
-        m_current_node.BR.X = bottom_right.x;
-        m_current_node.BR.Y = bottom_right.y;
-        m_current_node.BL.X = bottom_left.x;
-        m_current_node.BL.Y = bottom_left.y;
     }
 }
 
@@ -310,4 +297,9 @@ bool ksComplex::getTag()
 int ksComplex::getBoundingRadius()
 {
     return m_bounding_radius;
+}
+
+void ksComplex::toggleBehavior()
+{
+    m_behavior_on = !m_behavior_on;
 }

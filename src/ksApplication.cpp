@@ -62,7 +62,8 @@ bool ksApplication::isOpen()
     m_world.drawWorld(m_window);
 
 //    m_window.setView(m_window.getDefaultView());
-	m_entity_layer.drawLayer(m_window);
+        
+    m_entity_layer.drawLayer(m_window);
     
     if (m_light_system != nullptr)
         m_window.draw(*m_light_system);

@@ -27,8 +27,8 @@ ksEntityLayer::ksEntityLayer(ksWorld * world, std::string tilesheet)
 *********************************************************/
 void ksEntityLayer::addEntity(ksEntity * entity)
 {
-	m_array.setPrimitiveType(sf::Quads);
-	m_array.resize((m_num_of_entities + 1) * 4);
+	m_array.setPrimitiveType(sf::Triangles);
+	m_array.resize((m_num_of_entities + 1) * 6);
 
 	m_entities[m_num_of_entities] = entity;
 
@@ -103,16 +103,19 @@ void ksEntityLayer::drawLayer(sf::RenderWindow & app)
         if (m_entities[count]->isVisible())
         {
             // Update each entities animation before drawing.
-		    //m_entities[count]->animate();
+		    m_entities[count]->animate();
+            m_entities[count]->update();
 
             ksPathNode tile = m_entities[count]->getTilePosition();
 
-		    int vec  = count * 4;
+		    int vec  = count * 6;
 
     		m_array[vec].position     = sf::Vector2f(tile.TL.X, tile.TL.Y);
 	    	m_array[vec + 1].position = sf::Vector2f(tile.TR.X, tile.TR.Y);
 		    m_array[vec + 2].position = sf::Vector2f(tile.BR.X, tile.BR.Y);
 		    m_array[vec + 3].position = sf::Vector2f(tile.BL.X, tile.BL.Y);
+            m_array[vec + 4].position = m_array[vec].position;
+            m_array[vec + 5].position = m_array[vec + 2].position;
 
 		    float x = (float) m_entities[count]->getTextureCoord().X / 2;
 		    float y = (float) m_entities[count]->getTextureCoord().Y / 2;
@@ -123,6 +126,8 @@ void ksEntityLayer::drawLayer(sf::RenderWindow & app)
 		    m_array[vec + 1].texCoords = sf::Vector2f(x + w, y);
 		    m_array[vec + 2].texCoords = sf::Vector2f(x + w, y + h);
 		    m_array[vec + 3].texCoords = sf::Vector2f(x, y + h);
+            m_array[vec + 4].texCoords = m_array[vec].texCoords;
+            m_array[vec + 5].texCoords = m_array[vec + 2].texCoords;
 
             sf::Color color = sf::Color(255, 255, 255);
 
@@ -130,6 +135,8 @@ void ksEntityLayer::drawLayer(sf::RenderWindow & app)
             m_array[vec + 1].color = color;
             m_array[vec + 2].color = color;
             m_array[vec + 3].color = color;
+            m_array[vec + 4].color = color;
+            m_array[vec + 5].color = color;
         }
     }
 

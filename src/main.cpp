@@ -7,6 +7,7 @@
 #include "ksScene.h"
 #include "ksAudioTrack.h"
 #include <string>
+#include <vector>
 
 int main()
 {
@@ -73,14 +74,9 @@ int main()
     // column.addControl(&row3);
 
     ksPathFinder path_finder(app.getWorld());
-    
-    std::vector<ksComplex *> entity_list;
-    int entity_num = 0;
-
-    int scenario_mode = 0;
 
     int emitter_x = 400;
-    int emitter_z = 128;
+    int emitter_z = 400;
     
     double alpha_value = 255.0;
     double alpha_value2 = 255.0;
@@ -118,11 +114,37 @@ int main()
     ksEntity tree(app.getWorld(), 600, 0, 800, 2, 4, 18);
     app.addEntity(&tree);
     
-    ksEntity ent(app.getWorld(), 400, 200, 32, 1, 2, 10);
+    ksComplex ent(&path_finder, app.getWorld(), 400, 200, 32, 1, 2, 10);
     app.addEntity(&ent);
     ent.setAnimationLower(10);
     ent.setAnimationUpper(12);
     ent.setAnimationDelay(60);
+    ent.toggleBehavior();
+    
+    // Add wolves.
+    std::vector<ksComplex *> entity_list;
+    int entity_num = 0;
+    
+    for (int count = 0; count < 8; ++count)
+    {
+        entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), emitter_x, 200, emitter_z, 1, 2, 10));
+        entity_list[entity_num]->setAnimationLower(10);
+        entity_list[entity_num]->setAnimationUpper(12);
+        entity_list[entity_num]->setAnimationDelay(60);
+        app.addEntity(entity_list[entity_num++]);
+    }
+    
+    for (int count = 0; count < entity_num; ++count)
+    {
+        for (int count2 = 0; count2 < entity_num; ++count2)
+        {
+            entity_list[count]->addToGroup(entity_list[count2]);
+            //entity_list[count]->pursue(&ent);
+            entity_list[count]->arrive(ksVector2D(ent.X(), ent.Z()));
+        }
+        entity_list[count]->group();
+        entity_list[count]->avoidObstacles();
+    }
     
     // Run the app without a main loop
     //app.run();
@@ -157,6 +179,9 @@ int main()
             if ((ent.X() + 25) < app.getWorld()->getWidth())
                 ent.moveEntity(25, 0, 0);
         }
+        
+        for (int count = 0; count < entity_num; ++count)
+            entity_list[count]->arrive(ksVector2D(ent.X(), ent.Z()));
         
         if (title_fade_in.isDone())
             track.update();
