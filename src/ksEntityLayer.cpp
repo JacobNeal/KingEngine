@@ -222,3 +222,15 @@ int ksEntityLayer::getCount()
 {
 	return m_num_of_entities;
 }
+
+/*********************************************************
+*   updateScreenPosition
+*
+*   Update the screen position of all entities in this
+*   layer. This can be beneficial for if the camera changes.
+*********************************************************/
+void ksEntityLayer::updateScreenPosition()
+{
+    for (int count = 0; count < m_num_of_entities; ++count)
+        m_entities[count]->updateScreenPosition();
+}

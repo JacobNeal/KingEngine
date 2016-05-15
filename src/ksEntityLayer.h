@@ -35,6 +35,7 @@ class ksEntityLayer : public sf::Drawable, public sf::Transformable
 		virtual void            draw(sf::RenderTarget & target, sf::RenderStates states) const;
         void                    sortEntitiesByRow();
 		void                    purge();
+        void                    updateScreenPosition();
 
 		//                      Mutators
 		bool                    setTilesheet(std::string tilesheet);

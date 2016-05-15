@@ -105,26 +105,7 @@ bool ksApplication::isOpen()
 				if (m_evt.key.code == it->first)
 					m_key_down[it->first] = true;
 			}
-
-            if (m_evt.key.code == sf::Keyboard::Key::Up)
-            {
-                // if (m_emitter != nullptr)
-                //     m_emitter->moveEmitter(0, 0, 5);
-                m_world.moveCamera(0, 0, 1);
-                
-                if (m_light_system != nullptr)
-                    m_light_system->updateWallShadows();
-            }
-            else if (m_evt.key.code == sf::Keyboard::Key::Down)
-            {
-                // if (m_emitter != nullptr)
-                //     m_emitter->moveEmitter(0, 0, -5);
-                m_world.moveCamera(0, 0, -1);
-                
-                if (m_light_system != nullptr)
-                    m_light_system->updateWallShadows();
-            }
-            else if (m_evt.key.code == sf::Keyboard::Key::Right)
+            if (m_evt.key.code == sf::Keyboard::Key::Right)
             {
                 // if (m_emitter != nullptr)
                 //     m_emitter->rotate(1.0);
@@ -133,6 +114,8 @@ bool ksApplication::isOpen()
                 
                 if (m_light_system != nullptr)
                     m_light_system->updateWallShadows();
+                    
+                m_entity_layer.updateScreenPosition();
             }
             else if (m_evt.key.code == sf::Keyboard::Key::Left)
             {
@@ -143,6 +126,8 @@ bool ksApplication::isOpen()
                 
                 if (m_light_system != nullptr)
                     m_light_system->updateWallShadows();
+                
+                m_entity_layer.updateScreenPosition();
             }
 		}
 		else if (m_evt.type == sf::Event::KeyReleased)
