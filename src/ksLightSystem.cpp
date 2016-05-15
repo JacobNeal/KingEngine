@@ -122,6 +122,8 @@ void ksLightSystem::addLight(sf::Vector3f position, int diameter, sf::Color colo
     int edge = (3 * radius) / 4;
     int temp = (m_number_of_lights * 24) + 54;
     
+    m_lights.push_back(ksLight(position, diameter, color));
+    
     sf::Vector2f center = m_world->transform3DWithPixelValue(position.x, position.y, position.z);
     
     m_array.resize(((m_number_of_lights + 1) * 24) + 54);
@@ -198,6 +200,68 @@ void ksLightSystem::addLight(sf::Vector3f position, int diameter, sf::Color colo
 }
 
 /*********************************************************
+*	getLightPosition
+*
+*	Returns the 3D position of a light source.
+*********************************************************/
+ksVector3f ksLightSystem::getLightPosition(int index)
+{
+    return m_lights[index].getPosition();
+}
+
+/*********************************************************
+*	setLightPosition
+*
+*	Moves the light to the passed x, y, and z position, 
+*   and then updates the vertices associated with that 
+*   light.
+*********************************************************/
+void ksLightSystem::setLightPosition(int index, int x, int y, int z)
+{   
+    int radius = m_lights[index].getDiameter() / 2;
+    int edge = (3 * radius) / 4;
+    int temp = 54 + (index * 24);
+    
+    sf::Vector3f position(x, y, z);
+    
+    m_lights[index].setPosition(position);
+    
+    sf::Vector2f center = m_world->transform3DWithPixelValue(position.x, position.y, position.z);
+                                                             
+    m_array[temp].position        = center;
+    m_array[temp + 1].position    = m_world->transform3DWithPixelValue(position.x + edge, position.y - edge, position.z);
+    m_array[temp + 2].position    = m_world->transform3DWithPixelValue(position.x + radius, position.y, position.z);
+    
+    m_array[temp + 3].position    = center;
+    m_array[temp + 4].position    = m_world->transform3DWithPixelValue(position.x + radius, position.y, position.z);
+    m_array[temp + 5].position    = m_world->transform3DWithPixelValue(position.x + edge, position.y + edge, position.z);
+    
+    m_array[temp + 6].position    = center;
+    m_array[temp + 7].position    = m_world->transform3DWithPixelValue(position.x + edge, position.y + edge, position.z);
+    m_array[temp + 8].position    = m_world->transform3DWithPixelValue(position.x, position.y + radius, position.z);
+    
+    m_array[temp + 9].position    = center;
+    m_array[temp + 10].position   = m_world->transform3DWithPixelValue(position.x, position.y + radius, position.z);
+    m_array[temp + 11].position   = m_world->transform3DWithPixelValue(position.x - edge, position.y + edge, position.z);
+    
+    m_array[temp + 12].position   = center;
+    m_array[temp + 13].position   = m_world->transform3DWithPixelValue(position.x - edge, position.y + edge, position.z);
+    m_array[temp + 14].position   = m_world->transform3DWithPixelValue(position.x - radius, position.y, position.z);
+    
+    m_array[temp + 15].position   = center;
+    m_array[temp + 16].position   = m_world->transform3DWithPixelValue(position.x - radius, position.y, position.z);
+    m_array[temp + 17].position   = m_world->transform3DWithPixelValue(position.x - edge, position.y - edge, position.z);
+    
+    m_array[temp + 18].position   = center;
+    m_array[temp + 19].position   = m_world->transform3DWithPixelValue(position.x - edge, position.y - edge, position.z);
+    m_array[temp + 20].position   = m_world->transform3DWithPixelValue(position.x, position.y - radius, position.z);
+    
+    m_array[temp + 21].position   = center;
+    m_array[temp + 22].position   = m_world->transform3DWithPixelValue(position.x, position.y - radius, position.z);
+    m_array[temp + 23].position   = m_world->transform3DWithPixelValue(position.x + edge, position.y - edge, position.z);
+}
+
+/*********************************************************
 *	draw
 *
 *	The overloaded SFML pure virtual method for drawing
@@ -217,6 +281,8 @@ void ksLightSystem::draw(sf::RenderTarget & target, sf::RenderStates states) con
 *********************************************************/
 void ksLightSystem::updateWallShadows()
 {
+    // Check for the deepest z value.
+    
     // Left
     m_array[0].position     = m_world->transform3DWithPixelValue(0, 0, m_deepest_light_z);
     m_array[1].position     = m_world->transform3DWithPixelValue(0, 0, m_world->getDepth());

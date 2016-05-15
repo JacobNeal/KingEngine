@@ -1,6 +1,6 @@
 #CXX = clang++
 CXX = g++
-SFML = -framework sfml-window -framework sfml-graphics -framework sfml-system
+SFML = -framework sfml-window -framework sfml-graphics -framework sfml-audio -framework sfml-system
 LUA = -I/usr/local/Cellular/lua51/5.1.5_3/include -L/usr/local/Cellular/lua51/5.1.5_3/lib -lua
 BOOST = -I/usr/local/Cellular/boost/1.60.0/include -L/usr/local/Cellular/boost/1.60.0/lib -boost
 LUABIND = -I/usr/local/Cellular/luabind/0.9.1_1/include -L/usr/local/Cellular/luabind/0.9.1_1/lib -luabind
@@ -12,8 +12,8 @@ EXE = KingEngine
 
 all: $(EXE)
 
-$(EXE): main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksContainer.o ksLabel.o ksParticleEmitter.o ksLightSystem.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o
-	$(CXX) $(LDFLAGS) main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksContainer.o ksLabel.o ksParticleEmitter.o ksLightSystem.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o -o $@
+$(EXE): main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksAudioTrack.o ksContainer.o ksLabel.o ksParticleEmitter.o ksLightSystem.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o
+	$(CXX) $(LDFLAGS) main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksAudioTrack.o ksContainer.o ksLabel.o ksParticleEmitter.o ksLightSystem.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o -o $@
 
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) main.cpp -o $@
@@ -26,6 +26,9 @@ ksComplexBehavior.o: ksComplexBehavior.cpp
 
 ksApplication.o: ksApplication.cpp
 	$(CXX) $(CXXFLAGS) ksApplication.cpp -o $@
+
+ksAudioTrack.o: ksAudioTrack.cpp
+	$(CXX) $(CXXFLAGS) ksAudioTrack.cpp -o $@
 
 ksContainer.o: ksContainer.cpp
 	$(CXX) $(CXXFLAGS) ksContainer.cpp -o $@

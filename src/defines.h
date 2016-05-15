@@ -12,6 +12,8 @@
 
 #define ksColor sf::Color
 
+#define ksVector3f sf::Vector3f
+
 #define LIGHT_INTENSITY_MULT 7
 
 #define MAX_LIGHT_INTENSITY 3

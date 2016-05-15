@@ -61,13 +61,13 @@ class ksApplication
         void                  loadWorld(int width, int height, int depth, std::string name="");
         void                  increaseCameraDepth();
         void                  decreaseCameraDepth();
-        ksPathNode            calculateWorldNode(int x, int y);
         void                  toggleWorldLighting();
         void                  toggleWorld3D();
         void                  insertText(double x, double y, 
                                          std::string name, std::string text,
                                          int size = 20, ksColor color = ksColor(255, 255, 255));
         void                  setText(std::string name, std::string text);
+        void                  setTextColor(std::string name, ksColor color);
         void                  clearEntities();
         void                  addParticleEmitter(ksParticleEmitter * emitter);
         void                  addLightSystem(ksLightSystem * system);

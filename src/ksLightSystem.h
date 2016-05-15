@@ -16,7 +16,9 @@
 #ifndef KS_LIGHT_SYSTEM_H
 
 #include <SFML/Graphics.hpp>
+#include <vector>
 #include "ksWorld.h"
+#include "ksLight.h"
 
 class ksLightSystem : public sf::Drawable, public sf::Transformable
 {
@@ -26,6 +28,8 @@ class ksLightSystem : public sf::Drawable, public sf::Transformable
             
         //                       Methods
         void                     addLight(sf::Vector3f position, int diameter, sf::Color color);
+        ksVector3f               getLightPosition(int index);
+        void                     setLightPosition(int index, int x, int y, int z);
         void                     draw(sf::RenderTarget & target, sf::RenderStates states) const;
         void                     updateWallShadows();
         
@@ -37,6 +41,7 @@ class ksLightSystem : public sf::Drawable, public sf::Transformable
         sf::VertexArray          m_array;
         int                      m_number_of_lights;
         int                      m_deepest_light_z;
+        std::vector<ksLight>     m_lights;
 };
 
 #endif

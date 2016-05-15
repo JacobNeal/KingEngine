@@ -97,13 +97,17 @@ ksWorld::ksWorld(std::string tilesheet, int width, int height, int depth)
 ********************************************************/
 void ksWorld::load(int width, int height, int depth, std::string name)
 {
-    m_width  = width  > 0 ? width  : 1;
-    m_height = height > 0 ? height : 1;
-    m_depth  = depth  > 0 ? depth  : 0;
+    m_width  = 8;
+    m_height = 4;
+    m_depth  = 8;
+    m_world_name = name;
 
-    m_world_width_px  = 800;
-    m_world_height_px = 640;
-    m_world_depth_px  = 256;
+    //m_world_width_px  = 800;
+    //m_world_height_px = 640;
+    m_world_width_px  = width;
+    m_world_height_px = height;
+    //m_world_depth_px  = 256;
+    m_world_depth_px  = depth;
     m_map_row_num     = 4;
     m_map_col_num     = 8;
     m_map_depth_num   = 8;
@@ -114,15 +118,15 @@ void ksWorld::load(int width, int height, int depth, std::string name)
     m_array.clear();
 
     if (name != "")
-        readTiles(name);
+        readTiles(m_world_name);
 
     m_array.setPrimitiveType(sf::Triangles);
 
-    m_outer_width_px = ((m_depth * 2) + m_width) * TILE_WIDTH;
-    m_outer_height_px = ((m_depth * 2) + m_height) * TILE_HEIGHT;
+    // m_outer_width_px = ((m_depth * 2) + m_width) * TILE_WIDTH;
+    // m_outer_height_px = ((m_depth * 2) + m_height) * TILE_HEIGHT;
 
-    m_inner_x = (m_outer_width_px / 2) - ((m_width * TILE_WIDTH) / 2);
-    m_inner_y = (m_outer_height_px / 2) - ((m_height * TILE_HEIGHT) / 2);
+    // m_inner_x = (m_outer_width_px / 2) - ((m_width * TILE_WIDTH) / 2);
+    // m_inner_y = (m_outer_height_px / 2) - ((m_height * TILE_HEIGHT) / 2);
 
     transform3DWorld(m_world_width_px, m_world_height_px, m_world_depth_px,
                      m_map_row_num, m_map_col_num, m_map_depth_num);
@@ -495,46 +499,6 @@ void ksWorld::readTiles(std::string name)
 
         map.close();
     }
-}
-
-ksPathNode ksWorld::calculateFrontNode(int screen_x, int screen_y)
-{
-    ksPathNode node;
-    ksTile     position;
-
-    node.row = (screen_y - m_inner_y) / TILE_HEIGHT;
-    node.col = (screen_x - m_inner_x) / TILE_WIDTH;
-
-//    position = calculateFrontPosition(node.row, node.col);
-
-    node.TL  = position.TL;
-    node.TR  = position.TR;
-    node.BL  = position.BL;
-    node.BR  = position.BR;
-
-    std::cout << "Position: " << node.row << ", " << node.col << "\n";
-
-    return node;
-}
-
-ksPathNode ksWorld::calculateBottomNode(int screen_x, int screen_y)
-{
-    ksPathNode node;
-    ksTile     position;
-
-    node.row = ((screen_y - m_inner_y - (m_height * TILE_HEIGHT)) / TILE_HEIGHT) - 1;
-    node.col = (screen_x * m_width) / m_outer_width_px;
-
-//    position = calculateBottomPosition(node.row, node.col);
-
-    node.TL  = position.TL;
-    node.TR  = position.TR;
-    node.BL  = position.BL;
-    node.BR  = position.BR;
-
-    std::cout << "Position: " << node.row << ", " << node.col << "\n";
-    
-    return node;
 }
 
 /********************************************************
@@ -950,10 +914,18 @@ sf::Vector2f ksWorld::transform3DWithPixelValue(int x, int y, int z)
 {
     sf::Vector2f position;
 
-    position.x = ((m_camera_z * (x - m_camera_x)) / (m_camera_z + z)) +
-        m_camera_x;
-    position.y = ((m_camera_z * (y - m_camera_y)) / (m_camera_z + z)) +
-        m_camera_y;
+    if (m_camera_z + z == 0)
+    {
+        position.x = m_camera_x;
+        position.y = m_camera_y;
+    }
+    else
+    {
+        position.x = ((m_camera_z * (x - m_camera_x)) / (m_camera_z + z)) +
+            m_camera_x;
+        position.y = ((m_camera_z * (y - m_camera_y)) / (m_camera_z + z)) +
+            m_camera_y;
+    }
 
     return position;
 }
@@ -1249,6 +1221,21 @@ void ksWorld::moveCamera(int x, int y, int z)
     
     transform3DWorld(m_world_width_px, m_world_height_px, m_world_depth_px,
         m_map_row_num, m_map_col_num, m_map_depth_num);
+}
+
+/********************************************************
+*   resizeWorld
+*
+*   Resize the world to the new screen width and height.
+********************************************************/
+void ksWorld::resizeWorld(int screen_width, int screen_height)
+{
+    int old_proportion = m_world_width_px * m_world_height_px;
+    int new_proportion = screen_width / screen_height;
+    
+    int new_depth = (old_proportion / new_proportion) * m_world_depth_px;
+    
+    load(screen_width, screen_height, new_depth, m_world_name);
 }
 
 /********************************************************

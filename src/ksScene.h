@@ -14,6 +14,7 @@
 #define KS_SCENE_H
 
 #include "ksTransition.h"
+#include <iostream>
 #include <list>
 
 template <typename T>
@@ -22,6 +23,7 @@ class ksScene
     public:
         //                         Constructors
         ksScene();
+        ksScene(ksTransition<T> transition);
         
         //                         Methods
         void                       addTransition(ksTransition<T> transition);
@@ -45,6 +47,22 @@ template <typename T>
 ksScene<T>::ksScene()
     : m_duration(0), m_current_frame(0)
 { }
+
+/********************************************************
+*   ksScene(ksTransition<T> transition)
+*
+*   Initializes the scene to the passed transition and
+*   it's duration.
+********************************************************/
+template <typename T>
+ksScene<T>::ksScene(ksTransition<T> transition)
+    : m_current_frame(0)
+{
+    m_duration = transition.getDuration();
+    
+    // Add the transition to the list.
+    m_transitions.push_back(transition);
+}
 
 /********************************************************
 *   addTransition
@@ -89,7 +107,7 @@ void ksScene<T>::update()
         for (typename std::list<ksTransition<T>>::iterator iter = m_transitions.begin();
             iter != m_transitions.end(); ++iter)
         {
-            iter->update();         
+            iter->update();
         }
         
         m_current_frame++;

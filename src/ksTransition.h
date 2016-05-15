@@ -14,6 +14,8 @@
 #ifndef KS_TRANSITION_H
 #define KS_TRANSITION_H
 
+#include <iostream>
+
 template <typename T>
 class ksTransition
 {
@@ -25,6 +27,7 @@ class ksTransition
         
         //                         Methods
         int                        getDuration();
+        bool                       isDone();
         void                       update();
         
     private:
@@ -49,9 +52,7 @@ template <typename T>
 ksTransition<T>::ksTransition(T * state1, T state2, int duration)
     : m_first_state(state1), m_second_state(state2), m_duration(duration),
     m_current_frame(0)
-{
-    m_delta_state = m_second_state - *m_first_state;
-}
+{ }
 
 /********************************************************
 *   ksTransition(const ksTransition<T> & copy)
@@ -82,6 +83,8 @@ ksTransition<T> & ksTransition<T>::operator=(const ksTransition<T> & rhs)
     m_delta_state   = rhs.m_delta_state;
     m_duration      = rhs.m_duration;
     m_current_frame = rhs.m_current_frame;
+    
+    return *this;
 }
 
 /********************************************************
@@ -96,6 +99,17 @@ int ksTransition<T>::getDuration()
 }
 
 /********************************************************
+*   isDone
+*
+*   Return whether or not the transition has completed.
+********************************************************/
+template <typename T>
+bool ksTransition<T>::isDone()
+{
+    return m_current_frame >= m_duration;
+}
+
+/********************************************************
 *   update
 *
 *   Update the transition between the two states by adding
@@ -105,6 +119,11 @@ int ksTransition<T>::getDuration()
 template <typename T>
 void ksTransition<T>::update()
 {
+    // In the beginning of the transition update
+    // the difference between the states.
+    if (m_current_frame == 0)
+        m_delta_state = m_second_state - *m_first_state;
+    
     // If the current frame is less than the duration
     // then increment the first state.
     if (m_current_frame < m_duration)
@@ -113,6 +132,8 @@ void ksTransition<T>::update()
         
         // Update the current frame.
         m_current_frame++;
+        
+        std::cout << "Current Frame: " << m_current_frame << '\t' << m_delta_state << '\t' << isDone() << '\n';
     }
 }
 

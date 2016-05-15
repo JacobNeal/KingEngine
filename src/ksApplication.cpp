@@ -75,13 +75,13 @@ bool ksApplication::isOpen()
     //m_window.setView(m_window.getDefaultView());
     m_window.setView(m_gui_view);
     
+	m_control_layer.drawLayer(m_window);
+    
     for (std::map<std::string, sf::Text>::iterator iter = m_text_layer.begin();
          iter != m_text_layer.end(); iter++)
     {
         m_window.draw(iter->second);
     }
-    
-	m_control_layer.drawLayer(m_window);
 
     m_window.display();
 
@@ -160,7 +160,9 @@ bool ksApplication::isOpen()
         {
             // Center the world view
             //m_world_view = sf::View(sf::FloatRect(0.f, 0.f, 800, 640));
-            m_world_view.setCenter(m_evt.size.width / 2, m_evt.size.height / 2);
+            m_world_view.setCenter(sf::Vector2f(m_evt.size.width, m_evt.size.height) / 2.0f);
+            m_world_view.setSize(sf::Vector2f(m_evt.size.width, m_evt.size.height));
+            m_world.resizeWorld(m_evt.size.width, m_evt.size.height);
             
             std::cout << "Center: " << (m_evt.size.width / 2) << ", " << (m_evt.size.height / 2) << '\n';
             
@@ -356,30 +358,6 @@ void ksApplication::decreaseCameraDepth()
     m_world_view.zoom(scale);
 }
 
-ksPathNode ksApplication::calculateWorldNode(int screen_x, int screen_y)
-{
-    ksPathNode temp = m_world.calculateBottomNode(screen_x, screen_y);
-
-    if (temp.row < 0)
-        temp.row = 0;
-    else if (temp.row >= m_world.getDepth())
-        temp.row = m_world.getDepth() - 1;
-
-    if (temp.col < 0)
-        temp.col = 0;
-    else if (temp.col >= m_world.getWidth())
-        temp.col = m_world.getWidth() - 1;
-
-    ksTile position; //= m_world.calculateBottomPosition(temp.row, temp.col);
-
-    temp.TL = position.TL;
-    temp.TR = position.TR;
-    temp.BL = position.BL;
-    temp.BR = position.BR;
-
-    return temp;
-}
-
 void ksApplication::toggleWorldLighting()
 {
     m_world.toggleLighting();
@@ -402,6 +380,11 @@ void ksApplication::insertText(double x, double y, std::string name,
 void ksApplication::setText(std::string name, std::string text)
 {
     m_text_layer[name].setString(text);
+}
+
+void ksApplication::setTextColor(std::string name, ksColor color)
+{
+    m_text_layer[name].setColor(color);
 }
 
 void ksApplication::clearEntities()

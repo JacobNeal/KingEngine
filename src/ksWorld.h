@@ -54,8 +54,6 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         //              Methods
         void            load(int width, int height, int depth, std::string name="");
         void            readTiles(std::string name);
-        ksPathNode      calculateFrontNode(int screen_x, int screen_y);
-        ksPathNode      calculateBottomNode(int screen_x, int screen_y);
         virtual void    draw(sf::RenderTarget & target, sf::RenderStates states) const;
         void            drawWorld(sf::RenderWindow & app);
         void            addLight(ksVector2D start, ksWorldWall wall, int row, int col,
@@ -95,6 +93,7 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         void            transformRightWall(int & index, int map_row_num,
                                            int map_depth_num);
         void            moveCamera(int x, int y, int z);
+        void            resizeWorld(int screen_width, int screen_height);
 
         //              Accessor methods
         int             getWidth() { return m_world_width_px; }
@@ -192,6 +191,7 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         int                              m_camera_x;
         int                              m_camera_y;
         int                              m_camera_z;
+        std::string                      m_world_name;
 };
 
 #endif
