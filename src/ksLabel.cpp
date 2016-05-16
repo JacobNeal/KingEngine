@@ -6,6 +6,7 @@
 ********************************************************/
 
 #include "ksLabel.h"
+#include <iostream>
 
 /********************************************************
 *   ksLabel
@@ -13,8 +14,9 @@
 *   Intitializes the label class by setting the text of
 *   the label and it's position to the passed values.
 ********************************************************/
-ksLabel::ksLabel(sf::Font * font, std::string str, double x, double y)
-    : m_text(str, *font, 12), m_pressed(false), m_visible(true)
+ksLabel::ksLabel(sf::Font * font, std::string str, double x, double y, int character_size)
+    : m_text(str, *font, character_size), m_pressed(false), m_visible(true),
+    m_character_size(character_size)
 {
     // Change origin point of the text object
     sf::FloatRect textRect = m_text.getLocalBounds();
@@ -34,7 +36,20 @@ ksLabel::ksLabel(sf::Font * font, std::string str, double x, double y)
 ********************************************************/
 void ksLabel::drawControl(sf::RenderWindow & app)
 {
-    app.draw(m_text);
+    if (m_visible)
+    {
+        app.draw(m_text);
+    }
+}
+
+/********************************************************
+*   getVisibility
+*
+*   Return the visibility of the label.
+********************************************************/
+bool ksLabel::getVisibility()
+{
+    return m_visible;
 }
 
 /********************************************************
@@ -70,6 +85,31 @@ bool ksLabel::pressed(int mouse_x, int mouse_y)
 bool ksLabel::isPressed()
 {
     return m_pressed;
+}
+
+/********************************************************
+*   resize
+*
+*   Resize the label character size based on the new
+*   application width and height.
+********************************************************/
+void ksLabel::resize(int screen_width, int screen_height)
+{
+    m_character_size = ((double) m_character_size / (DEFAULT_WINDOW_WIDTH * DEFAULT_WINDOW_HEIGHT)) * (screen_width * screen_height);
+    
+    m_text.setCharacterSize(m_character_size);
+    
+    std::cout << "Character size: " << m_character_size << '\n';
+    
+    // Change origin point of the text object
+    sf::FloatRect textRect = m_text.getLocalBounds();
+    
+    m_text.setOrigin(textRect.left + (textRect.width / 2.0f),
+        textRect.top + (textRect.height / 2.0f));
+    
+    // Update the position of the label
+    m_text.setPosition((m_text.getPosition().x / DEFAULT_WINDOW_WIDTH) * screen_width,
+        (m_text.getPosition().y / DEFAULT_WINDOW_HEIGHT) * screen_height);
 }
 
 /********************************************************
@@ -112,4 +152,14 @@ void ksLabel::setPressed(bool pressed)
 void ksLabel::setText(std::string str)
 {
     m_text.setString(str);
+}
+
+/********************************************************
+*   setVisibility
+*
+*   Set the visibility of the label.
+********************************************************/
+void ksLabel::setVisibility(bool visibility)
+{
+    m_visible = visibility;
 }

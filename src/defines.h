@@ -4,7 +4,7 @@
 // Change to MOBILE_BUILD for touchscreen devices.
 #define DESKTOP_BUILD
 #define DEFAULT_WINDOW_WIDTH 800
-#define DEFAULT_WINDOW_HEIGHT 640
+#define DEFAULT_WINDOW_HEIGHT 400
 
 #define ENTITY_MOVE_DELTA 3
 

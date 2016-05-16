@@ -32,11 +32,8 @@ class ksControlLayer : public sf::Drawable, public sf::Transformable
         bool                pressControl(int mouse_x, int mouse_y);
         void                depressControl();
         void                purge();
-
-        //                  Mutators
+        void                resize(int screen_width, int screen_height);
         bool                setTilesheet(std::string tilesheet);
-
-        //                  Accessor Methods
         int                 getCount();
 
     private:

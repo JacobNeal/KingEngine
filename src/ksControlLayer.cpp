@@ -101,6 +101,18 @@ void ksControlLayer::purge()
 }
 
 /********************************************************
+*   resize
+*
+*   Resize all of the controls within this layer based
+*   on the new application width and height.
+********************************************************/
+void ksControlLayer::resize(int screen_width, int screen_height)
+{
+    for (int count = 0; count < m_num_of_controls; ++count)
+        m_controls[count]->resize(screen_width, screen_height);
+}
+
+/********************************************************
 *   setTilesheet
 *
 *   Change the tilesheet that all the controls in the

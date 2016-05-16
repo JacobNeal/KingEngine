@@ -26,15 +26,18 @@ class ksButton : public ksControl
 
         //                         Methods
         virtual void               drawControl(sf::RenderWindow & app);
+        virtual bool               getVisibility();
         virtual void               moveControl(double x, double y);
         virtual bool               pressed(int mouse_x, int mouse_y);
         virtual bool               isPressed();
         virtual void               released();
+        virtual void               resize(int screen_width, int screen_height);
         virtual void               setCenter(double x, double y);
         void                       setColor(ksColor color);
         virtual void               setControlPosition(double x, double y);
         virtual void               setPressed(bool pressed);
         void                       setText(std::string str);
+        virtual void               setVisibility(bool visibility);
 
     private:
         //                         Data members

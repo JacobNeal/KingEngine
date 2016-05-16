@@ -21,7 +21,8 @@
 ksContainer::ksContainer(double width, double height, ksAlign alignment, 
     ksColor color, double radius, int resolution)
     : m_alignment(alignment), m_width(width), m_height(height),
-    m_pressed(false), m_color(color), m_radius(radius), m_resolution(resolution)
+    m_pressed(false), m_color(color), m_radius(radius), m_resolution(resolution),
+    m_visible(true)
 {   
     m_array.setPrimitiveType(sf::Triangles);
     
@@ -41,6 +42,16 @@ void ksContainer::addControl(ksControl * control)
     
     // Update the contained controls
     updateContainedControls();
+}
+
+/********************************************************
+*   getVisibility
+*
+*   Return the visibility of the control.
+********************************************************/
+bool ksContainer::getVisibility()
+{
+    return m_visible;
 }
 
 /********************************************************
@@ -200,12 +211,15 @@ void ksContainer::draw(sf::RenderTarget & target, sf::RenderStates states) const
 ********************************************************/
 void ksContainer::drawControl(sf::RenderWindow & app)
 {
-    // Draw the rounded rectangle of the container.
-    app.draw(*this);
-    
-    // Draw all the nested controls within the container.
-    for (int count = 0; count < m_controls.size(); ++count)
-        m_controls[count]->drawControl(app);
+    if (m_visible)
+    {
+        // Draw the rounded rectangle of the container.
+        app.draw(*this);
+        
+        // Draw all the nested controls within the container.
+        for (int count = 0; count < m_controls.size(); ++count)
+            m_controls[count]->drawControl(app);
+    }
 }
 
 /********************************************************
@@ -265,6 +279,30 @@ bool ksContainer::pressed(int mouse_x, int mouse_y)
 bool ksContainer::isPressed()
 {
     return m_pressed;
+}
+
+/********************************************************
+*   resize
+*
+*   Resize the container based on the new application
+*   width and height.
+********************************************************/
+void ksContainer::resize(int screen_width, int screen_height)
+{
+    // Update the size of the control.
+    m_width = (double) (m_width / DEFAULT_WINDOW_WIDTH) * screen_width;
+    m_height = (double) (m_height / DEFAULT_WINDOW_HEIGHT) * screen_height;
+    
+    // Update the position of the control
+    setPosition((getPosition().x / DEFAULT_WINDOW_WIDTH) * screen_width,
+                (getPosition().y / DEFAULT_WINDOW_HEIGHT) * screen_height);
+                
+    // Call the resize method of all contained controls.
+    for (int count = 0; count < m_controls.size(); ++count)
+        m_controls[count]->resize(screen_width, screen_height);
+    
+    // Update the size and position of the container.
+    update();
 }
 
 /********************************************************
@@ -346,4 +384,14 @@ void ksContainer::setHeight(double height)
     
     // Update the container and all the contained controls.
     update();
+}
+
+/********************************************************
+*   setVisibility
+*
+*   Set the visibility of the control.
+********************************************************/
+void ksContainer::setVisibility(bool visibility)
+{
+    m_visible = visibility;
 }

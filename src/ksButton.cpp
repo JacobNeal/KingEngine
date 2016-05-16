@@ -34,6 +34,16 @@ void ksButton::drawControl(sf::RenderWindow & app)
 }
 
 /********************************************************
+*   getVisibility
+*
+*   Return the visibility of the button control.
+********************************************************/
+bool ksButton::getVisibility()
+{
+    return m_container.getVisibility();
+}
+
+/********************************************************
 *   moveControl
 *
 *   Move all the vertices inside of this control by
@@ -63,6 +73,17 @@ bool ksButton::pressed(int mouse_x, int mouse_y)
 bool ksButton::isPressed()
 {
     return m_container.isPressed();
+}
+
+/********************************************************
+*   resize
+*
+*   Resize the button container and contained label
+*   based on the new application width and height.
+********************************************************/
+void ksButton::resize(int screen_width, int screen_height)
+{
+    m_container.resize(screen_width, screen_height);
 }
 
 /********************************************************
@@ -127,4 +148,15 @@ void ksButton::setPressed(bool pressed)
 void ksButton::setText(std::string str)
 {
     m_label.setText(str);
+}
+
+/********************************************************
+*   setVisibility
+*
+*   Sets the visibility of the button container and label.
+********************************************************/
+void ksButton::setVisibility(bool visibility)
+{
+    m_container.setVisibility(visibility);
+    m_label.setVisibility(visibility);
 }

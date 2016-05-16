@@ -308,13 +308,6 @@ void ksLightSystem::draw(sf::RenderTarget & target, sf::RenderStates states) con
 *********************************************************/
 void ksLightSystem::updateWallShadows()
 {
-    // // Check for the deepest z value.
-    // m_deepest_light_z = 0.0;
-    
-    // for (int count = 0; count < m_number_of_lights; ++count)
-    //     if (m_lights[count].getPosition().z < m_deepest_light_z)
-    //         m_deepest_light_z = m_lights[count].getPosition().z;
-    
     // Left
     m_array[0].position     = m_world->transform3DWithPixelValue(0, 0, m_deepest_light_z);
     m_array[1].position     = m_world->transform3DWithPixelValue(0, 0, m_world->getDepth());

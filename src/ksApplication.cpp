@@ -16,14 +16,17 @@
 *********************************************************/
 ksApplication::ksApplication()
 	: m_window(sf::VideoMode::getDesktopMode(), "KingEngine"),
-	m_world("images/voltor_interior.png"), m_camera_depth(0), 
+	m_world("images/voltor_interior2.png"), m_camera_depth(0), 
     m_entity_layer(&m_world, "images/default.png"), 
     m_control_layer("images/portal_obj.png"), m_mouse_released(false),
     m_emitter(nullptr), m_light_system(nullptr), m_scene_paused(false)
 {
 	m_window.setFramerateLimit(FRAMERATE);
     m_font = new sf::Font;
+    
     m_font->loadFromFile("images/minecraft.ttf");
+    ((sf::Texture&)m_font->getTexture(12U)).setSmooth(false);
+    
     m_gui_view = m_window.getDefaultView();
     m_current_scene = m_scenes.begin();
 }
@@ -36,14 +39,17 @@ ksApplication::ksApplication()
 *********************************************************/
 ksApplication::ksApplication(std::string app_title, int app_width, int app_height)
 	: m_window(sf::VideoMode(app_width, app_height, 32), app_title.c_str()),
-	m_world("images/voltor_interior.png"), m_camera_depth(0), 
+	m_world("images/voltor_interior2.png"), m_camera_depth(0), 
     m_entity_layer(&m_world, "images/default.png"), 
     m_control_layer("images/portal_obj.png"), m_mouse_released(false),
     m_emitter(nullptr), m_light_system(nullptr), m_scene_paused(false)
 {
 	m_window.setFramerateLimit(FRAMERATE);
     m_font = new sf::Font;
+    
     m_font->loadFromFile("images/minecraft.ttf");
+    ((sf::Texture&)m_font->getTexture(12U)).setSmooth(false);
+    
     m_gui_view = m_window.getDefaultView();
     m_current_scene = m_scenes.begin();
 }
@@ -75,7 +81,7 @@ bool ksApplication::isOpen()
     }
     
     //m_window.setView(m_window.getDefaultView());
-    m_window.setView(m_gui_view);
+    //m_window.setView(m_gui_view);
     
 	m_control_layer.drawLayer(m_window);
     
@@ -91,8 +97,6 @@ bool ksApplication::isOpen()
     m_control_layer.depressControl();
 
     m_mouse_released = false;
-    //m_world.setPosition(400 - (((m_world.getDepth() * 2) + m_world.getWidth() * TILE_WIDTH) / 2),
-    //                    320 - (((m_world.getDepth() * 2) + m_world.getHeight() * TILE_HEIGHT) / 2));
 
 	// check for closed window / app
 	if (m_window.pollEvent(m_evt))
@@ -107,9 +111,6 @@ bool ksApplication::isOpen()
 			}
             if (m_evt.key.code == sf::Keyboard::Key::Right)
             {
-                // if (m_emitter != nullptr)
-                //     m_emitter->rotate(1.0);
-                //m_world_view.rotate(1.0);
                 m_world.moveCamera(20, 0, 0);
                 
                 if (m_light_system != nullptr)
@@ -119,9 +120,6 @@ bool ksApplication::isOpen()
             }
             else if (m_evt.key.code == sf::Keyboard::Key::Left)
             {
-                // if (m_emitter != nullptr)
-                //     m_emitter->rotate(-1.0);
-                //m_world_view.rotate(-1.0);
                 m_world.moveCamera(-20, 0, 0);
                 
                 if (m_light_system != nullptr)
@@ -141,12 +139,6 @@ bool ksApplication::isOpen()
 		}
         else if (m_evt.type == sf::Event::Resized)
         {
-            // Center the world view
-            //m_world_view = sf::View(sf::FloatRect(0.f, 0.f, 800, 640));
-            //m_world_view.setCenter(sf::Vector2f(m_evt.size.width, m_evt.size.height) / 2.0f);
-            //m_world_view.setSize(sf::Vector2f(m_evt.size.width, m_evt.size.height));
-            //m_world.resizeWorld(m_evt.size.width, m_evt.size.height);
-            
             double heightProportionateToWidth = (double) m_world.getHeight() / m_world.getWidth();
     
             double new_width = m_evt.size.width;
@@ -156,10 +148,6 @@ bool ksApplication::isOpen()
             
             //m_world_view.reset(sf::FloatRect(0, 0, width, height));
             m_world_view.setViewport(sf::FloatRect(0.0f, viewport_top, 1.f, viewport_height));
-            
-            // Resize the GUI view
-            m_gui_view.setCenter(sf::Vector2f(m_evt.size.width, m_evt.size.height) / 2.0f);
-            m_gui_view.setSize(sf::Vector2f(m_evt.size.width, m_evt.size.height));
         }
 		else if (m_evt.type == sf::Event::Closed)
 			m_window.close();

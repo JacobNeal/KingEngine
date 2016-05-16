@@ -11,7 +11,7 @@
 
 int main()
 {
-	ksApplication app("KingEngine", 800, 640);
+	ksApplication app("KingEngine", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
 	app.setEntityTilesheet("images/voltor_interior2.png");
 
     app.insertText(53, 53, "title", "KingEngine", 30, ksColor(0, 0, 0, 200));
@@ -26,57 +26,29 @@ int main()
     app.addParticleEmitter(&emitter);
     
     // Sunny day
-    // ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 0, 100), sf::Color(0, 0, 0, 255));
-    // lighting.addLight(sf::Vector3f(128, 128, 800), 256, sf::Color(255, 200, 0, 255));
+    ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 0, 100), sf::Color(0, 0, 0, 255));
+    lighting.addLight(sf::Vector3f(128, 128, 1), 256, sf::Color(255, 200, 0, 255));
     
     // Nightime
-    ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 255, 120), sf::Color(0, 0, 255, 60));
-    //lighting.addLight(sf::Vector3f(128, 128, 800), 256, sf::Color(255, 255, 200, 255));
+    // ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 255, 120), sf::Color(0, 0, 255, 60));
+    // //lighting.addLight(sf::Vector3f(128, 128, 800), 256, sf::Color(255, 255, 200, 255));
     app.addLightSystem(&lighting);
     
     // Create a wrapper for a column of rows of buttons.
-    ksContainer column(800, 640, ksAlign::COLUMN, ksColor(0, 0, 0, 0), 0);
-    app.addControl(&column);
+    ksContainer container_foreground(800, 400, ksAlign::COLUMN, ksColor(0, 0, 0, 0), 0);
+    app.addControl(&container_foreground);
     
     double container_alpha = 255.0;
     
-    // // Create the first row
-    // ksContainer row1(640, 96, ksAlign::ROW);
+    // Create the directions message.
+    ksContainer container_message(480, 128, ksAlign::CENTER, ksColor(0, 0, 0, 120));
+    app.addControl(&container_message);
     
-    // ksButton button1(app.getFont(), "Click me", 96, 64, ksColor(30, 30, 30));
-    // ksButton button2(app.getFont(), "Click me", 96, 64, ksColor(30, 30, 30));
-    // ksButton button3(app.getFont(), "Click me", 96, 64, ksColor(30, 30, 30));
+    ksLabel lbl_message(app.getFont(), "To the left we'll take a look at the executive diagram\nfor this project.", 0, 0);
+    container_message.addControl(&lbl_message);
+    container_message.setVisibility(false);
     
-    // row1.addControl(&button1);
-    // row1.addControl(&button2);
-    // row1.addControl(&button3);
-    
-    // // Create the second row
-    // ksContainer row2(640, 96, ksAlign::ROW);
-    
-    // ksButton button4(app.getFont(), "Click me", 96, 64, ksColor(30, 30, 30));
-    // ksButton button5(app.getFont(), "Click me", 96, 64, ksColor(30, 30, 30));
-    // ksButton button6(app.getFont(), "Click me", 96, 64, ksColor(30, 30, 30));
-    
-    // row2.addControl(&button4);
-    // row2.addControl(&button5);
-    // row2.addControl(&button6);
-    
-    // // Create the third row
-    // ksContainer row3(640, 96, ksAlign::ROW);
-    
-    // ksButton button7(app.getFont(), "Click me", 96, 64, ksColor(30, 30, 30));
-    // ksButton button8(app.getFont(), "Click me", 96, 64, ksColor(30, 30, 30));
-    // ksButton button9(app.getFont(), "Click me", 96, 64, ksColor(30, 30, 30));
-    
-    // row3.addControl(&button7);
-    // row3.addControl(&button8);
-    // row3.addControl(&button9);
-    
-    // // Add the rows to the column.
-    // column.addControl(&row1);
-    // column.addControl(&row2);
-    // column.addControl(&row3);
+    container_message.setPosition(0, 0);
 
     ksPathFinder path_finder(app.getWorld());
 
@@ -100,10 +72,10 @@ int main()
     scene2.addTransition(ksTransition<double>(&alpha_value3, 0, 30));
     scene2.addTransition(ksTransition<double>(&alpha_value4, 0, 60));
     
-    ksAudioTrack track("audio/sorrow.ogg", 120, 100);
+    ksAudioTrack track("audio/the_honeymoon.ogg", 120, 100);
     
     double title_alpha = 0.0;
-    double sun_z_position = 800.0;
+    double sun_z_position = 0.0;
     
     ksScene<double> title_fade_in;
     title_fade_in.addTransition(ksTransition<double>(&title_alpha, 200.0, 120));
@@ -111,7 +83,7 @@ int main()
     ksScene<double> title_fade_out;
     title_fade_out.addTransition(ksTransition<double>(&title_alpha, 0.0, 120));
     title_fade_out.addTransition(ksTransition<double>(&container_alpha, 0.0, 120));
-    //title_fade_out.addTransition(ksTransition<double>(&sun_z_position, 800.0, 120));
+    title_fade_out.addTransition(ksTransition<double>(&sun_z_position, 801.0, 150));
 
     app.addScene(&title_fade_in);
     app.addScene(&title_fade_out);
@@ -219,20 +191,23 @@ int main()
         if (title_fade_in.isDone() && !title_fade_out.isDone())
         {
             // Get the sun's position.
-            //ksVector3f temp = lighting.getLightPosition(0);
+            ksVector3f temp = lighting.getLightPosition(0);
             
             // Update the sun's z coordinate.
-            //temp.z = sun_z_position;
+            temp.z = sun_z_position;
             
             // Update the position of the light source.
-            //lighting.setLightPosition(0, temp.x, temp.y, temp.z);
+            lighting.setLightPosition(0, temp.x, temp.y, temp.z);
             //lighting.addLight(sf::Vector3f(128, 128, sun_z_position), 256, sf::Color(255, 200, 0, 255));
         }
+        
+        if (title_fade_out.isDone())
+            container_message.setVisibility(true);
         
         app.setTextColor("title", ksColor(0, 0, 0, title_alpha));
         app.setTextColor("title2", ksColor(255, 255, 255, title_alpha));
         app.setTextColor("subtitle", ksColor(0, 0, 0, title_alpha));
-        column.setColor(ksColor(0, 0, 0, container_alpha));
+        container_foreground.setColor(ksColor(0, 0, 0, container_alpha));
         //ent.animate();
     }
 

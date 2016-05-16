@@ -36,15 +36,18 @@ class ksContainer : public ksControl, public sf::Drawable, public sf::Transforma
         void                       addControl(ksControl * control);
         virtual void               draw(sf::RenderTarget & target, sf::RenderStates states) const;
         virtual void               drawControl(sf::RenderWindow & app);
+        virtual bool               getVisibility();
         virtual void               moveControl(double x, double y);
         virtual bool               pressed(int mouse_x, int mouse_y);
         virtual bool               isPressed();
+        virtual void               resize(int screen_width, int screen_height);
         virtual void               setCenter(double x, double y);
         void                       setColor(ksColor color);
         virtual void               setControlPosition(double x, double y);
         virtual void               setPressed(bool pressed);
         void                       setWidth(double width);
         void                       setHeight(double height);
+        virtual void               setVisibility(bool visibility);
         
     private:
         void                       update();
@@ -60,6 +63,7 @@ class ksContainer : public ksControl, public sf::Drawable, public sf::Transforma
         ksColor                    m_color;
         double                     m_radius;
         int                        m_resolution;
+        bool                       m_visible;
 };
 
 #endif
