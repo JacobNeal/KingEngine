@@ -129,6 +129,17 @@ void ksButton::setControlPosition(double x, double y)
 }
 
 /********************************************************
+*   setOpacity
+*
+*   Set the opacity of the button's container and label.
+********************************************************/
+void ksButton::setOpacity(double opacity)
+{
+    m_container.setOpacity(opacity);
+    m_label.setOpacity(opacity);
+}
+
+/********************************************************
 *   setPressed
 *
 *   Sets whether or not the button is pressed.

@@ -135,6 +135,22 @@ void ksLabel::setControlPosition(double x, double y)
 }
 
 /********************************************************
+*   setOpacity
+*
+*   Set the opacity of the label, where 0.0 is completely
+*   translucent and 1.0 is completely visible.
+********************************************************/
+void ksLabel::setOpacity(double opacity)
+{
+    // Get the current color of the text object.
+    sf::Color temp = m_text.getColor();
+    
+    // Update the color to the passed opacity converted
+    // to an alpha value.
+    m_text.setColor(sf::Color(temp.r, temp.g, temp.b, opacity * 255));
+}
+
+/********************************************************
 *   setPressed
 *
 *   Set whether or not the label is being pressed.

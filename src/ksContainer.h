@@ -44,6 +44,7 @@ class ksContainer : public ksControl, public sf::Drawable, public sf::Transforma
         virtual void               setCenter(double x, double y);
         void                       setColor(ksColor color);
         virtual void               setControlPosition(double x, double y);
+        virtual void               setOpacity(double opacity);
         virtual void               setPressed(bool pressed);
         void                       setWidth(double width);
         void                       setHeight(double height);

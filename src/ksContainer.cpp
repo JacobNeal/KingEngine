@@ -349,6 +349,27 @@ void ksContainer::setControlPosition(double x, double y)
 }
 
 /********************************************************
+*   setOpacity
+*
+*   Update the opacity of the container and all contained
+*   controls.
+********************************************************/
+void ksContainer::setOpacity(double opacity)
+{
+    // Take the value of opacity from 0.0 - 1.0
+    // to either be completely translucent or visible
+    // and update the alpha of the container color.
+    m_color.a = opacity * 255;
+    
+    // Update the opacity of all contained controls.
+    for (int count = 0; count < m_controls.size(); ++count)
+        m_controls[count]->setOpacity(opacity);
+    
+    // Update the container.
+    update();
+}
+
+/********************************************************
 *   setPressed
 *
 *   Set whether or not the control is pressed.

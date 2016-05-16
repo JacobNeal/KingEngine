@@ -35,6 +35,7 @@ class ksButton : public ksControl
         virtual void               setCenter(double x, double y);
         void                       setColor(ksColor color);
         virtual void               setControlPosition(double x, double y);
+        virtual void               setOpacity(double opacity);
         virtual void               setPressed(bool pressed);
         void                       setText(std::string str);
         virtual void               setVisibility(bool visibility);

@@ -8,6 +8,7 @@
 #include "ksAudioTrack.h"
 #include <string>
 #include <vector>
+#include <iostream>
 
 int main()
 {
@@ -27,7 +28,7 @@ int main()
     
     // Sunny day
     ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 0, 100), sf::Color(0, 0, 0, 255));
-    lighting.addLight(sf::Vector3f(128, 128, 1), 256, sf::Color(255, 200, 0, 255));
+    lighting.addLight(sf::Vector3f(128, 128, 0), 256, sf::Color(255, 200, 0, 255));
     
     // Nightime
     // ksLightSystem lighting(app.getWorld(), sf::Color(0, 0, 255, 120), sf::Color(0, 0, 255, 60));
@@ -38,14 +39,16 @@ int main()
     ksContainer container_foreground(800, 400, ksAlign::COLUMN, ksColor(0, 0, 0, 0), 0);
     app.addControl(&container_foreground);
     
-    double container_alpha = 255.0;
+    double container_opacity = 1.0;
     
     // Create the directions message.
-    ksContainer container_message(480, 128, ksAlign::CENTER, ksColor(0, 0, 0, 120));
+    ksContainer container_message(480, 128, ksAlign::COLUMN, ksColor(0, 0, 0, 120));
     app.addControl(&container_message);
     
     ksLabel lbl_message(app.getFont(), "To the left we'll take a look at the executive diagram\nfor this project.", 0, 0);
+    ksButton btn_accept(app.getFont(), "Ok", 96, 32);
     container_message.addControl(&lbl_message);
+    container_message.addControl(&btn_accept);
     container_message.setVisibility(false);
     
     container_message.setPosition(0, 0);
@@ -55,24 +58,8 @@ int main()
     int emitter_x = 400;
     int emitter_z = 400;
     
-    double alpha_value = 255.0;
-    double alpha_value2 = 255.0;
-    
-    ksScene<double> scene;
-    
-    // 60 frames / (30 frames / sec) = 2 seconds
-    scene.addTransition(ksTransition<double>(&alpha_value, 0, 30));
-    scene.addTransition(ksTransition<double>(&alpha_value2, 0, 60));
-    
-    double alpha_value3 = 255.0;
-    double alpha_value4 = 255.0;
-    
-    ksScene<double> scene2;
-    
-    scene2.addTransition(ksTransition<double>(&alpha_value3, 0, 30));
-    scene2.addTransition(ksTransition<double>(&alpha_value4, 0, 60));
-    
-    ksAudioTrack track("audio/the_honeymoon.ogg", 120, 100);
+    ksAudioTrack track("audio/a_theme_among_themes.ogg", 120, 100);
+    bool transitioning = false;
     
     double title_alpha = 0.0;
     double sun_z_position = 0.0;
@@ -82,7 +69,7 @@ int main()
     
     ksScene<double> title_fade_out;
     title_fade_out.addTransition(ksTransition<double>(&title_alpha, 0.0, 120));
-    title_fade_out.addTransition(ksTransition<double>(&container_alpha, 0.0, 120));
+    title_fade_out.addTransition(ksTransition<double>(&container_opacity, 0.0, 120));
     title_fade_out.addTransition(ksTransition<double>(&sun_z_position, 801.0, 150));
 
     app.addScene(&title_fade_in);
@@ -185,8 +172,13 @@ int main()
             entity_list[count]->arrive(ksVector2D(ent.X(), ent.Z()));
         }
         
-        if (title_fade_in.isDone())
-            track.update();
+        if (title_fade_in.isDone() && !transitioning)
+        {
+            track.transitionTrack("audio/the_honeymoon.ogg");
+            transitioning = true;
+        }
+        
+        track.update();
         
         if (title_fade_in.isDone() && !title_fade_out.isDone())
         {
@@ -203,11 +195,14 @@ int main()
         
         if (title_fade_out.isDone())
             container_message.setVisibility(true);
+            
+        if (btn_accept.isPressed())
+            container_message.setVisibility(false);
         
         app.setTextColor("title", ksColor(0, 0, 0, title_alpha));
         app.setTextColor("title2", ksColor(255, 255, 255, title_alpha));
         app.setTextColor("subtitle", ksColor(0, 0, 0, title_alpha));
-        container_foreground.setColor(ksColor(0, 0, 0, container_alpha));
+        container_foreground.setOpacity(container_opacity);
         //ent.animate();
     }
 

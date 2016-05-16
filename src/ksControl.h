@@ -29,6 +29,7 @@ class ksControl
         virtual void               resize(int screen_width, int screen_height) = 0;
         virtual void               setCenter(double x, double y) = 0;
         virtual void               setControlPosition(double x, double y) = 0;
+        virtual void               setOpacity(double opacity) = 0;
         virtual void               setPressed(bool pressed) = 0;
         virtual void               setVisibility(bool visibility) = 0;
 };
