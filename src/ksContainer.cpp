@@ -22,7 +22,7 @@ ksContainer::ksContainer(double width, double height, ksAlign alignment,
     ksColor color, double radius, int resolution)
     : m_alignment(alignment), m_width(width), m_height(height),
     m_pressed(false), m_color(color), m_radius(radius), m_resolution(resolution),
-    m_visible(true)
+    m_visible(true), m_opacity(1.0)
 {   
     m_array.setPrimitiveType(sf::Triangles);
     
@@ -163,20 +163,26 @@ void ksContainer::updateContainedControls()
     double current_x = 0.0;
     double current_y = 0.0;
     
-    if (m_alignment == ksAlign::CENTER)
+    switch (m_alignment)
     {
-        current_x = (double) getPosition().x + (m_width / 2);
-        current_y = (double) getPosition().y + (m_height / 2);
-    }
-    else if (m_alignment == ksAlign::COLUMN)
-    {
-        current_x = (double) getPosition().x + (m_width / 2);
-        current_y = (double) getPosition().y + (m_height / m_controls.size()) / 2;
-    }
-    else if (m_alignment == ksAlign::ROW)
-    {
-        current_x = (double) getPosition().x + (m_width / m_controls.size()) / 2;
-        current_y = (double) getPosition().y + (m_height / 2);
+        case ksAlign::CENTER:
+            current_x = (double) getPosition().x + (m_width / 2);
+            current_y = (double) getPosition().y + (m_height / 2);
+            break;
+            
+        case ksAlign::COLUMN:
+            current_x = (double) getPosition().x + (m_width / 2);
+            current_y = (double) getPosition().y + (m_height / m_controls.size()) / 2;
+            break;
+            
+        case ksAlign::ROW:
+            current_x = (double) getPosition().x + (m_width / m_controls.size()) / 2;
+            current_y = (double) getPosition().y + (m_height / 2);
+            break;
+            
+        default:
+            current_x = (double) getPosition().x + (m_width / 2);
+            current_y = (double) getPosition().y + (m_height / 2);
     }
     
     // Update the contained controls
@@ -364,6 +370,8 @@ void ksContainer::setOpacity(double opacity)
     // Update the opacity of all contained controls.
     for (int count = 0; count < m_controls.size(); ++count)
         m_controls[count]->setOpacity(opacity);
+        
+    m_opacity = opacity;
     
     // Update the container.
     update();

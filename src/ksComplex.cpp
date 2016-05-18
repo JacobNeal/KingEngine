@@ -303,3 +303,15 @@ void ksComplex::toggleBehavior()
 {
     m_behavior_on = !m_behavior_on;
 }
+
+// void ksComplex::moveEntity(int x, int y, int z)
+// {
+//     //m_position.X = x;
+//     //m_position.Y = z;
+//     m_x = x;
+//     m_y = y;
+//     m_z = z;
+    
+//     // Update the position of the entity on the screen.
+//     updateScreenPosition();
+// }

@@ -13,8 +13,8 @@ EXE = KingEngine
 
 all: $(EXE)
 
-$(EXE): main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksAudioTrack.o ksContainer.o ksLabel.o ksParticleEmitter.o ksLightSystem.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o
-	$(CXX) $(LDFLAGS) main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksAudioTrack.o ksContainer.o ksLabel.o ksParticleEmitter.o ksLightSystem.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o -o $@
+$(EXE): main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksAudioTrack.o ksImageControl.o ksContainer.o ksLabel.o ksParticleEmitter.o ksLightSystem.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o
+	$(CXX) $(LDFLAGS) main.o ksComplex.o ksComplexBehavior.o ksApplication.o ksAudioTrack.o ksImageControl.o ksContainer.o ksLabel.o ksParticleEmitter.o ksLightSystem.o ksWorld.o ksPathFinder.o ksEffect.o ksControlLayer.o ksButton.o ksEntityLayer.o ksEntity.o ksVector2D.o -o $@
 
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) main.cpp -o $@
@@ -30,6 +30,9 @@ ksApplication.o: $(ENGINE)/ksApplication.cpp
 
 ksAudioTrack.o: $(ENGINE)/ksAudioTrack.cpp
 	$(CXX) $(CXXFLAGS) $(ENGINE)/ksAudioTrack.cpp -o $@
+
+ksImageControl.o: $(ENGINE)/ksImageControl.cpp
+	$(CXX) $(CXXFLAGS) $(ENGINE)/ksImageControl.cpp -o $@
 
 ksContainer.o: $(ENGINE)/ksContainer.cpp
 	$(CXX) $(CXXFLAGS) $(ENGINE)/ksContainer.cpp -o $@

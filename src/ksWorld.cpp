@@ -87,7 +87,7 @@ ksWorld::ksWorld(std::string tilesheet, int width, int height, int depth)
     m_bottom_num_row = &m_depth;
     m_bottom_num_col = &m_width;
 
-    load(m_width, m_height, m_depth);
+    //load(m_width, m_height, m_depth);
 }
 
 /********************************************************
@@ -95,11 +95,11 @@ ksWorld::ksWorld(std::string tilesheet, int width, int height, int depth)
 *
 *   Load a map with (width x height x depth) values.
 ********************************************************/
-void ksWorld::load(int width, int height, int depth, std::string name)
+void ksWorld::load(int width, int height, int depth, int map_row, int map_col, int map_depth, std::string name)
 {
-    m_width  = 8;
-    m_height = 4;
-    m_depth  = 8;
+    m_width  = map_col;
+    m_height = map_row;
+    m_depth  = map_depth;
     m_world_name = name;
 
     //m_world_width_px  = 800;
@@ -898,18 +898,11 @@ sf::Vector2f ksWorld::transform3D(sf::Vector3f position)
 }
 
 /********************************************************
-*   transform2D
+*   transform3DWithPixelValue
 *
-*   Returns the transformed (x, y) screen coordinate
-*   to a 3D world coordinate.
+*   Returns the transformed (x, y, z) position to a
+*   2D drawable coordinate.
 ********************************************************/
-sf::Vector3f ksWorld::transform2D(double x, double y)
-{
-    sf::Vector3f position;
-
-    return position;
-}
-
 sf::Vector2f ksWorld::transform3DWithPixelValue(int x, int y, int z)
 {
     sf::Vector2f position;
@@ -1227,7 +1220,7 @@ void ksWorld::resizeWorld(int screen_width, int screen_height)
     
     int new_depth = (old_proportion / new_proportion) * m_world_depth_px;
     
-    load(screen_width, screen_height, new_depth, m_world_name);
+    load(screen_width, screen_height, new_depth, m_map_row_num, m_map_col_num, m_map_depth_num, m_world_name);
 }
 
 /********************************************************
@@ -1371,4 +1364,235 @@ int ksWorld::getMapRow()
 int ksWorld::getMapDepth()
 {
     return m_map_depth_num;
+}
+
+void ksWorld::setTilesheet(std::string tilesheet)
+{
+    if (!m_texture.loadFromFile(tilesheet))
+        std::cout << "ERROR (ksWorld): Couldn't load tilesheet\n";
+}
+
+/********************************************************
+*   loadWorldDemo
+*
+*   Fill the world with a demo map, rather than using
+*   File IO to read in the tiles on the walls.
+*
+*   This is used for demonstrating the engine on
+*   platforms that don't currently have the same File IO 
+*   support as the desktop platforms like the current 
+*   SFML build on Android and iOS.
+********************************************************/
+void ksWorld::loadWorldDemo()
+{
+    // Set the demo world to
+    // this particular size.
+    m_width  = 8;
+    m_height = 4;
+    m_depth  = 8;
+    
+    m_world_width_px  = 800;
+    m_world_height_px = 400;
+    m_world_depth_px  = 800;
+    
+    m_map_row_num   = 4;
+    m_map_col_num   = 8;
+    m_map_depth_num = 8;
+    
+    // Front wall
+    // 09 09 09 09 09 09 09 09
+    // 09 09 09 09 09 09 09 09
+    // 10 10 10 10 10 10 10 10
+    // 33 34 34 34 34 34 34 35
+    int front[4][8] = {{9, 9, 9, 9, 9, 9, 9, 9},
+                       {9, 9, 9, 9, 9, 9, 9, 9},
+                       {10, 10, 10, 10, 10, 10, 10, 10},
+                       {33, 34, 34, 34, 34, 34, 34, 35}};
+    
+    // Bottom wall
+    // 10 10 10 10 10 10 10 10
+    // 10 10 10 10 10 10 10 10
+    // 10 10 10 10 10 10 10 10
+    // 10 10 10 10 10 10 10 10
+    // 10 10 10 10 10 10 10 10
+    // 10 10 10 10 10 10 10 10
+    // 10 10 10 10 10 10 10 10
+    // 10 10 10 10 10 10 10 10
+    int bottom[8][8] = {{10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10},
+                        {10, 10, 10, 10, 10, 10, 10, 10}};
+                        
+    // Top wall
+    // 09 09 09 09 09 09 09 09
+    // 09 09 09 09 09 09 09 09
+    // 09 09 09 09 09 09 09 09
+    // 09 09 09 09 09 09 09 09
+    // 09 09 09 09 09 09 09 09
+    // 09 09 09 09 09 09 09 09
+    // 09 09 09 09 09 09 09 09
+    // 09 09 09 09 09 09 09 09
+    int top[8][8] = {{9, 9, 9, 9, 9, 9, 9, 9},
+                     {9, 9, 9, 9, 9, 9, 9, 9},
+                     {9, 9, 9, 9, 9, 9, 9, 9},
+                     {9, 9, 9, 9, 9, 9, 9, 9},
+                     {9, 9, 9, 9, 9, 9, 9, 9},
+                     {9, 9, 9, 9, 9, 9, 9, 9},
+                     {9, 9, 9, 9, 9, 9, 9, 9},
+                     {9, 9, 9, 9, 9, 9, 9, 9}};
+                        
+    // Left wall
+    // 09 09 09 09 09 09 09 09
+    // 09 09 09 09 09 09 09 09
+    // 10 10 10 10 10 10 10 10
+    // 33 34 34 34 34 34 34 34
+    int left[4][8] = {{9, 9, 9, 9, 9, 9, 9, 9},
+                      {9, 9, 9, 9, 9, 9, 9, 9},
+                      {10, 10, 10, 10, 10, 10, 10, 10},
+                      {33, 34, 34, 34, 34, 34, 34, 34}};
+                      
+    // Right wall
+    // 09 09 09 09 09 09 09 09
+    // 09 09 09 09 09 09 09 09
+    // 10 10 10 10 10 10 10 10
+    // 33 34 34 34 34 34 34 34
+    int right[4][8] = {{9, 9, 9, 9, 9, 9, 9, 9},
+                       {9, 9, 9, 9, 9, 9, 9, 9},
+                       {10, 10, 10, 10, 10, 10, 10, 10},
+                       {33, 34, 34, 34, 34, 34, 34, 34}};
+      
+    // Front Wall
+    m_front.resize(m_map_row_num);
+                     
+    for (int row = 0; row < m_map_row_num; ++row)
+    {
+        m_front[row].resize(m_map_col_num);
+        
+        for (int col = 0; col < m_map_col_num; ++col)
+        {
+            int tile_type = front[row][col];
+            int type_x = ((tile_type - (TILE_PER_LINE * (tile_type / TILE_PER_LINE)))
+                            * TILE_WIDTH) / 2;
+            int type_y = ((tile_type / TILE_PER_LINE) * TILE_HEIGHT) / 2;
+            int type_w = TILE_WIDTH / 2;
+            int type_h = TILE_HEIGHT / 2;
+            
+            m_front[row][col].TL = ksVector2D(type_x, type_y);
+            m_front[row][col].TR = ksVector2D(type_x + type_w, type_y);
+            m_front[row][col].BR = ksVector2D(type_x + type_w, type_y + type_h);
+            m_front[row][col].BL = ksVector2D(type_x, type_y + type_h);
+        }
+    }
+    
+    // Bottom Wall
+    m_bottom.resize(m_map_depth_num);
+                     
+    for (int row = 0; row < m_map_depth_num; ++row)
+    {
+        m_bottom[row].resize(m_map_col_num);
+        
+        for (int col = 0; col < m_map_col_num; ++col)
+        {
+            int tile_type = bottom[row][col];
+            int type_x = ((tile_type - (TILE_PER_LINE * (tile_type / TILE_PER_LINE)))
+                            * TILE_WIDTH) / 2;
+            int type_y = ((tile_type / TILE_PER_LINE) * TILE_HEIGHT) / 2;
+            int type_w = TILE_WIDTH / 2;
+            int type_h = TILE_HEIGHT / 2;
+            
+            m_bottom[row][col].TL = ksVector2D(type_x, type_y);
+            m_bottom[row][col].TR = ksVector2D(type_x + type_w, type_y);
+            m_bottom[row][col].BR = ksVector2D(type_x + type_w, type_y + type_h);
+            m_bottom[row][col].BL = ksVector2D(type_x, type_y + type_h);
+        }
+    }
+    
+    // Top Wall
+    m_top.resize(m_map_depth_num);
+                     
+    for (int row = 0; row < m_map_depth_num; ++row)
+    {
+        m_top[row].resize(m_map_col_num);
+        
+        for (int col = 0; col < m_map_col_num; ++col)
+        {
+            int tile_type = top[row][col];
+            int type_x = ((tile_type - (TILE_PER_LINE * (tile_type / TILE_PER_LINE)))
+                            * TILE_WIDTH) / 2;
+            int type_y = ((tile_type / TILE_PER_LINE) * TILE_HEIGHT) / 2;
+            int type_w = TILE_WIDTH / 2;
+            int type_h = TILE_HEIGHT / 2;
+            
+            m_top[row][col].TL = ksVector2D(type_x, type_y);
+            m_top[row][col].TR = ksVector2D(type_x + type_w, type_y);
+            m_top[row][col].BR = ksVector2D(type_x + type_w, type_y + type_h);
+            m_top[row][col].BL = ksVector2D(type_x, type_y + type_h);
+        }
+    }
+    
+    // Left Wall
+    m_left.resize(m_map_row_num);
+                     
+    for (int row = 0; row < m_map_row_num; ++row)
+    {
+        m_left[row].resize(m_map_depth_num);
+        
+        for (int col = 0; col < m_map_depth_num; ++col)
+        {
+            int tile_type = left[row][col];
+            int type_x = ((tile_type - (TILE_PER_LINE * (tile_type / TILE_PER_LINE)))
+                            * TILE_WIDTH) / 2;
+            int type_y = ((tile_type / TILE_PER_LINE) * TILE_HEIGHT) / 2;
+            int type_w = TILE_WIDTH / 2;
+            int type_h = TILE_HEIGHT / 2;
+            
+            m_left[row][col].TL = ksVector2D(type_x, type_y);
+            m_left[row][col].TR = ksVector2D(type_x + type_w, type_y);
+            m_left[row][col].BR = ksVector2D(type_x + type_w, type_y + type_h);
+            m_left[row][col].BL = ksVector2D(type_x, type_y + type_h);
+        }
+    }
+    
+    // Right Wall
+    m_right.resize(m_map_row_num);
+                     
+    for (int row = 0; row < m_map_row_num; ++row)
+    {
+        m_right[row].resize(m_map_depth_num);
+        
+        for (int col = 0; col < m_map_depth_num; ++col)
+        {
+            int tile_type = right[row][col];
+            int type_x = ((tile_type - (TILE_PER_LINE * (tile_type / TILE_PER_LINE)))
+                            * TILE_WIDTH) / 2;
+            int type_y = ((tile_type / TILE_PER_LINE) * TILE_HEIGHT) / 2;
+            int type_w = TILE_WIDTH / 2;
+            int type_h = TILE_HEIGHT / 2;
+            
+            m_right[row][col].TL = ksVector2D(type_x, type_y);
+            m_right[row][col].TR = ksVector2D(type_x + type_w, type_y);
+            m_right[row][col].BR = ksVector2D(type_x + type_w, type_y + type_h);
+            m_right[row][col].BL = ksVector2D(type_x, type_y + type_h);
+        }
+    }
+    
+    // Update the camera position to the
+    // demo world's data.
+    m_camera_x        = m_world_width_px / 2;
+    m_camera_y        = m_world_height_px / 2;
+    m_camera_z        = m_world_depth_px;
+    
+    // Clear any existing data from the vertex array.
+    m_array.clear();
+
+    // Set the primitive type of the vertex array
+    m_array.setPrimitiveType(sf::Triangles);
+
+    // Calculate the coordinates for the 3D world.
+    transform3DWorld(m_world_width_px, m_world_height_px, m_world_depth_px,
+                     m_map_row_num, m_map_col_num, m_map_depth_num);
 }

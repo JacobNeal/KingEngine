@@ -49,6 +49,7 @@ class ksComplex : public ksEntity
         void                            tag();
         void                            untag();
         void                            toggleBehavior();
+        // virtual void                    moveEntity(int x, int y, int z);
 
         //                              Accessor methods
         ksPathNode                      getNextPathNode();

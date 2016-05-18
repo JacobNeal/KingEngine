@@ -52,7 +52,7 @@ class ksWorld : public sf::Drawable, public sf::Transformable
         ksWorld(std::string tilesheet, int width, int height, int depth);
 
         //              Methods
-        void            load(int width, int height, int depth, std::string name="");
+        void            load(int width, int height, int depth, int map_row, int map_col, int map_depth, std::string name="");
         void            readTiles(std::string name);
         virtual void    draw(sf::RenderTarget & target, sf::RenderStates states) const;
         void            drawWorld(sf::RenderWindow & app);
@@ -74,7 +74,6 @@ class ksWorld : public sf::Drawable, public sf::Transformable
                                                  int & pos, int max_row, int max_col);
         sf::Vector2f    transform3D(double x, double y, double z);
         sf::Vector2f    transform3D(sf::Vector3f position);
-        sf::Vector3f    transform2D(double x, double y);
         sf::Vector2f    transform3DWithPixelValue(int x, int y, int z);
         void            transform3DWorld(int world_width_px, 
                                       int world_height_px, int world_depth_px, 
@@ -94,6 +93,8 @@ class ksWorld : public sf::Drawable, public sf::Transformable
                                            int map_depth_num);
         void            moveCamera(int x, int y, int z);
         void            resizeWorld(int screen_width, int screen_height);
+        void            setTilesheet(std::string tilesheet);
+        void            loadWorldDemo();
 
         //              Accessor methods
         int             getWidth() { return m_world_width_px; }

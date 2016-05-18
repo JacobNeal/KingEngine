@@ -30,6 +30,8 @@ class ksLightSystem : public sf::Drawable, public sf::Transformable
         void                     addLight(sf::Vector3f position, int diameter, sf::Color color);
         ksVector3f               getLightPosition(int index);
         void                     setLightPosition(int index, int x, int y, int z);
+        void                     setLightColor(ksColor color);
+        void                     setDarkColor(ksColor color);
         void                     draw(sf::RenderTarget & target, sf::RenderStates states) const;
         void                     updateWallShadows();
         

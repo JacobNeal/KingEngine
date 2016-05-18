@@ -29,6 +29,12 @@ ksApplication::ksApplication()
     
     m_gui_view = m_window.getDefaultView();
     m_current_scene = m_scenes.begin();
+    
+    // // Change origin point of the text object
+    // sf::FloatRect worldRect = m_world.getLocalBounds();
+    
+    // m_world.setOrigin(m_world.left + (m_world.width / 2.0f),
+    //     m_world.top + (m_world.height / 2.0f));
 }
 
 /*********************************************************
@@ -109,24 +115,14 @@ bool ksApplication::isOpen()
 				if (m_evt.key.code == it->first)
 					m_key_down[it->first] = true;
 			}
-            if (m_evt.key.code == sf::Keyboard::Key::Right)
-            {
-                m_world.moveCamera(20, 0, 0);
-                
-                if (m_light_system != nullptr)
-                    m_light_system->updateWallShadows();
-                    
-                m_entity_layer.updateScreenPosition();
-            }
-            else if (m_evt.key.code == sf::Keyboard::Key::Left)
-            {
-                m_world.moveCamera(-20, 0, 0);
-                
-                if (m_light_system != nullptr)
-                    m_light_system->updateWallShadows();
-                
-                m_entity_layer.updateScreenPosition();
-            }
+            // if (m_evt.key.code == sf::Keyboard::Key::Right)
+            // {
+            //     rotateWorldLeft(20);
+            // }
+            // else if (m_evt.key.code == sf::Keyboard::Key::Left)
+            // {
+            //     rotateWorldRight(20);
+            // }
 		}
 		else if (m_evt.type == sf::Event::KeyReleased)
 		{
@@ -288,11 +284,39 @@ void ksApplication::addControl(ksControl * control)
 *
 *   * This method will also center the world view.
 *********************************************************/
-void ksApplication::loadWorld(int width, int height, int depth, std::string name)
+void ksApplication::loadWorld(int width, int height, int depth, int map_row, int map_col, int map_depth, std::string name)
 {
-    m_world.load(width, height, depth, name);
+    m_world.load(width, height, depth, map_row, map_col, map_depth, name);
     
     m_camera_depth = depth;
+    
+    double heightProportionateToWidth = (double) height / width;
+    
+    double new_width = m_window.getSize().x;
+    double new_height = heightProportionateToWidth * new_width;
+    float viewport_height = (float) 1.f - ((m_window.getSize().y - new_height) / m_window.getSize().y);
+    float viewport_top = (float) ((m_window.getSize().y - new_height) / 2) / m_window.getSize().y;
+    
+    m_world_view.reset(sf::FloatRect(0, 0, width, height));
+    m_world_view.setViewport(sf::FloatRect(0.0f, viewport_top, 1.f, viewport_height));
+}
+
+/*********************************************************
+*   loadWorldDemo
+*
+*   Loads the demo of the world to run on other platforms
+*   that don't currently have the same support for File IO,
+*   like iOS and Android.
+*********************************************************/
+void ksApplication::loadWorldDemo()
+{
+    // Load the world demo.
+    m_world.loadWorldDemo();
+    
+    m_camera_depth = m_world.getDepth();
+    
+    int width = m_world.getWidth();
+    int height = m_world.getHeight();
     
     double heightProportionateToWidth = (double) height / width;
     
@@ -432,6 +456,7 @@ sf::Font * ksApplication::getFont()
 void ksApplication::setEntityTilesheet(std::string tilesheet)
 {
 	m_entity_layer.setTilesheet(tilesheet);
+    m_world.setTilesheet(tilesheet);
 }
 
 /*********************************************************
@@ -508,4 +533,24 @@ void ksApplication::startSequence()
 void ksApplication::pauseSequence()
 {
     m_scene_paused = true;
+}
+
+void ksApplication::rotateWorldLeft(int amount)
+{
+    m_world.moveCamera(-amount, 0, 0);
+
+    if (m_light_system != nullptr)
+        m_light_system->updateWallShadows();
+        
+    m_entity_layer.updateScreenPosition();
+}
+
+void ksApplication::rotateWorldRight(int amount)
+{
+    m_world.moveCamera(amount, 0, 0);
+
+    if (m_light_system != nullptr)
+        m_light_system->updateWallShadows();
+        
+    m_entity_layer.updateScreenPosition();
 }

@@ -30,7 +30,9 @@ ksButton::ksButton(sf::Font * font, std::string text, double w, double h, ksColo
 ********************************************************/
 void ksButton::drawControl(sf::RenderWindow & app)
 {
-    m_container.drawControl(app);
+    // Only draw the control if it's visible.
+    if (m_container.getVisibility())
+        m_container.drawControl(app);
 }
 
 /********************************************************

@@ -288,6 +288,36 @@ void ksLightSystem::setLightPosition(int index, int x, int y, int z)
         m_array[count].color = m_light_base_color;
 }
 
+void ksLightSystem::setLightColor(ksColor color)
+{
+    // Update the light base
+    m_light_base_color = color;
+    
+    // Update the color of the lights
+    for (int count = 0; count < 54; ++count)
+    {
+        if (count < 30)
+            m_array[count].color = m_dark_base_color;
+        else
+            m_array[count].color = m_light_base_color;
+    }
+}
+
+void ksLightSystem::setDarkColor(ksColor color)
+{
+    // Update the dark base
+    m_dark_base_color = color;
+    
+    // Update the color of the lights
+    for (int count = 0; count < 54; ++count)
+    {
+        if (count < 30)
+            m_array[count].color = m_dark_base_color;
+        else
+            m_array[count].color = m_light_base_color;
+    }
+}
+
 /*********************************************************
 *	draw
 *

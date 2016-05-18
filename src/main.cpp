@@ -6,6 +6,7 @@
 #include "ksTransition.h"
 #include "ksScene.h"
 #include "ksAudioTrack.h"
+#include "ksImageControl.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -15,11 +16,8 @@ int main()
 	ksApplication app("KingEngine", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
 	app.setEntityTilesheet("images/voltor_interior2.png");
 
-    app.insertText(53, 53, "title", "KingEngine", 30, ksColor(0, 0, 0, 200));
-    app.insertText(50, 50, "title2", "KingEngine", 30, ksColor(255, 255, 255, 200));
-    app.insertText(50, 85, "subtitle", "Particle Demo", 20, ksColor(0, 0, 0, 200));
-
-    app.loadWorld(800, 400, 800, "maps/exterior");
+    //app.loadWorld(800, 400, 800, 4, 8, 8, "maps/exterior");
+    app.loadWorldDemo();
     
     // World, Color, Location, size, num, velocity, and reach (time to live)
     // ksParticleEmitter emitter(app.getWorld(), sf::Color(0, 0, 255, 200), sf::Vector3f(0, 0, -192), 8, 20, 20, 60);
@@ -36,22 +34,36 @@ int main()
     app.addLightSystem(&lighting);
     
     // Create a wrapper for a column of rows of buttons.
-    ksContainer container_foreground(800, 400, ksAlign::COLUMN, ksColor(0, 0, 0, 0), 0);
+    ksContainer background(800, 400, ksAlign::CENTER, ksColor(255, 255, 255, 255), 0);
+    app.addControl(&background);
+    
+    ksContainer container_foreground(800, 400, ksAlign::CENTER, ksColor(255, 255, 255, 0), 0);
     app.addControl(&container_foreground);
+    
+    ksImageControl title("images/KingEngineLogo.png", 14, 40, 771, 320);
+    
+    ksButton btn_fore(app.getFont(), "Something", 100, 35);
+    container_foreground.addControl(&title);
     
     double container_opacity = 1.0;
     
     // Create the directions message.
-    ksContainer container_message(480, 128, ksAlign::COLUMN, ksColor(0, 0, 0, 120));
+    ksContainer container_message(480, 128, ksAlign::COLUMN, ksColor(0, 0, 0, 120), 300, 20);
     app.addControl(&container_message);
     
-    ksLabel lbl_message(app.getFont(), "To the left we'll take a look at the executive diagram\nfor this project.", 0, 0);
+    ksLabel lbl_message(app.getFont(), "Welcome to this KingEngine demonstration!", 0, 0);
+    ksLabel lbl_message2(app.getFont(), "These angry villagers are chasing after the player.", 0, 0);
+    ksLabel lbl_message3(app.getFont(), "Move around using WASD.", 0, 0);
     ksButton btn_accept(app.getFont(), "Ok", 96, 32);
     container_message.addControl(&lbl_message);
+    container_message.addControl(&lbl_message2);
+    container_message.addControl(&lbl_message3);
     container_message.addControl(&btn_accept);
     container_message.setVisibility(false);
     
     container_message.setPosition(0, 0);
+    
+    double executive_diagram_opacity = 0.0;
 
     ksPathFinder path_finder(app.getWorld());
 
@@ -61,19 +73,25 @@ int main()
     ksAudioTrack track("audio/a_theme_among_themes.ogg", 120, 100);
     bool transitioning = false;
     
-    double title_alpha = 0.0;
+    double title_opacity = 0.0;
     double sun_z_position = 0.0;
     
     ksScene<double> title_fade_in;
-    title_fade_in.addTransition(ksTransition<double>(&title_alpha, 200.0, 120));
+    title_fade_in.addTransition(ksTransition<double>(&title_opacity, 1.0, 120));
+    
+    ksScene<double> title_pause;
+    title_pause.addTransition(ksTransition<double>(&title_opacity, 1.0, 240));
     
     ksScene<double> title_fade_out;
-    title_fade_out.addTransition(ksTransition<double>(&title_alpha, 0.0, 120));
+    title_fade_out.addTransition(ksTransition<double>(&title_opacity, 0.0, 120));
     title_fade_out.addTransition(ksTransition<double>(&container_opacity, 0.0, 120));
     title_fade_out.addTransition(ksTransition<double>(&sun_z_position, 801.0, 150));
 
     app.addScene(&title_fade_in);
+    app.addScene(&title_pause);
     app.addScene(&title_fade_out);
+    
+    bool sequence_paused = false;
     
     ksEntity tree(app.getWorld(), 600, 0, 800, 2, 4, 18);
     app.addEntity(&tree);
@@ -86,15 +104,15 @@ int main()
     ent.setAnimationDelay(30);
     ent.toggleBehavior();
     
-    // Add wolves.
+    // Add angry villagers.
     std::vector<ksComplex *> entity_list;
     int entity_num = 0;
     
-    for (int count = 0; count < 8; ++count)
+    for (int count = 0; count < 4; ++count)
     {
-        entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), emitter_x, 200, emitter_z, 2, 2, 30));
-        entity_list[entity_num]->setAnimationLower(30);
-        entity_list[entity_num]->setAnimationUpper(35);
+        entity_list.push_back(new ksComplex(&path_finder, app.getWorld(), emitter_x, 200, emitter_z, 2, 2, 66));
+        entity_list[entity_num]->setAnimationLower(66);
+        entity_list[entity_num]->setAnimationUpper(71);
         entity_list[entity_num]->setAnimationDelay(5);
         app.addEntity(entity_list[entity_num++]);
     }
@@ -104,11 +122,26 @@ int main()
         for (int count2 = 0; count2 < entity_num; ++count2)
         {
             entity_list[count]->addToGroup(entity_list[count2]);
-            //entity_list[count]->pursue(&ent);
             entity_list[count]->arrive(ksVector2D(ent.X(), ent.Z()));
         }
         entity_list[count]->group();
         entity_list[count]->avoidObstacles();
+    }
+    
+    // Flowers
+    std::vector<ksEntity *> flower_list;
+    int flower_num = 0;
+    
+    for (int col = 0; col < app.getWorld()->getMapCol(); ++col)
+    {
+        for (int depth = 0; depth < app.getWorld()->getMapDepth(); ++depth)
+        {
+            flower_list.push_back(new ksEntity(app.getWorld(), col * 100, 300, depth * 100, 1, 1, 31));
+            flower_list[flower_num]->setAnimationLower(31);
+            flower_list[flower_num]->setAnimationUpper(32);
+            flower_list[flower_num]->setAnimationDelay(30);
+            app.addEntity(flower_list[flower_num++]);
+        }
     }
     
     // Run the app without a main loop
@@ -118,12 +151,21 @@ int main()
     {
         if (app.getKeyDown(ksKey::Space))
         {
-            app.pauseSequence();
+            // Start or pause the sequence of scenes.
+            if (sequence_paused)
+                app.startSequence();
+            else
+                app.pauseSequence();
+            
+            // Toggle the sequence paused boolean.
+            sequence_paused = !sequence_paused;
         }
         else if (app.getKeyDown(ksKey::Return))
-        {
-            app.startSequence();
-        }
+            container_message.setVisibility(false);
+        else if (app.getKeyDown(ksKey::Left))
+            app.rotateWorldLeft(20);
+        else if (app.getKeyDown(ksKey::Right))
+            app.rotateWorldRight(20);
         
         // Set default animation for player
         ent.setAnimationLower(27);
@@ -180,7 +222,7 @@ int main()
         
         track.update();
         
-        if (title_fade_in.isDone() && !title_fade_out.isDone())
+        if (title_pause.isDone() && !title_fade_out.isDone())
         {
             // Get the sun's position.
             ksVector3f temp = lighting.getLightPosition(0);
@@ -194,16 +236,14 @@ int main()
         }
         
         if (title_fade_out.isDone())
+        {
             container_message.setVisibility(true);
-            
-        if (btn_accept.isPressed())
-            container_message.setVisibility(false);
+            //executive_diagram.setVisibility(true);
+        }
         
-        app.setTextColor("title", ksColor(0, 0, 0, title_alpha));
-        app.setTextColor("title2", ksColor(255, 255, 255, title_alpha));
-        app.setTextColor("subtitle", ksColor(0, 0, 0, title_alpha));
-        container_foreground.setOpacity(container_opacity);
-        //ent.animate();
+        //app.setTextColor("subtitle", ksColor(0, 0, 0, title_alpha));
+        background.setOpacity(container_opacity);
+        container_foreground.setOpacity(title_opacity);
     }
 
 	return 0;

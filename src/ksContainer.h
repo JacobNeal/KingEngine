@@ -65,6 +65,7 @@ class ksContainer : public ksControl, public sf::Drawable, public sf::Transforma
         double                     m_radius;
         int                        m_resolution;
         bool                       m_visible;
+        double                     m_opacity;
 };
 
 #endif

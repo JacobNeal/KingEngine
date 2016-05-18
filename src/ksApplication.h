@@ -58,7 +58,8 @@ class ksApplication
 		void                  animateEntity(int entity_number, int lower_tile, int upper_tile, int frame_delay);
         void                  addControl(ksControl * control);
         void                  addLight(ksVector2D start, ksWorldWall wall, int row, int col, ksColor first, ksColor second);
-        void                  loadWorld(int width, int height, int depth, std::string name="");
+        void                  loadWorld(int width, int height, int depth, int map_row, int map_col, int map_depth, std::string name="");
+        void                  loadWorldDemo();
         void                  increaseCameraDepth();
         void                  decreaseCameraDepth();
         void                  toggleWorldLighting();
@@ -75,6 +76,8 @@ class ksApplication
         void                  addScene(ksScene<double> * scene);
         void                  startSequence();
         void                  pauseSequence();
+        void                  rotateWorldLeft(int amount);
+        void                  rotateWorldRight(int amount);
     
         //                    Accessor methods
         int                   getCameraDelta();

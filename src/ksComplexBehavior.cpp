@@ -35,7 +35,8 @@ ksComplexBehavior::ksComplexBehavior(ksPathFinder * path_finder,
 /*********************************************************
 *   calculateForce
 *
-*   Calculates the force using the weighted sums method.
+*   Calculates the force using the sum of the weighted
+*   steering behaviors.
 *********************************************************/
 ksVector2D ksComplexBehavior::calculateForce()
 {
@@ -64,7 +65,6 @@ ksVector2D ksComplexBehavior::calculateForce()
     {
         ksVector2D temp = obstacleAvoidance() * 10.0;
         steering_force += temp;
-        std::cout << "Obstacle Force: " << temp.X << ", " << temp.Y << '\n';
     }
     if (m_seek)
         steering_force += seek(m_target) * 1.0;
@@ -182,12 +182,14 @@ ksVector2D ksComplexBehavior::calculatePrioritizedForce()
 *   seek
 *
 *   Perform the seek steering behavior using the passed
-*   vector position.
+*   vector position, by normalizing the vector between
+*   the sought position and the current position, and
+*   multiplying it by the speed.
 *********************************************************/
 ksVector2D ksComplexBehavior::seek(ksVector2D position)
 {
     // Max speed = 150 (5 pixels per frame)
-    ksVector2D desired_velocity = VecNormalize(position - m_vehicle->getPosition()) * 150;
+    ksVector2D desired_velocity = VecNormalize(position - m_vehicle->getPosition()) * COMPLEX_MAX_SPEED;
 
     return (desired_velocity - m_vehicle->getVelocity());
 }
@@ -198,20 +200,20 @@ ksVector2D ksComplexBehavior::seek(ksVector2D position)
 *   Perform the flee steering behavior using the passed
 *   vector. This method calculates the panic distance
 *   and uses the squared value to determine whether or
-*   not it should fleee.
+*   not it should flee.
 *   The range gets checked in the calculate method.
 ********************************************************/
 ksVector2D ksComplexBehavior::flee(ksVector2D position)
 {
     // Only consider the position if it's within
     // the panic distance.
-    double panic_dist_sq = 100.0 * 100.0;
+    double panic_dist_sq = COMPLEX_PROXIMITY * COMPLEX_PROXIMITY;
 
     if (VecDistanceSq(m_vehicle->getPosition(), position) > panic_dist_sq)
         return ksVector2D(0, 0);
 
     // Max speed = 150 (5 pixels per frame)
-    ksVector2D desired_velocity = VecNormalize(m_vehicle->getPosition() - position) * 150;
+    ksVector2D desired_velocity = VecNormalize(m_vehicle->getPosition() - position) * COMPLEX_MAX_SPEED;
 
     return (desired_velocity - m_vehicle->getVelocity());
 }
@@ -219,8 +221,9 @@ ksVector2D ksComplexBehavior::flee(ksVector2D position)
 /*********************************************************
 *   arrive
 *
-*   Performs the arrive steering behavior using the
-*   passed vector position.
+*   Performs the arrive steering behavior, where the
+*   complex entity will slow down upon arrival at it's
+*   destination.
 *********************************************************/
 ksVector2D ksComplexBehavior::arrive(ksVector2D position)
 {
@@ -234,8 +237,9 @@ ksVector2D ksComplexBehavior::arrive(ksVector2D position)
 
         double speed = distance / deceleration;
 
-        if (speed > 150.0) // Max speed: 150
-            speed = 150.0;
+        // Cap the speed
+        if (speed > COMPLEX_MAX_SPEED)
+            speed = COMPLEX_MAX_SPEED;
 
         ksVector2D desired_velocity = to_target * speed / distance;
 
@@ -808,15 +812,12 @@ ksVector2D ksComplexBehavior::getVectorToWorldSpace(ksVector2D vect, ksVector2D 
 {
     double transform_11 = (1 * vect.X) + (0 * side.X) + (0 * 0);
     double transform_12 = (1 * vect.Y) + (0 * side.Y) + (0 * 0);
-    //double transform_13 = (1 * 0) + (0 * 0) + (0 * 1);
 
     double transform_21 = (0 * vect.X) + (1 * side.X) + (0 * 0);
     double transform_22 = (0 * vect.Y) + (1 * side.Y) + (0 * 0);
-    //double transform_23 = (0 * 0) + (1 * 0) + (0 * 1);
 
     double transform_31 = (0 * vect.X) + (0 * side.X) + (1 * 0);
     double transform_32 = (0 * vect.Y) + (0 * side.Y) + (1 * 0);
-    //double transform_33 = (0 * 0) + (0 * 0) + (1 * 1);
 
     double temp_x = (transform_11 * vect.X) + (transform_21 * vect.Y) + transform_31;
     double temp_y = (transform_12 * vect.X) + (transform_22 * vect.Y) + transform_32;
