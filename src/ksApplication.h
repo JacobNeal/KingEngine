@@ -59,14 +59,14 @@
 class ksApplication
 {
 	public:
-		////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////
         /// \brief Default Constructor
         ///
         /// Initialize the application to the default screen or desktop 
         /// size, and the title to KingEngine.
         ///
         ////////////////////////////////////////////////////////////
-		ksApplication();
+        ksApplication();
 
         ////////////////////////////////////////////////////////////
         /// \brief Construct the application using the passed title,
@@ -77,15 +77,15 @@ class ksApplication
         /// \param app_height   Height of the application window
         ///
         ////////////////////////////////////////////////////////////
-		ksApplication(std::string app_title, int app_width, int app_height);
+        ksApplication(std::string app_title, int app_width, int app_height);
 
-		////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////
         /// \brief Return whether or not the application is open.
         ///
         /// This can be useful for creating a main game loop.
         ///
         ////////////////////////////////////////////////////////////
-		bool isOpen();
+        bool isOpen();
 
         ////////////////////////////////////////////////////////////
         /// \brief Add a key input to be checked for if it's pressed
@@ -94,7 +94,7 @@ class ksApplication
         /// \param key  The new key to check for.
         ///
         ////////////////////////////////////////////////////////////
-		void addInput(ksKey::Key key);
+        void addInput(ksKey::Key key);
 
         ////////////////////////////////////////////////////////////
         /// \brief Return whether the passed key is down or not.
@@ -102,33 +102,33 @@ class ksApplication
         /// \param key  The new key to check for.
         ///
         ////////////////////////////////////////////////////////////
-		bool getKeyDown(ksKey::Key key);
+        bool getKeyDown(ksKey::Key key);
 
         ////////////////////////////////////////////////////////////
         /// \brief Return whether or not the left mouse button is clicked
         /// or a finger is pressed down on a touch screen device.
         ///
         ////////////////////////////////////////////////////////////
-		bool getMouseDown();
+        bool getMouseDown();
 
         ////////////////////////////////////////////////////////////
         /// \brief Return the position in vector form of the mouse 
         /// or touch.
         ///
         ////////////////////////////////////////////////////////////
-		ksVector2D getMousePosition();
+        ksVector2D getMousePosition();
 
         ////////////////////////////////////////////////////////////
         /// \brief Return the x position of the mouse or touch.
         ///
         ////////////////////////////////////////////////////////////
-		double getMouseX();
+        double getMouseX();
 
         ////////////////////////////////////////////////////////////
         /// \brief Return the y position of the mouse or touch.
         ///
         ////////////////////////////////////////////////////////////
-		double getMouseY();
+        double getMouseY();
 
         ////////////////////////////////////////////////////////////
         /// \brief Add an entity to the base game entity layer.
@@ -136,7 +136,7 @@ class ksApplication
         /// \param entity   The entity to be added
         ///
         ////////////////////////////////////////////////////////////
-		void addEntity(ksEntity * entity);
+        void addEntity(ksEntity * entity);
 
         ////////////////////////////////////////////////////////////
         /// \brief Set the lower and upper tile boundaries of the 
@@ -148,7 +148,7 @@ class ksApplication
         /// \param frame_delay      The number of cycles between each frame.
         ///
         ////////////////////////////////////////////////////////////
-		void animateEntity(int entity_number, int lower_tile, int upper_tile, int frame_delay);
+        void animateEntity(int entity_number, int lower_tile, int upper_tile, int frame_delay);
 
         ////////////////////////////////////////////////////////////
         /// \brief Add a control to the base game control layer.
@@ -272,16 +272,106 @@ class ksApplication
         ////////////////////////////////////////////////////////////
         void run();
 
+        ////////////////////////////////////////////////////////////
+        /// \brief Adds a scene to be executed.
+        ///
+        /// \param scene  The scene to be added.
+        ///
+        /// \see startSequence, pauseSequence
+        ///
+        ////////////////////////////////////////////////////////////
         void addScene(ksScene<double> * scene);
+
+        ////////////////////////////////////////////////////////////
+        /// \brief Starts the sequence of scenes executing linearly.
+        ///
+        /// \see pauseSequence, addScene
+        ///
+        ////////////////////////////////////////////////////////////
         void startSequence();
+
+        ////////////////////////////////////////////////////////////
+        /// \brief Pauses the sequence of scenes that are currently
+        /// being run.
+        ///
+        /// \see startSequence, addScene
+        ///
+        ////////////////////////////////////////////////////////////
         void pauseSequence();
+
+        ////////////////////////////////////////////////////////////
+        /// \brief Moves the camera to the left, rotating it in opposite
+        /// direction.
+        ///
+        /// \param amount  How much to move the camera.
+        ///
+        /// \see rotateWorldRight
+        ///
+        ////////////////////////////////////////////////////////////
         void rotateWorldLeft(int amount);
+
+        ////////////////////////////////////////////////////////////
+        /// \brief Moves the camera to the right, rotating it in opposite
+        /// direction.
+        ///
+        /// \param amount  How much to move the camera.
+        ///
+        /// \see rotateWorldLeft
+        ///
+        ////////////////////////////////////////////////////////////
         void rotateWorldRight(int amount);
+
+        ////////////////////////////////////////////////////////////
+        /// \brief Moves the camera to the left, rotating it in opposite
+        /// direction.
+        ///
+        /// \param amount  How much to move the camera.
+        ///
+        /// \see rotateWorldRight
+        ///
+        ////////////////////////////////////////////////////////////
         int getCameraDelta();
+
+
+        ////////////////////////////////////////////////////////////
+        /// \brief Returns the difference between the world's depth and 
+        /// the camera's depth.
+        ///
+        ////////////////////////////////////////////////////////////
         ksWorld * getWorld();
+
+        ////////////////////////////////////////////////////////////
+        /// \brief Returns the smallest orientation of the window, based
+        /// on the width and height.
+        ///
+        ////////////////////////////////////////////////////////////
         int getSmallestOrientation();
+
+        ////////////////////////////////////////////////////////////
+        /// \brief Returns a reference to the font currently being
+        /// used to draw lines of text into the application.
+        ///
+        ////////////////////////////////////////////////////////////
         sf::Font * getFont();
-		void setEntityTilesheet(std::string tilesheet);
+
+        ////////////////////////////////////////////////////////////
+        /// \brief Set the tilesheet for the base game entity layer.
+        ///
+        /// \param tilesheet  The tilesheet for the entity layer.
+        ///
+        ////////////////////////////////////////////////////////////
+        void setEntityTilesheet(std::string tilesheet);
+
+        ////////////////////////////////////////////////////////////
+        /// \brief Changing the camera delta changes the distance the
+        /// camera is from the front wall. This gives the effect
+        /// of zomming in, or out on the world. Can be useful
+        /// for first person perspectives.
+        ///
+        /// \param camera_delta  The distance between the camera data
+        /// the front wall.
+        ///
+        ////////////////////////////////////////////////////////////
         void setCameraDelta(int camera_delta);
 
 	private:

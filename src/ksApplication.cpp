@@ -1,19 +1,37 @@
-/********************************************************
-* Class:			ksApplication
-* Author:           Beyond Parallel - Jacob Neal
-*
-* Filename:         ksApplication.cpp
-********************************************************/
+////////////////////////////////////////////////////////////
+//
+// KingEngine
+// The MIT License (MIT)
+// Copyright (c) 2016 Beyond Parallel
+//
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #include "ksApplication.h"
 #include <iostream>
 
-/*********************************************************
-*   ksApplication
-*
-*   Initialize the application to the default screen or 
-*   desktop size, and the title to KingEngine.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksApplication::ksApplication()
 	: m_window(sf::VideoMode::getDesktopMode(), "KingEngine"),
 	m_world("images/voltor_interior2.png"), m_camera_depth(0), 
@@ -29,20 +47,9 @@ ksApplication::ksApplication()
     
     m_gui_view = m_window.getDefaultView();
     m_current_scene = m_scenes.begin();
-    
-    // // Change origin point of the text object
-    // sf::FloatRect worldRect = m_world.getLocalBounds();
-    
-    // m_world.setOrigin(m_world.left + (m_world.width / 2.0f),
-    //     m_world.top + (m_world.height / 2.0f));
 }
 
-/*********************************************************
-*   ksApplication
-*
-*   Initialize the application to the width, height and
-*   application title passed.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksApplication::ksApplication(std::string app_title, int app_width, int app_height)
 	: m_window(sf::VideoMode(app_width, app_height, 32), app_title.c_str()),
 	m_world("images/voltor_interior2.png"), m_camera_depth(0), 
@@ -60,12 +67,7 @@ ksApplication::ksApplication(std::string app_title, int app_width, int app_heigh
     m_current_scene = m_scenes.begin();
 }
 
-/*********************************************************
-*   isOpen
-*
-*   Return whether the application is still open.
-*   (This can be useful for creating a main game loop)
-*********************************************************/
+////////////////////////////////////////////////////////////
 bool ksApplication::isOpen()
 {
 	// do updates
@@ -181,109 +183,61 @@ bool ksApplication::isOpen()
 	return m_window.isOpen();
 }
 
-/*********************************************************
-*   addInput
-*
-*   Add a key input to be checked for if it's pressed down
-*	on each cycle of the main game loop.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::addInput(ksKey::Key key)
 {
 	m_key_down[key] = false;
 }
 
-/*********************************************************
-*   getKeyInput
-*
-*   Return whether the passed key is down or not.
-*********************************************************/
+////////////////////////////////////////////////////////////
 bool ksApplication::getKeyDown(ksKey::Key key)
 {
 	return m_key_down[key];
 }
 
-/*********************************************************
-*   getMouseDown
-*
-*   Return whether or not the left mouse button is clicked
-*   or a finger is pressed down on a touch screen device.
-*********************************************************/
+////////////////////////////////////////////////////////////
 bool ksApplication::getMouseDown()
 {
 	return m_mouse_released;
 }
 
-/*********************************************************
-*   getMousePosition
-*
-*   Return the position in vector form of the mouse
-*   or touch.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksApplication::getMousePosition()
 {
 	return ksVector2D(sf::Mouse::getPosition(m_window).x, sf::Mouse::getPosition(m_window).y);
 }
 
-/*********************************************************
-*   getMouseX
-*
-*   Return the x position of the mouse or touch.
-*********************************************************/
+////////////////////////////////////////////////////////////
 double ksApplication::getMouseX()
 {
 	return (double)sf::Mouse::getPosition(m_window).x;
 }
 
-/*********************************************************
-*   getMouseY
-*
-*   Return the y position of the mouse or touch.
-*********************************************************/
+////////////////////////////////////////////////////////////
 double ksApplication::getMouseY()
 {
 	return (double)sf::Mouse::getPosition(m_window).y;
 }
 
-/*********************************************************
-*   addEntity
-*
-*   Add an entity to the base game entity layer.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::addEntity(ksEntity * entity)
 {
 	m_entity_layer.addEntity(entity);
 }
 
-/*********************************************************
-*   animateEntity
-*
-*   Set the lower and upper tile boundaries of animation
-*   for a base game entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::animateEntity(int entity_number, int lower_tile, int upper_tile, int frame_delay)
 {
 	m_entity_layer.animate(entity_number, lower_tile, upper_tile, frame_delay);
 }
 
-/*********************************************************
-*   addControl
-*
-*   Add a control to the base game control layer.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::addControl(ksControl * control)
 {
     m_control_layer.addControl(control);
 }
 
-/*********************************************************
-*   loadWorld
-*
-*   Loads the perspective game world using the passed
-*   (width x height x depth) and the path to the map
-*   files.
-*
-*   * This method will also center the world view.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::loadWorld(int width, int height, int depth, int map_row, int map_col, int map_depth, std::string name)
 {
     m_world.load(width, height, depth, map_row, map_col, map_depth, name);
@@ -301,13 +255,7 @@ void ksApplication::loadWorld(int width, int height, int depth, int map_row, int
     m_world_view.setViewport(sf::FloatRect(0.0f, viewport_top, 1.f, viewport_height));
 }
 
-/*********************************************************
-*   loadWorldDemo
-*
-*   Loads the demo of the world to run on other platforms
-*   that don't currently have the same support for File IO,
-*   like iOS and Android.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::loadWorldDemo()
 {
     // Load the world demo.
@@ -329,12 +277,7 @@ void ksApplication::loadWorldDemo()
     m_world_view.setViewport(sf::FloatRect(0.0f, viewport_top, 1.f, viewport_height));
 }
 
-/*********************************************************
-*   increaseCameraDepth
-*
-*   Increases the depth of the camera inward toward the
-*   front wall of the game world.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::increaseCameraDepth()
 {
     sf::Vector2f top_left = m_world.transform3D(0.0, 0.0, 0.125);
@@ -349,12 +292,7 @@ void ksApplication::increaseCameraDepth()
     m_world_view.zoom(scale);
 }
 
-/*********************************************************
-*   decreaseCameraDepth
-*
-*   Decreases the depth of the camera backward away from
-*   the front wall of the game world.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::decreaseCameraDepth()
 {
     sf::Vector2f top_left = m_world.transform3D(0.0, 0.0, -0.125);
@@ -369,16 +307,19 @@ void ksApplication::decreaseCameraDepth()
     m_world_view.zoom(scale);
 }
 
+////////////////////////////////////////////////////////////
 void ksApplication::toggleWorldLighting()
 {
     m_world.toggleLighting();
 }
 
+////////////////////////////////////////////////////////////
 void ksApplication::toggleWorld3D()
 {
     m_world.toggle3D();
 }
 
+////////////////////////////////////////////////////////////
 void ksApplication::insertText(double x, double y, std::string name, 
                                std::string text, int size, ksColor color)
 {
@@ -388,85 +329,57 @@ void ksApplication::insertText(double x, double y, std::string name,
     m_text_layer[name].setColor(color);
 }
 
+////////////////////////////////////////////////////////////
 void ksApplication::setText(std::string name, std::string text)
 {
     m_text_layer[name].setString(text);
 }
 
+////////////////////////////////////////////////////////////
 void ksApplication::setTextColor(std::string name, ksColor color)
 {
     m_text_layer[name].setColor(color);
 }
 
+////////////////////////////////////////////////////////////
 void ksApplication::clearEntities()
 {
     m_entity_layer.purge();
 }
 
-/*********************************************************
-*   getCameraDelta
-*
-*   Returns the difference between the world's depth
-*   and the camera's depth.
-*********************************************************/
+////////////////////////////////////////////////////////////
 int ksApplication::getCameraDelta()
 {
     return m_camera_depth;
 }
 
-/*********************************************************
-*   getWorld
-*
-*   Returns a pointer to a world object that contains
-*   info about different events and coliidable tiles
-*   in the world.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksWorld * ksApplication::getWorld()
 {
     return &m_world;
 }
 
-/*********************************************************
-*   getSmallestOrientation
-*
-*   Returns the smallest orientation of the window, based
-*   on the width and height.
-*********************************************************/
+////////////////////////////////////////////////////////////
 int ksApplication::getSmallestOrientation()
 {
     return m_window.getSize().x < m_window.getSize().y ?
         (int) m_window.getSize().x : (int) m_window.getSize().y;
 }
 
-/*********************************************************
-*   getFont
-*
-*   Returns a reference to the font used in the application.
-*********************************************************/
+////////////////////////////////////////////////////////////
 sf::Font * ksApplication::getFont()
 {
     return m_font;
 }
 
-/*********************************************************
-*   setEntityTilesheet
-*
-*   Set the tilesheet for the base game entity layer.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::setEntityTilesheet(std::string tilesheet)
 {
 	m_entity_layer.setTilesheet(tilesheet);
     m_world.setTilesheet(tilesheet);
 }
 
-/*********************************************************
-*   setCameraDelta
-*
-*   Changing the camera delta changes the distance the
-*   camera is from the front wall. This gives the effect
-*   of zomming in, or out on the world. Can be useful
-*   for first person perspectives.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::setCameraDelta(int camera_delta)
 {
     if (camera_delta > 0 && camera_delta <= m_world.getDepth())
@@ -483,45 +396,32 @@ void ksApplication::setCameraDelta(int camera_delta)
     }
 }
 
-/*********************************************************
-*   addParticleEmitter
-*
-*   Add a reference to a particle emitter so that it can
-*   be drawn in the application window.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::addParticleEmitter(ksParticleEmitter * emitter)
 {
     m_emitter = emitter;
 }
 
-/*********************************************************
-*   addLightSystem
-*
-*   Add a reference to a light system so that it can be
-*   drawn in the application window.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::addLightSystem(ksLightSystem * system)
 {
     m_light_system = system;
 }
 
-/*********************************************************
-*   run
-*
-*   Allow the developer to just run the application without
-*   creating a main loop in external code.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksApplication::run()
 {
     while (isOpen()) ;
 }
 
+////////////////////////////////////////////////////////////
 void ksApplication::addScene(ksScene<double> * scene)
 {
     m_scenes.push_back(scene);
     m_current_scene = m_scenes.begin();
 }
 
+////////////////////////////////////////////////////////////
 void ksApplication::startSequence()
 {
     m_scene_paused = false;
@@ -530,11 +430,13 @@ void ksApplication::startSequence()
         m_current_scene = m_scenes.begin();
 }
 
+////////////////////////////////////////////////////////////
 void ksApplication::pauseSequence()
 {
     m_scene_paused = true;
 }
 
+////////////////////////////////////////////////////////////
 void ksApplication::rotateWorldLeft(int amount)
 {
     m_world.moveCamera(-amount, 0, 0);
@@ -545,6 +447,7 @@ void ksApplication::rotateWorldLeft(int amount)
     m_entity_layer.updateScreenPosition();
 }
 
+////////////////////////////////////////////////////////////
 void ksApplication::rotateWorldRight(int amount)
 {
     m_world.moveCamera(amount, 0, 0);

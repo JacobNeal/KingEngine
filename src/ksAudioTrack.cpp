@@ -1,20 +1,38 @@
-/********************************************************
-* Class:            ksAudioTrack
-* Author:           Beyond Parallel - Jacob Neal
-*
-* Filename:         ksAudioTrack.cpp
-********************************************************/
+////////////////////////////////////////////////////////////
+//
+// KingEngine
+// The MIT License (MIT)
+// Copyright (c) 2016 Beyond Parallel
+//
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #include "ksAudioTrack.h"
 
 #define MIN_VOLUME 0
 
-/********************************************************
-*   ksAudioTrack
-*
-*   Initializes the audio track to the passed OGG Vorbis
-*   audio file and set to the passed volume.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksAudioTrack::ksAudioTrack(std::string track_filename, int duration, int volume)
     : m_track_volume(0), m_track_transition(false), m_muted(false),
     m_max_volume(volume), m_transition(&m_track_volume, (double) volume, duration),
@@ -28,21 +46,13 @@ ksAudioTrack::ksAudioTrack(std::string track_filename, int duration, int volume)
     m_track.play();
 }
 
-/********************************************************
-*   ~ksAudioTrack
-*
-*   Stop the audio upon the destruction of the audio track.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksAudioTrack::~ksAudioTrack()
 {
     m_track.stop();
 }
 
-/********************************************************
-*   mute
-*
-*   Mute the playback of the audio track.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksAudioTrack::mute()
 {
     m_track_volume = 0;
@@ -50,11 +60,7 @@ void ksAudioTrack::mute()
     m_muted = true;
 }
 
-/********************************************************
-*   transitionTrack
-*
-*   Transition to a different audio file.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksAudioTrack::transitionTrack(std::string new_track)
 {
     m_transition_file = new_track;
@@ -62,12 +68,7 @@ void ksAudioTrack::transitionTrack(std::string new_track)
     m_transition = ksTransition<double>(&m_track_volume, 0, m_duration);
 }
 
-/********************************************************
-*   update
-*
-*   Update the playback of the audio track to create
-*   transition between tracks if transitioning.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksAudioTrack::update()
 {
     if (m_track_transition && m_transition.isDone())
