@@ -1,20 +1,37 @@
-/********************************************************
-* Class:            ksComplex
-* Author:           Beyond Parallel - Jacob Neal
-*
-* Filename:         ksComplex.cpp
-********************************************************/
+////////////////////////////////////////////////////////////
+//
+// KingEngine
+// The MIT License (MIT)
+// Copyright (c) 2016 Beyond Parallel
+//
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #include "ksComplex.h"
 #include <iostream>
 
-/********************************************************
-*   ksComplex
-*
-*   Initializes the complex type to the path finder
-*   referenced that has been passed and calls the 
-*   constructor of the base game entity class.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksComplex::ksComplex(ksPathFinder * path_finder, ksWorld * world, int x, int y, int z,
                      int w, int h, int current_tile) :
                      ksEntity(world, x, y, z, w, h, current_tile),
@@ -35,12 +52,7 @@ ksComplex::ksComplex(ksPathFinder * path_finder, ksWorld * world, int x, int y, 
     updateScreenPosition();
 }
 
-/********************************************************
-*   update
-*
-*   Updates the current position of the complex type
-*   relative to its path.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplex::update()
 {
     if (m_behavior_on)
@@ -137,12 +149,7 @@ void ksComplex::update()
     }
 }
 
-/********************************************************
-*   move
-*
-*   Sets the path of the complex type using the A*
-*   path finder as the default form of movement.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplex::move(int row, int col, bool loop)
 {
     m_path_on   = true;
@@ -159,146 +166,115 @@ void ksComplex::move(int row, int col, bool loop)
     m_center_delta = (*m_path_iter).center - m_current_node.center;
 }
 
-/********************************************************
-*   seek
-*
-*   Call the seekOn method of the complex behavior class
-*   passing the desired row and column.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplex::seek(ksVector2D vect)
 {
     m_behavior.seekOn(vect);
 }
 
-/********************************************************
-*   flee
-*
-*   Call the fleeOn method of the complex behavior class
-*   passing the desired row, column, and range.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplex::flee(ksVector2D vect)
 {
     m_behavior.fleeOn(vect);
 }
 
+////////////////////////////////////////////////////////////
 void ksComplex::arrive(ksVector2D vect)
 {
     m_behavior.arriveOn(vect);
 }
 
-/********************************************************
-*   pursue
-*
-*   Call the pursue method of the complex behavior class
-*   passing the desired entity.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplex::pursue(ksComplex * entity)
 {
     m_behavior.pursuitOn(entity);
 }
 
-/********************************************************
-*   evade
-*
-*   Call the evade method of the complex behavior class
-*   passing the desired entity.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplex::evade(ksComplex * entity)
 {
     m_behavior.evasionOn(entity);
 }
 
-/********************************************************
-*   addToGroup
-*
-*   Call the addToGroup method of the complex behavior
-*   class passing the desired entity.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplex::addToGroup(ksComplex * entity)
 {
     m_behavior.addToGroup(entity);
 }
 
-/********************************************************
-*   clearGroup
-*
-*   Call the clear group method of the complex behavior
-*   class, clearing the group of entities from
-*   consideration when performing group behaviors.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplex::clearGroup()
 {
     m_behavior.clearGroup();
 }
 
-/********************************************************
-*   group
-*
-*   Call the group method of the complex behavior class
-*   so that group behaviors can be performed on this
-*   complex entity.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplex::group()
 {
     m_behavior.groupOn();
 }
 
+////////////////////////////////////////////////////////////
 void ksComplex::avoidObstacles()
 {
     m_behavior.obstacleOn();
 }
 
+////////////////////////////////////////////////////////////
 void ksComplex::tag()
 {
     m_tag = true;
 }
 
+////////////////////////////////////////////////////////////
 void ksComplex::untag()
 {
     m_tag = false;
 }
 
-/********************************************************
-*   getNextPathNode
-*
-*   Returns the estimated next path node associated with
-*   this complex entity.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksPathNode ksComplex::getNextPathNode()
 {
     return m_behavior.getNextPathNode();
 }
 
+////////////////////////////////////////////////////////////
 ksVector2D ksComplex::getHeading()
 {
     return m_heading;
 }
 
+////////////////////////////////////////////////////////////
 ksVector2D ksComplex::getVelocity()
 {
     return m_velocity;
 }
 
+////////////////////////////////////////////////////////////
 ksVector2D ksComplex::getPosition()
 {
     return m_position;
 }
 
+////////////////////////////////////////////////////////////
 ksVector2D ksComplex::getSide()
 {
     return m_side;
 }
 
+////////////////////////////////////////////////////////////
 bool ksComplex::getTag()
 {
     return m_tag;
 }
 
+////////////////////////////////////////////////////////////
 int ksComplex::getBoundingRadius()
 {
     return m_bounding_radius;
 }
 
+////////////////////////////////////////////////////////////
 void ksComplex::toggleBehavior()
 {
     m_behavior_on = !m_behavior_on;
