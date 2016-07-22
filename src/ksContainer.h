@@ -48,6 +48,8 @@ enum ksAlign
 /// controls to be dynamically aligned when the width and height
 /// of the container changes.
 ///
+/// \see ksControl
+///
 ////////////////////////////////////////////////////////////
 class ksContainer : public ksControl, public sf::Drawable, public sf::Transformable
 {

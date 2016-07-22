@@ -39,6 +39,8 @@
 /// \brief Class that contains a drawable layer of in game controls.
 /// These include: ksButton, ksText, and ksContainer.
 ///
+/// \see ksControl, ksContainer, ksLabel, ksButton, ksImageControl
+///
 ////////////////////////////////////////////////////////////
 class ksControlLayer : public sf::Drawable, public sf::Transformable
 {

@@ -40,6 +40,8 @@
 ///
 /// This class cannot be instantiated.
 ///
+/// \see ksContainer, ksLabel, ksButton, ksImageControl
+///
 ////////////////////////////////////////////////////////////
 class ksControl
 {

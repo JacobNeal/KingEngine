@@ -44,6 +44,8 @@
 /// characters to be state driven based on different
 /// behavior states.
 ///
+/// \see ksComplexBehavior, ksEntity
+///
 ////////////////////////////////////////////////////////////
 class ksComplex : public ksEntity
 {

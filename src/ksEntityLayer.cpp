@@ -1,30 +1,44 @@
-/********************************************************
-* Class:			ksEntityLayer
-* Author:           Beyond Parallel - Jacob Neal
-*
-* Filename:         ksEntityLayer.cpp
-********************************************************/
+////////////////////////////////////////////////////////////
+//
+// KingEngine
+// The MIT License (MIT)
+// Copyright (c) 2016 Beyond Parallel
+//
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #include "ksEntityLayer.h"
 #include <iostream>
 
-/*********************************************************
-*	ksEntityLayer(char * tilesheet)
-*
-*	Initialize the entity layer by loading the passed
-*	tilesheet.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksEntityLayer::ksEntityLayer(ksWorld * world, std::string tilesheet)
 	: m_world(world), m_num_of_entities(0), m_pressedEntity(nullptr)
 {
 	m_texture.loadFromFile(tilesheet);
 }
 
-/*********************************************************
-*	addEntity
-*
-*	Add a base game entity to the drawable layer.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntityLayer::addEntity(ksEntity * entity)
 {
 	m_array.setPrimitiveType(sf::Triangles);
@@ -35,12 +49,7 @@ void ksEntityLayer::addEntity(ksEntity * entity)
 	m_num_of_entities++;
 }
 
-/*********************************************************
-*	animate
-*
-*	Set the lower and upper tile boundaries and frame
-*	delay of an entity's animation.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntityLayer::animate(int entity_number, int lower_tile, int upper_tile, int frame_delay)
 {
 	m_entities[entity_number]->setAnimationLower(lower_tile);
@@ -48,12 +57,7 @@ void ksEntityLayer::animate(int entity_number, int lower_tile, int upper_tile, i
 	m_entities[entity_number]->setAnimationDelay(frame_delay);
 }
 
-/*********************************************************
-*   pressEntity
-*
-*   Press the first entity that the mouse coordinates are
-*   contained within.
-*********************************************************/
+////////////////////////////////////////////////////////////
 bool ksEntityLayer::pressEntity(int mouse_x, int mouse_y)
 {
 	for (int count = 0; count < m_num_of_entities; ++count)
@@ -76,23 +80,14 @@ bool ksEntityLayer::pressEntity(int mouse_x, int mouse_y)
 	return false;
 }
 
-/*********************************************************
-*   depressEntity
-*
-*   Set the pressed flag of the most recently pressed
-*   entity to false.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntityLayer::depressEntity()
 {
 	if (m_pressedEntity != nullptr)
 		m_pressedEntity->setPressed(false);
 }
 
-/*********************************************************
-*	drawLayer
-*
-*	Draw the layer of base game entities.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntityLayer::drawLayer(sf::RenderWindow & app)
 {
     // Sort the entities before drawing.
@@ -143,12 +138,7 @@ void ksEntityLayer::drawLayer(sf::RenderWindow & app)
 	app.draw(*this);
 }
 
-/*********************************************************
-*	draw
-*
-*	The overloaded SFML pure virtual method for drawing
-*	an sf::Drawable type.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntityLayer::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	states.transform *= getTransform();
@@ -156,6 +146,7 @@ void ksEntityLayer::draw(sf::RenderTarget & target, sf::RenderStates states) con
 	target.draw(m_array, states);
 }
 
+////////////////////////////////////////////////////////////
 void ksEntityLayer::sortEntitiesByRow()
 {
     for (int count = 0; count < m_num_of_entities; ++count)
@@ -173,11 +164,7 @@ void ksEntityLayer::sortEntitiesByRow()
     }
 }
 
-/*********************************************************
-*	purge
-*
-*	Empty the entity layer of all base game entities.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntityLayer::purge()
 {
 	m_array.clear();
@@ -185,22 +172,13 @@ void ksEntityLayer::purge()
 	m_num_of_entities = 0;
 }
 
-/*********************************************************
-*	setTilesheet
-*
-*	Set the tilesheet for all base game entities.
-*********************************************************/
+////////////////////////////////////////////////////////////
 bool ksEntityLayer::setTilesheet(std::string tilesheet)
 {
 	return m_texture.loadFromFile(tilesheet);
 }
 
-/*********************************************************
-*   getRect
-*
-*   Return the rectangle (x, y, width, height), of a
-*   particular base game entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksRect ksEntityLayer::getRect(int entity_number)
 {
 	ksRect rect;
@@ -213,22 +191,13 @@ ksRect ksEntityLayer::getRect(int entity_number)
 	return rect;
 }
 
-/*********************************************************
-*   getCount
-*
-*   Return the total number of base game entities.
-*********************************************************/
+////////////////////////////////////////////////////////////
 int ksEntityLayer::getCount()
 {
 	return m_num_of_entities;
 }
 
-/*********************************************************
-*   updateScreenPosition
-*
-*   Update the screen position of all entities in this
-*   layer. This can be beneficial for if the camera changes.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntityLayer::updateScreenPosition()
 {
     for (int count = 0; count < m_num_of_entities; ++count)
