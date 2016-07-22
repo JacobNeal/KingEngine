@@ -1,21 +1,40 @@
-/*********************************************************
-* Class:            ksComplexBehavior
-* Author:           Beyond Parallel - Jacob Neal
-*
-* Filename:         ksComplexBehavior.cpp
-*********************************************************/
+////////////////////////////////////////////////////////////
+//
+// KingEngine
+// The MIT License (MIT)
+// Copyright (c) 2016 Beyond Parallel
+//
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #include "ksComplexBehavior.h"
 #include "ksComplex.h"
 #include <iostream>
 #include <limits>
 #include <math.h>
 
-/*********************************************************
-*   ksComplexBehavior
-*
-*   Initializes the state of the complex behavior class.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksComplexBehavior::ksComplexBehavior(ksPathFinder * path_finder, 
                                      ksWorld * world,
                                      ksComplex * vehicle)
@@ -32,12 +51,7 @@ ksComplexBehavior::ksComplexBehavior(ksPathFinder * path_finder,
     m_vehicle_heading.Y = 0;
 }
 
-/*********************************************************
-*   calculateForce
-*
-*   Calculates the force using the sum of the weighted
-*   steering behaviors.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::calculateForce()
 {
     ksVector2D steering_force;
@@ -84,12 +98,7 @@ ksVector2D ksComplexBehavior::calculateForce()
     return steering_force;
 }
 
-/*********************************************************
-*   calculatePrioritizedForce
-*
-*   Calculates the steering force using the prioritized
-*   sum of the weighted behaviors.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::calculatePrioritizedForce()
 {
     m_steering_force.zero();
@@ -178,14 +187,7 @@ ksVector2D ksComplexBehavior::calculatePrioritizedForce()
     return m_steering_force;
 }
 
-/*********************************************************
-*   seek
-*
-*   Perform the seek steering behavior using the passed
-*   vector position, by normalizing the vector between
-*   the sought position and the current position, and
-*   multiplying it by the speed.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::seek(ksVector2D position)
 {
     // Max speed = 150 (5 pixels per frame)
@@ -194,15 +196,7 @@ ksVector2D ksComplexBehavior::seek(ksVector2D position)
     return (desired_velocity - m_vehicle->getVelocity());
 }
 
-/********************************************************
-*   flee
-*
-*   Perform the flee steering behavior using the passed
-*   vector. This method calculates the panic distance
-*   and uses the squared value to determine whether or
-*   not it should flee.
-*   The range gets checked in the calculate method.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::flee(ksVector2D position)
 {
     // Only consider the position if it's within
@@ -218,13 +212,7 @@ ksVector2D ksComplexBehavior::flee(ksVector2D position)
     return (desired_velocity - m_vehicle->getVelocity());
 }
 
-/*********************************************************
-*   arrive
-*
-*   Performs the arrive steering behavior, where the
-*   complex entity will slow down upon arrival at it's
-*   destination.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::arrive(ksVector2D position)
 {
     ksVector2D to_target = position - m_vehicle->getPosition();
@@ -249,12 +237,7 @@ ksVector2D ksComplexBehavior::arrive(ksVector2D position)
     return ksVector2D(0, 0);
 }
 
-/********************************************************
-*   pursue
-*
-*   Get the estimated future position of the target
-*   entity and seek that position.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::pursue(ksComplex * pursuit_target)
 {
     ksVector2D to_evader = m_pursuit_target->getPosition() - m_vehicle->getPosition();
@@ -276,23 +259,13 @@ ksVector2D ksComplexBehavior::pursue(ksComplex * pursuit_target)
                 m_pursuit_target->getVelocity() * look_ahead);
 }
 
-/*********************************************************
-*   offsetPursue
-*
-*   Gets the vector force that will pursue the desired
-*   target at a particular offset away from it.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::offsetPursue(ksComplex * pursuit_target, ksVector2D offset)
 {
     return ksVector2D(0, 0);
 }
 
-/********************************************************
-*   evade
-*
-*   Get the estimated future position of the target
-*   entity and flee from that position.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::evade(ksComplex * evasion_target)
 {
     ksVector2D to_pursuer = m_evasion_target->getPosition() - m_vehicle->getPosition();
@@ -312,13 +285,7 @@ ksVector2D ksComplexBehavior::evade(ksComplex * evasion_target)
                 m_evasion_target->getVelocity() * look_ahead);
 }
 
-/*********************************************************
-*   obstacleAvoidance
-*
-*   Calculates a steering force that will avoid nearby
-*   obstacles and entities, based on who is in the group
-*   and who it closest by.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::obstacleAvoidance()
 {
     // detection_length = min_detection + (m_vehicle.speed / max_speed) * min_detection
@@ -399,12 +366,7 @@ ksVector2D ksComplexBehavior::obstacleAvoidance()
     return getVectorToWorldSpace(steering_force, m_vehicle->getHeading(), m_vehicle->getSide());
 }
 
-/********************************************************
-*   move
-*
-*   Use pathfinding to move the complex type on the
-*   shortest path to the desired row and column.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::move(int row, int col)
 {
     m_wander_path.clear();
@@ -423,234 +385,134 @@ void ksComplexBehavior::move(int row, int col)
     m_path_on     = true;
 }
 
-/********************************************************
-*   addToGroup
-*
-*   Add an entity to the complex type's group so
-*   that they can be considered when performing
-*   group separation, alignment, and cohesion.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::addToGroup(ksComplex * entity)
 {
     m_group.push_back(entity);
 }
 
-/********************************************************
-*   clearGroup
-*
-*   Clear all complex entities from the group so that
-*   they may not be considered when performing group
-*   behaviors.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::clearGroup()
 {
     m_group.clear();
 }
 
-/********************************************************
-*   seekOn
-*
-*   Toggle on the seek behavior so that this complex
-*   entity will seek the desired row and column.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::seekOn(ksVector2D vect)
 {
     m_target = vect;
     m_seek = true;
 }
 
-/********************************************************
-*   seekOff
-*
-*   Toggle off the seek behavior for this complex entity.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::seekOff()
 {
     m_seek = false;
 }
 
-/********************************************************
-*   fleeOn
-*
-*   Toggle on the flee behavior so that this complex
-*   entity will flee from the desired row and column
-*   assuming it's within range.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::fleeOn(ksVector2D vect)
 {
     m_target       = vect;
     m_flee         = true;
 }
 
-/********************************************************
-*   fleeOff
-*
-*   Toggle off the flee behavior for this complex entity.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::fleeOff()
 {
     m_flee = false;
 }
 
-/*********************************************************
-*   arriveOn
-*
-*   Toggle on the arrive behavior for this complex entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::arriveOn(ksVector2D vect)
 {
     m_arrive = true;
     m_target = vect;
 }
 
-/*********************************************************
-*   arriveOff
-*
-*   Toggle off the arrive behavior for this complex entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::arriveOff()
 {
     m_arrive = false;
 }
 
-/*********************************************************
-*   pursuitOn
-*
-*   Toggle on the pursuit behavior for this complex entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::pursuitOn(ksComplex * vehicle)
 {
     m_pursuit_target = vehicle;
     m_pursuit = true;
 }
 
-/*********************************************************
-*   pursuitOff
-*
-*   Toggle off the pursuit behavior for this complex entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::pursuitOff()
 {
     m_pursuit = false;
 }
 
-/*********************************************************
-*   offsetPursuitOn
-*
-*   Toggle on the offset pursuit behavior for this complex
-*   entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::offsetPursuitOn(ksComplex * vehicle, ksVector2D offset)
 {
     m_offset_pursuit = true;
     m_pursuit_target = vehicle;
 }
 
-/*********************************************************
-*   offsetPursuitOff
-*
-*   Toggle off the offset pursuit behavior for this complex
-*   entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::offsetPursuitOff()
 {
     m_offset_pursuit = false;
 }
 
-/*********************************************************
-*   evasionOn
-*
-*   Toggle on the evasion behavior for this complex entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::evasionOn(ksComplex * vehicle)
 {
     m_evasion_target = vehicle;
     m_evasion = true;
 }
 
-/*********************************************************
-*   evasionOff
-*
-*   Toggle off the evasion behavior for this complex entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::evasionOff()
 {
     m_evasion = false;
 }
 
-/********************************************************
-*   groupOn
-*
-*   Toggle on the group behaviors so that this complex
-*   entity will have group separation, alignment and
-*   cohesion within it's group.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::groupOn()
 {
     m_group_on = true;
     m_next_node.row += 1;
 }
 
-/********************************************************
-*   groupOff
-*
-*   Toggle off the group behaviors for this complex
-*   entity.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::groupOff()
 {
     m_group_on = false;
 }
 
-/*********************************************************
-*   obstacleOn
-*
-*   Toggle on the obstacle avoidance behavior for this
-*   complex entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::obstacleOn()
 {
     m_obstacle = true;
 }
 
-/*********************************************************
-*   obstacleOff
-*
-*   Toggle off the obstacle avoidance behavior for this
-*   complex entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::obstacleOff()
 {
     m_obstacle = false;
 }
 
-/********************************************************
-*   getNextPathNode
-*
-*   Return the estimated next path node of this complex
-*   entity.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksPathNode ksComplexBehavior::getNextPathNode()
 {
     return m_next_node;
 }
 
-/*********************************************************
-*   getPathHeading
-*
-*   Returns the path heading of the vehicle.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::getPathHeading()
 {
     return m_vehicle_heading;
 }
 
-/********************************************************
-*   applyRowBoundaries
-*
-*   Ensure that the passed row is a valid row, and if
-*   it's not, adjust it till it is.
-********************************************************/
+////////////////////////////////////////////////////////////
 int ksComplexBehavior::applyRowBoundaries(int row)
 {
     int max_row = m_world->getWallMaxRow(BOTTOM);
@@ -663,12 +525,7 @@ int ksComplexBehavior::applyRowBoundaries(int row)
     return row;
 }
 
-/********************************************************
-*   applyColumnBoundaries
-*
-*   Ensure that the passed column is a valid column,
-*   and if it's not, adjust it till it is.
-********************************************************/
+////////////////////////////////////////////////////////////
 int ksComplexBehavior::applyColumnBoundaries(int col)
 {
     int max_col = m_world->getWallMaxCol(BOTTOM);
@@ -681,13 +538,7 @@ int ksComplexBehavior::applyColumnBoundaries(int col)
     return col;
 }
 
-/********************************************************
-*   getNodePosition
-*
-*   Get the node position from ksWorld for the passed
-*   row and column and set up all the memnbers of the
-*   path node.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksPathNode ksComplexBehavior::getNodePosition(int row, int col)
 {
     ksPathNode temp;
@@ -706,13 +557,7 @@ ksPathNode ksComplexBehavior::getNodePosition(int row, int col)
     return temp;
 }
 
-/********************************************************
-*   moveInc
-*
-*   Move the complex entity incrementally using the 
-*   difference between the current and next nodes (delta)
-*   in the number of transition steps between nodes.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksComplexBehavior::moveInc(int transition_num)
 {
     // Move the current node in incremental steps
@@ -728,16 +573,7 @@ void ksComplexBehavior::moveInc(int transition_num)
     m_current_node.center.Y += m_center_delta.Y / transition_num;
 }
 
-/*********************************************************
-*   accumulateForce
-*
-*   Allow for the next added force to be added if there's
-*   enough remaining force relative to the maximum
-*   steering force. If there isn't enough remaining
-*   force, then fill the remainder of the steering force
-*   with the incoming force. Returns false if there
-*   wasn't enough remaining force.
-*********************************************************/
+////////////////////////////////////////////////////////////
 bool ksComplexBehavior::accumulateForce(ksVector2D force)
 {
     double magnitude = m_steering_force.getLength();
@@ -757,12 +593,7 @@ bool ksComplexBehavior::accumulateForce(ksVector2D force)
     return true;
 }
 
-/*********************************************************
-*   getPointToLocalSpace
-*
-*   Converts a point, heading, side and position to
-*   local space for behavior based calculations.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::getPointToLocalSpace(ksVector2D point, ksVector2D heading,
                                                    ksVector2D side, ksVector2D position)
 {
@@ -789,24 +620,14 @@ ksVector2D ksComplexBehavior::getPointToLocalSpace(ksVector2D point, ksVector2D 
     return point;
 }
 
-/*********************************************************
-*   getPointToWorldSpace
-*
-*   Converts a point, heading, side, and position to
-*   world space for behavior based calculations.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::getPointToWorldSpace(ksVector2D point, ksVector2D heading,
                                                    ksVector2D side, ksVector2D position)
 {
     return ksVector2D(0, 0);
 }
 
-/*********************************************************
-*   getVectorToWorldSpace
-*
-*   Returns a vector to world space relative to the passed
-*   vector, heading, and side.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::getVectorToWorldSpace(ksVector2D vect, ksVector2D heading,
                                                     ksVector2D side)
 {
@@ -828,11 +649,7 @@ ksVector2D ksComplexBehavior::getVectorToWorldSpace(ksVector2D vect, ksVector2D 
     return vect;
 }
 
-/********************************************************
-*   separation
-*
-*   Perform separation on the group of complex entities.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::separation()
 {
     ksVector2D steering;
@@ -850,11 +667,7 @@ ksVector2D ksComplexBehavior::separation()
     return steering;
 }
 
-/********************************************************
-*   alignment
-*
-*   Perform alignment on the group of complex entities.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::alignment()
 {
     ksVector2D avg_heading;
@@ -880,11 +693,7 @@ ksVector2D ksComplexBehavior::alignment()
     return avg_heading;
 }
 
-/********************************************************
-*   cohesion
-*
-*   Perform cohesion on the group of complex entities.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksVector2D ksComplexBehavior::cohesion()
 {
     ksVector2D center;

@@ -1,23 +1,39 @@
-/********************************************************
-* Class:            ksContainer
-* Author:           Beyond Parallel - Jacob Neal
-*
-* Filename:         ksContainer.cpp
-********************************************************/
+////////////////////////////////////////////////////////////
+//
+// KingEngine
+// The MIT License (MIT)
+// Copyright (c) 2016 Beyond Parallel
+//
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #include "ksContainer.h"
 #include <math.h>
 
 #define PI 3.14
 
-/********************************************************
-*   ksContainer
-*
-*   Initializes the ksContainer class to a particular
-*   alignment that controls within this container will
-*   be dynamically updated to when the width, height,
-*   or x, y position of the container changes.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksContainer::ksContainer(double width, double height, ksAlign alignment, 
     ksColor color, double radius, int resolution)
     : m_alignment(alignment), m_width(width), m_height(height),
@@ -30,12 +46,7 @@ ksContainer::ksContainer(double width, double height, ksAlign alignment,
     update();
 }
 
-/********************************************************
-*   addControl
-*
-*   Add a control to the list of controls contained within
-*   the container.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::addControl(ksControl * control)
 {
     m_controls.push_back(control);
@@ -44,21 +55,13 @@ void ksContainer::addControl(ksControl * control)
     updateContainedControls();
 }
 
-/********************************************************
-*   getVisibility
-*
-*   Return the visibility of the control.
-********************************************************/
+////////////////////////////////////////////////////////////
 bool ksContainer::getVisibility()
 {
     return m_visible;
 }
 
-/********************************************************
-*   update
-*
-*   Updates the current state of the container.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::update()
 {
     // Number of sides that make up a corner times 4 corners
@@ -152,12 +155,7 @@ void ksContainer::update()
     updateContainedControls();
 }
 
-/********************************************************
-*   updateContainedControls
-*
-*   Updates the position of the controls contained within
-*   the container.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::updateContainedControls()
 {
     double current_x = 0.0;
@@ -197,24 +195,14 @@ void ksContainer::updateContainedControls()
     }
 }
 
-/********************************************************
-*   draw
-*
-*   Override the default behavior for drawing objects
-*   in SFML.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
     target.draw(m_array, states);
 }
 
-/********************************************************
-*   drawControl
-*
-*   Draws the control along with any other associated
-*   object to the screen.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::drawControl(sf::RenderWindow & app)
 {
     if (m_visible)
@@ -228,12 +216,7 @@ void ksContainer::drawControl(sf::RenderWindow & app)
     }
 }
 
-/********************************************************
-*   moveControl
-*
-*   Move the container and any associated controls within
-*   the container by the passed (x, y) values.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::moveControl(double x, double y)
 {
     move(x, y);
@@ -244,12 +227,7 @@ void ksContainer::moveControl(double x, double y)
         m_controls[count]->moveControl(x, y);
 }
 
-/********************************************************
-*   pressed
-*
-*   Return whether or not the control is pressed within
-*   the passed coordinates.
-********************************************************/
+////////////////////////////////////////////////////////////
 bool ksContainer::pressed(int mouse_x, int mouse_y)
 {   
     bool contained_control_pressed = false;
@@ -277,22 +255,13 @@ bool ksContainer::pressed(int mouse_x, int mouse_y)
     return m_pressed;
 }
 
-/********************************************************
-*   isPressed
-*
-*   Return whether or not the control is already pressed.
-********************************************************/
+////////////////////////////////////////////////////////////
 bool ksContainer::isPressed()
 {
     return m_pressed;
 }
 
-/********************************************************
-*   resize
-*
-*   Resize the container based on the new application
-*   width and height.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::resize(int screen_width, int screen_height)
 {
     // Update the size of the control.
@@ -311,12 +280,7 @@ void ksContainer::resize(int screen_width, int screen_height)
     update();
 }
 
-/********************************************************
-*   setCenter
-*
-*   Position the control relative to the passed (x, y)
-*   pair that represents the future center position.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::setCenter(double x, double y)
 {
     setPosition(x - (m_width / 2), y - (m_height / 2));
@@ -325,12 +289,7 @@ void ksContainer::setCenter(double x, double y)
     updateContainedControls();
 }
 
-/********************************************************
-*   setColor
-*
-*   Set the color of the rounded rectangle of the
-*   container.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::setColor(ksColor color)
 {
     m_color = color;
@@ -340,12 +299,7 @@ void ksContainer::setColor(ksColor color)
         m_array[count].color = m_color;
 }
 
-/********************************************************
-*   setControlPosition
-*
-*   Position the control relative to the passed (x, y)
-*   pair.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::setControlPosition(double x, double y)
 {
     setPosition(x, y);
@@ -354,12 +308,7 @@ void ksContainer::setControlPosition(double x, double y)
     updateContainedControls();
 }
 
-/********************************************************
-*   setOpacity
-*
-*   Update the opacity of the container and all contained
-*   controls.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::setOpacity(double opacity)
 {
     // Take the value of opacity from 0.0 - 1.0
@@ -377,22 +326,13 @@ void ksContainer::setOpacity(double opacity)
     update();
 }
 
-/********************************************************
-*   setPressed
-*
-*   Set whether or not the control is pressed.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::setPressed(bool pressed)
 {
     m_pressed = pressed;
 }
 
-/********************************************************
-*   setWidth
-*
-*   Set the width of the container and dynamically update
-*   the position of all the contained controls.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::setWidth(double width)
 {
     m_width = width;
@@ -401,12 +341,7 @@ void ksContainer::setWidth(double width)
     update();
 }
 
-/********************************************************
-*   setHeight
-*
-*   Set the height of the container and dynamically update
-*   the position of all the contained controls.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::setHeight(double height)
 {
     m_height = height;
@@ -415,11 +350,7 @@ void ksContainer::setHeight(double height)
     update();
 }
 
-/********************************************************
-*   setVisibility
-*
-*   Set the visibility of the control.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksContainer::setVisibility(bool visibility)
 {
     m_visible = visibility;

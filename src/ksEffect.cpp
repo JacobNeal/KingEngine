@@ -1,18 +1,36 @@
-/********************************************************
-* Class:            ksEffect
-* Author:           Beyond Parallel - Jacob Neal
-*
-* Filename:         ksEffect.cpp
-********************************************************/
+////////////////////////////////////////////////////////////
+//
+// KingEngine
+// The MIT License (MIT)
+// Copyright (c) 2016 Beyond Parallel
+//
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #include "ksEffect.h"
 
-/********************************************************
-*   ksEffect
-*
-*   Initialize the effect layer of lights to default
-*   values.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksEffect::ksEffect()
     : m_number_of_lights(0), /*m_current_color(1),*/
       m_first_duration(0), m_second_duration(0)
@@ -21,14 +39,7 @@ ksEffect::ksEffect()
     m_array.setPrimitiveType(sf::Triangles);
 }
 
-/********************************************************
-*   addLight
-*
-*   Add a light (colored octagon) into the effect layer 
-*   and draw a triangle beam connecting the light source 
-*   with it's destination if the starting location != 
-*   ending location.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksEffect::addLight(ksVector2D start, ksVector2D end,
                         int diameter, sf::Color first,
                         sf::Color second)
@@ -86,11 +97,7 @@ void ksEffect::addLight(ksVector2D start, ksVector2D end,
     m_number_of_lights += 1;
 }
 
-/********************************************************
-*   clear
-*
-*   Clear the effect layer of all active lights.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksEffect::clear()
 {
     m_array.clear();
@@ -99,93 +106,56 @@ void ksEffect::clear()
     m_number_of_lights = 0;
 }
 
-/********************************************************
-*   draw
-*
-*   Overloads the draw method of drawable entities in
-*   the SFML library, so that this layer can be drawn.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksEffect::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
     target.draw(m_array, states);
 }
 
-/********************************************************
-*   getFirstColor
-*
-*   Returns the first color of one of the lights.
-********************************************************/
+////////////////////////////////////////////////////////////
 sf::Color ksEffect::getFirstColor(int index)
 {
     return m_first[index];
 }
 
-/********************************************************
-*   getSecondColor
-*
-*   Returns the second color of one of the lights.
-********************************************************/
+////////////////////////////////////////////////////////////
 sf::Color ksEffect::getSecondColor(int index)
 {
     return m_second[index];
 }
 
-/********************************************************
-*   getFirstDuration
-*
-*   Returns the first duration of the effect layer.
-********************************************************/
+////////////////////////////////////////////////////////////
 int ksEffect::getFirstDuration()
 {
    return m_first_duration; 
 }
 
-/********************************************************
-*   getSecondDuration
-*
-*   Returns the second duration of the effect layer.
-********************************************************/
+////////////////////////////////////////////////////////////
 int ksEffect::getSecondDuration()
 {
     return m_second_duration;
 }
 
-/********************************************************
-*   setFirstColor
-*
-*   Sets the first color of one of the lights.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksEffect::setFirstColor(int index, sf::Color first)
 {
     m_first[index] = first;
 }
 
-/********************************************************
-*   setSecondColor
-*
-*   Sets the second color of one of the lights.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksEffect::setSecondColor(int index, sf::Color second)
 {
     m_second[index] = second;
 }
 
-/********************************************************
-*   setFirstDuration
-*
-*   Sets the first duration of the effect layer.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksEffect::setFirstDuration(int duration)
 {
     m_first_duration = duration;
 }
 
-/********************************************************
-*   setSecondDuration
-*
-*   Sets the second duration of the effect layer.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksEffect::setSecondDuration(int duration)
 {
     m_second_duration = duration;

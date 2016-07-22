@@ -1,19 +1,37 @@
-/********************************************************
-* Class:			ksEntity
-* Author:           Beyond Parallel - Jacob Neal
-*
-* Filename:         ksEntity.cpp
-********************************************************/
+////////////////////////////////////////////////////////////
+//
+// KingEngine
+// The MIT License (MIT)
+// Copyright (c) 2016 Beyond Parallel
+//
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #include "ksEntity.h"
 #include <iostream>
 
-/*********************************************************
-*	ksEntity
-*
-*	Initialize entity to the position, width, height and 
-*	current tile passed.
-*********************************************************/
+////////////////////////////////////////////////////////////
 ksEntity::ksEntity(ksWorld * world, int x, int y, int z, int w, int h, 
         int current_tile)
     : m_world(world), m_current_tile(current_tile), 
@@ -43,12 +61,7 @@ ksEntity::ksEntity(ksWorld * world, int x, int y, int z, int w, int h,
     m_current_node.BL = ksVector2D(BL.x, BL.y);
 }
 
-/*********************************************************
-*	animate
-*
-*	Animate the entity between the lower and upper tile
-*	bounds with the given animation delay (in frames).
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntity::animate()
 {
 	if (m_current_tile < m_lower_tile || m_current_tile > m_upper_tile)
@@ -72,152 +85,101 @@ void ksEntity::animate()
 	++m_frame;
 }
 
-/********************************************************
-*   update
-*
-*   Call the frame by frame update method. This method
-*   should be overridden in any derived classes.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntity::update()
 { }
 
-/*********************************************************
-*	setAnimationLow
-*
-*	Set the lower tile boundary for the animation of the
-*	entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntity::setAnimationLower(int lower_tile)
 {
 	m_lower_tile = lower_tile;
 }
 
-/*********************************************************
-*	setAnimationUpper
-*
-*	Set the upper tile boundary for the animation of the
-*	entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntity::setAnimationUpper(int upper_tile)
 {
 	m_upper_tile = upper_tile;
 }
 
-/*********************************************************
-*	setAnimationDelay
-*
-*	Set the animation delay (in frames).
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntity::setAnimationDelay(int frame_delay)
 {
 	m_anim_delay = frame_delay;
 }
 
-/*********************************************************
-*	setPressed
-*
-*	Set whether or not the entity is being pressed.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntity::setPressed(bool pressed)
 {
 	m_pressed = pressed;
 }
 
-/*********************************************************
-*	setVisible
-*
-*	Set the visibility of the entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntity::setVisible(bool visible)
 {
 	m_visible = visible;
 }
 
-/*********************************************************
-*   setTilePosition
-*
-*   Set the position of the entity to the passed path node.
-*********************************************************/
+////////////////////////////////////////////////////////////
 void ksEntity::setTilePosition(ksPathNode node)
 {
     m_current_node = node;
 }
 
-/*********************************************************
-*	getPosition
-*
-*	Returns the position of the entity in vector form.
-*********************************************************/
+////////////////////////////////////////////////////////////
 const ksPathNode & ksEntity::getTilePosition()
 {
 	return m_current_node;
 }
 
-/*********************************************************
-*	getTextureCoord
-*
-*	Returns the texture coordinates of the entity.
-*********************************************************/
+////////////////////////////////////////////////////////////
 const ksRect & ksEntity::getTextureCoord()
 {
 	return m_texture_coord;
 }
 
-/********************************************************
-*   getWidth
-*
-*   Returns the width in tiles of the entity.
-********************************************************/
+////////////////////////////////////////////////////////////
 int ksEntity::getWidth()
 {
     return m_w;
 }
 
-/********************************************************
-*   getHeight
-*
-*   Returns the height in tiles of the entity.
-********************************************************/
+////////////////////////////////////////////////////////////
 int ksEntity::getHeight()
 {
     return m_h;
 }
 
-/*********************************************************
-*	isPressed
-*
-*	Returns whether or not the entity is being pressed.
-*********************************************************/
+////////////////////////////////////////////////////////////
 bool ksEntity::isPressed()
 {
 	return m_pressed;
 }
 
-/*********************************************************
-*	isVisible
-*
-*	Returns whether or not the entity is visible.
-*********************************************************/
+////////////////////////////////////////////////////////////
 bool ksEntity::isVisible()
 {
 	return m_visible;
 }
 
+////////////////////////////////////////////////////////////
 int ksEntity::X()
 {
     return m_x;
 }
 
+////////////////////////////////////////////////////////////
 int ksEntity::Y()
 {
     return m_y;
 }
 
+////////////////////////////////////////////////////////////
 int ksEntity::Z()
 {
     return m_z;
 }
 
+////////////////////////////////////////////////////////////
 void ksEntity::moveEntity(int x, int y, int z)
 {
     m_x += x;
@@ -227,6 +189,7 @@ void ksEntity::moveEntity(int x, int y, int z)
     updateScreenPosition();
 }
 
+////////////////////////////////////////////////////////////
 void ksEntity::updateScreenPosition()
 {
     // Transform the 3D world position into screen coordinates.

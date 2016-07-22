@@ -1,18 +1,36 @@
-/********************************************************
-* Class:            ksControlLayer
-* Author:           Beyond Parallel - Jacob Neal
-*
-* Filename:         ksControlLayer.cpp
-********************************************************/
+////////////////////////////////////////////////////////////
+//
+// KingEngine
+// The MIT License (MIT)
+// Copyright (c) 2016 Beyond Parallel
+//
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #include "ksControlLayer.h"
 
-/********************************************************
-*   ksControl
-*
-*   Initialize the control and set the texture to the
-*   path of the tilesheet that was passed.
-********************************************************/
+////////////////////////////////////////////////////////////
 ksControlLayer::ksControlLayer(std::string tilesheet)
     : m_num_of_controls(0), m_pressedControl(nullptr)
 {
@@ -20,36 +38,21 @@ ksControlLayer::ksControlLayer(std::string tilesheet)
    m_array.setPrimitiveType(sf::Triangles);
 }
 
-/********************************************************
-*   addControl
-*
-*   Adding a drawable control to the layer  of controls 
-*   to be drawn.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksControlLayer::addControl(ksControl * control)
 {
     m_controls[m_num_of_controls] = control;
     ++m_num_of_controls;
 }
 
-/********************************************************
-*   drawLayer
-*
-*   Draw the layer of controls to screen using the render
-*   window that was passed.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksControlLayer::drawLayer(sf::RenderWindow & app)
 {
     for (int count = 0; count < m_num_of_controls; ++count)
         m_controls[count]->drawControl(app);
 }
 
-/********************************************************
-*   draw
-*
-*   Override the default behavior for drawing objects
-*   in SFML.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksControlLayer::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
@@ -57,12 +60,7 @@ void ksControlLayer::draw(sf::RenderTarget & target, sf::RenderStates states) co
     target.draw(m_array, states);
 }
 
-/********************************************************
-*   pressControl
-*
-*   Returns whether or not one of the controls is
-*   pressed based on the passed mouse coordinates.
-********************************************************/
+////////////////////////////////////////////////////////////
 bool ksControlLayer::pressControl(int mouse_x, int mouse_y)
 {
     for (int count = 0; count < m_num_of_controls; ++count)
@@ -77,57 +75,33 @@ bool ksControlLayer::pressControl(int mouse_x, int mouse_y)
     return false;
 }
 
-/********************************************************
-*   depressControl
-*
-*   Set the pressed flag of the most recently pressed
-*   control to false.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksControlLayer::depressControl()
 {
     if (m_pressedControl != nullptr)
         m_pressedControl->setPressed(false);
 }
 
-/********************************************************
-*   purge
-*
-*   Remove all the drawable controls in the Control Layer.
-********************************************************/
-
+////////////////////////////////////////////////////////////
 void ksControlLayer::purge()
 {
     m_array.clear();
 }
 
-/********************************************************
-*   resize
-*
-*   Resize all of the controls within this layer based
-*   on the new application width and height.
-********************************************************/
+////////////////////////////////////////////////////////////
 void ksControlLayer::resize(int screen_width, int screen_height)
 {
     for (int count = 0; count < m_num_of_controls; ++count)
         m_controls[count]->resize(screen_width, screen_height);
 }
 
-/********************************************************
-*   setTilesheet
-*
-*   Change the tilesheet that all the controls in the
-*   layer will use.
-********************************************************/
+////////////////////////////////////////////////////////////
 bool ksControlLayer::setTilesheet(std::string tilesheet)
 {
     return m_texture.loadFromFile(tilesheet);
 }
 
-/********************************************************
-*   getCount
-*
-*   Return the number of controls in this layer.
-********************************************************/
+////////////////////////////////////////////////////////////
 int ksControlLayer::getCount()
 {
     return m_num_of_controls;
